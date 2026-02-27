@@ -12,3 +12,7 @@ base_price = 220.0
 base_demand_weight = 1.0
 preferred_ingredients = {"roasted_barley": 0.95, "chocolate_malt": 0.9, "pale_malt": 0.7, "crystal_60": 0.75, "munich_malt": 0.6, "east_kent_goldings": 0.85, "fuggle": 0.8, "cascade": 0.4, "s04_english_ale": 0.9, "us05_clean_ale": 0.75, "lactose": 0.7}
 ideal_flavor_profile = {"bitterness": 0.4, "sweetness": 0.3, "roastiness": 0.8, "fruitiness": 0.1, "funkiness": 0.0}
+ideal_mash_temp_min = 66.0
+ideal_mash_temp_max = 69.0
+ideal_boil_min = 60.0
+ideal_boil_max = 90.0

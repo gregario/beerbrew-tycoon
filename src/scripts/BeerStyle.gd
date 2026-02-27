@@ -31,5 +31,13 @@ extends Resource
 	"funkiness": 0.0,
 }
 
+## Ideal mash temperature range for this style (°C). Used by BrewingScience.
+@export var ideal_mash_temp_min: float = 64.0
+@export var ideal_mash_temp_max: float = 66.0
+
+## Ideal boil duration range for this style (minutes). Used by BrewingScience.
+@export var ideal_boil_min: float = 50.0
+@export var ideal_boil_max: float = 70.0
+
 func get_ingredient_compatibility(ingredient_id: String) -> float:
 	return preferred_ingredients.get(ingredient_id, 0.5)
