@@ -10,7 +10,7 @@ const STARTING_BALANCE: float = 500.0
 const WIN_TARGET: float = 10000.0
 const RENT_AMOUNT: float = 150.0
 const RENT_INTERVAL: int = 4       # Rent charged every N turns
-const INGREDIENT_COST: float = 50.0  # Flat ingredient cost per brew (MVP)
+const MINIMUM_RECIPE_COST: int = 50  # Cheapest base malt (15) + cheapest hop (20) + cheapest yeast (15)
 
 # ---------------------------------------------------------------------------
 # State machine
@@ -38,8 +38,8 @@ var balance: float = STARTING_BALANCE
 var turn_counter: int = 0
 
 var current_style: Resource = null
-var current_recipe: Dictionary = {}  # {malt: Ingredient, hop: Ingredient, yeast: Ingredient}
-var recipe_history: Array = []       # Array of {style_id, malt_id, hop_id, yeast_id}
+var current_recipe: Dictionary = {}  # {malts: Array, hops: Array, yeast: Yeast, adjuncts: Array}
+var recipe_history: Array = []       # Array of {style_id, malt_ids, hop_ids, yeast_id, adjunct_ids}
 var last_brew_result: Dictionary = {}
 
 # Run statistics
@@ -104,10 +104,24 @@ func set_recipe(recipe: Dictionary) -> void:
 # ---------------------------------------------------------------------------
 # Economy methods
 # ---------------------------------------------------------------------------
+static func get_recipe_cost(recipe: Dictionary) -> int:
+	var total := 0
+	for malt in recipe.get("malts", []):
+		total += malt.cost
+	for hop in recipe.get("hops", []):
+		total += hop.cost
+	var yeast: Resource = recipe.get("yeast", null)
+	if yeast:
+		total += yeast.cost
+	for adj in recipe.get("adjuncts", []):
+		total += adj.cost
+	return total
+
 func deduct_ingredient_cost() -> bool:
-	if balance < INGREDIENT_COST:
+	var cost := get_recipe_cost(current_recipe)
+	if balance < cost:
 		return false
-	balance -= INGREDIENT_COST
+	balance -= cost
 	balance_changed.emit(balance)
 	return true
 
@@ -121,7 +135,7 @@ func check_win_condition() -> bool:
 	return balance >= WIN_TARGET
 
 func check_loss_condition() -> bool:
-	return balance <= 0.0 or balance < INGREDIENT_COST
+	return balance <= 0.0 or balance < MINIMUM_RECIPE_COST
 
 func check_rent_due() -> bool:
 	return turn_counter > 0 and turn_counter % RENT_INTERVAL == 0
@@ -137,14 +151,25 @@ func deduct_rent() -> void:
 func record_brew(quality: float) -> void:
 	if quality > best_quality:
 		best_quality = quality
-	var malt_id: Variant = current_recipe.get("malt", null)
-	var hop_id: Variant = current_recipe.get("hop", null)
-	var yeast_id: Variant = current_recipe.get("yeast", null)
+	var malt_ids: Array = []
+	for m in current_recipe.get("malts", []):
+		malt_ids.append(m.ingredient_id)
+	malt_ids.sort()
+	var hop_ids: Array = []
+	for h in current_recipe.get("hops", []):
+		hop_ids.append(h.ingredient_id)
+	hop_ids.sort()
+	var yeast_id: String = current_recipe.get("yeast").ingredient_id if current_recipe.get("yeast") else ""
+	var adjunct_ids: Array = []
+	for a in current_recipe.get("adjuncts", []):
+		adjunct_ids.append(a.ingredient_id)
+	adjunct_ids.sort()
 	recipe_history.append({
 		"style_id": current_style.style_id if current_style else "",
-		"malt_id": malt_id.ingredient_id if malt_id else "",
-		"hop_id": hop_id.ingredient_id if hop_id else "",
-		"yeast_id": yeast_id.ingredient_id if yeast_id else ""
+		"malt_ids": malt_ids,
+		"hop_ids": hop_ids,
+		"yeast_id": yeast_id,
+		"adjunct_ids": adjunct_ids,
 	})
 
 func set_brewing(active: bool) -> void:

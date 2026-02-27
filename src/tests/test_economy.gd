@@ -58,17 +58,64 @@ func test_starting_balance():
 	assert_eq(GameState.balance, GameState.STARTING_BALANCE,
 		"Balance should start at STARTING_BALANCE after reset")
 
-func test_deduct_ingredient_cost():
-	var initial := GameState.balance
+func test_deduct_recipe_cost_sums_ingredients():
+	GameState.balance = 500.0
+	var m := Malt.new()
+	m.cost = 20
+	m.is_base_malt = true
+	var h := Hop.new()
+	h.cost = 25
+	var y := Yeast.new()
+	y.cost = 15
+	var recipe := {"malts": [m], "hops": [h], "yeast": y, "adjuncts": []}
+	GameState.set_recipe(recipe)
 	var ok := GameState.deduct_ingredient_cost()
-	assert_true(ok, "deduct_ingredient_cost should succeed when balance is sufficient")
-	assert_eq(GameState.balance, initial - GameState.INGREDIENT_COST,
-		"Balance should decrease by INGREDIENT_COST")
+	assert_true(ok)
+	assert_eq(GameState.balance, 440.0)  # 500 - (20+25+15)
 
-func test_deduct_ingredient_cost_fails_on_insufficient_balance():
-	GameState.balance = GameState.INGREDIENT_COST - 1.0
+func test_deduct_recipe_cost_with_multiple_malts():
+	GameState.balance = 500.0
+	var m1 := Malt.new()
+	m1.cost = 20
+	m1.is_base_malt = true
+	var m2 := Malt.new()
+	m2.cost = 25
+	var h := Hop.new()
+	h.cost = 25
+	var y := Yeast.new()
+	y.cost = 15
+	var recipe := {"malts": [m1, m2], "hops": [h], "yeast": y, "adjuncts": []}
+	GameState.set_recipe(recipe)
 	var ok := GameState.deduct_ingredient_cost()
-	assert_false(ok, "deduct_ingredient_cost should fail when balance < INGREDIENT_COST")
+	assert_true(ok)
+	assert_eq(GameState.balance, 415.0)  # 500 - (20+25+25+15)
+
+func test_deduct_recipe_cost_fails_insufficient_balance():
+	GameState.balance = 30.0
+	var m := Malt.new()
+	m.cost = 20
+	m.is_base_malt = true
+	var h := Hop.new()
+	h.cost = 25
+	var y := Yeast.new()
+	y.cost = 15
+	var recipe := {"malts": [m], "hops": [h], "yeast": y, "adjuncts": []}
+	GameState.set_recipe(recipe)
+	var ok := GameState.deduct_ingredient_cost()
+	assert_false(ok)
+	assert_eq(GameState.balance, 30.0)  # unchanged
+
+func test_get_recipe_cost():
+	var m := Malt.new()
+	m.cost = 20
+	var h := Hop.new()
+	h.cost = 25
+	var y := Yeast.new()
+	y.cost = 15
+	var a := Adjunct.new()
+	a.cost = 10
+	var recipe := {"malts": [m], "hops": [h], "yeast": y, "adjuncts": [a]}
+	assert_eq(GameState.get_recipe_cost(recipe), 70)
 
 func test_add_revenue_increases_balance():
 	var initial := GameState.balance
@@ -112,12 +159,12 @@ func test_loss_condition_at_zero():
 	GameState.balance = 0.0
 	assert_true(GameState.check_loss_condition(), "Loss when balance is 0")
 
-func test_loss_condition_below_ingredient_cost():
-	GameState.balance = GameState.INGREDIENT_COST - 0.01
-	assert_true(GameState.check_loss_condition(), "Loss when can't afford next brew")
+func test_loss_condition_uses_minimum_recipe_cost():
+	GameState.balance = 40.0
+	assert_true(GameState.check_loss_condition())
 
 func test_loss_condition_not_met_with_sufficient_balance():
-	GameState.balance = GameState.INGREDIENT_COST + 10.0
+	GameState.balance = GameState.MINIMUM_RECIPE_COST + 10.0
 	assert_false(GameState.check_loss_condition())
 
 # ---------------------------------------------------------------------------

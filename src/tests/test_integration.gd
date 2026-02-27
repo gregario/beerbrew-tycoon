@@ -26,25 +26,29 @@ func _make_style(style_id: String = "lager") -> BeerStyle:
 	return s
 
 func _make_recipe(style_id: String = "lager") -> Dictionary:
-	var malt := Ingredient.new()
+	var malt := Malt.new()
 	malt.ingredient_id = "pale_malt"
 	malt.ingredient_name = "Pale Malt"
 	malt.category = 0
+	malt.cost = 20
+	malt.is_base_malt = true
 	malt.style_compatibility = {style_id: 0.5}
 
-	var hop := Ingredient.new()
+	var hop := Hop.new()
 	hop.ingredient_id = "centennial"
 	hop.ingredient_name = "Centennial"
 	hop.category = 1
+	hop.cost = 25
 	hop.style_compatibility = {style_id: 0.5}
 
-	var yeast := Ingredient.new()
+	var yeast := Yeast.new()
 	yeast.ingredient_id = "ale_yeast"
 	yeast.ingredient_name = "Ale Yeast"
 	yeast.category = 2
+	yeast.cost = 15
 	yeast.style_compatibility = {style_id: 0.5}
 
-	return {"malt": malt, "hop": hop, "yeast": yeast}
+	return {"malts": [malt], "hops": [hop], "yeast": yeast, "adjuncts": []}
 
 func before_each() -> void:
 	MarketSystem.register_styles(["lager", "pale_ale", "wheat_beer", "stout"])
@@ -86,9 +90,10 @@ func test_balance_after_one_turn_matches_expected_math():
 	GameState.deduct_ingredient_cost()
 	var revenue := GameState.calculate_revenue(50.0)
 	_brew_and_advance(50.0)
-	var expected := initial - GameState.INGREDIENT_COST + revenue
+	var recipe_cost := GameState.get_recipe_cost(GameState.current_recipe)
+	var expected := initial - recipe_cost + revenue
 	assert_almost_eq(GameState.balance, expected, 0.01,
-		"Balance should equal initial - ingredient_cost + revenue")
+		"Balance should equal initial - recipe_cost + revenue")
 
 # ---------------------------------------------------------------------------
 # Tests: turn counter — Task 14.1
@@ -125,7 +130,8 @@ func test_rent_deducted_at_rent_interval():
 	GameState.deduct_ingredient_cost()
 	var revenue := GameState.calculate_revenue(50.0)
 	_brew_and_advance(50.0)
-	var expected := balance_before - GameState.INGREDIENT_COST + revenue - GameState.RENT_AMOUNT
+	var rent_recipe_cost := GameState.get_recipe_cost(GameState.current_recipe)
+	var expected := balance_before - rent_recipe_cost + revenue - GameState.RENT_AMOUNT
 	assert_almost_eq(GameState.balance, expected, 0.01,
 		"Balance on rent turn must include RENT_AMOUNT deduction")
 
@@ -136,8 +142,8 @@ func test_run_survives_two_rent_cycles():
 		GameState.deduct_ingredient_cost()
 		_brew_and_advance(50.0)
 	assert_false(_lost, "A healthy run should survive two full rent cycles")
-	assert_gt(GameState.balance, GameState.INGREDIENT_COST,
-		"Balance should remain above ingredient threshold after two rent cycles")
+	assert_gt(GameState.balance, GameState.MINIMUM_RECIPE_COST,
+		"Balance should remain above minimum recipe cost after two rent cycles")
 	assert_eq(GameState.turn_counter, GameState.RENT_INTERVAL * 2)
 
 # ---------------------------------------------------------------------------
@@ -160,9 +166,10 @@ func test_win_condition_triggers_when_balance_crosses_target():
 # ---------------------------------------------------------------------------
 
 func test_loss_triggers_when_cant_afford_next_brew():
-	# balance = 51 → deduct ingredient (50) → balance = 1 (< INGREDIENT_COST).
+	# balance = recipe_cost + 1 → deduct → balance = 1 (< MINIMUM_RECIPE_COST).
 	# No revenue added → advance_state should detect loss.
-	GameState.balance = GameState.INGREDIENT_COST + 1.0
+	var loss_recipe_cost := GameState.get_recipe_cost(GameState.current_recipe)
+	GameState.balance = loss_recipe_cost + 1.0
 	GameState.deduct_ingredient_cost()
 	# Do NOT add revenue — simulate zero revenue to leave balance below threshold
 	GameState.current_state = GameState.State.RESULTS
@@ -175,7 +182,8 @@ func test_loss_triggers_via_rent_wipe():
 	# balance = 51, turn_counter = RENT_INTERVAL-1 (3).
 	# After deduct: balance = 1.
 	# On advance: turn becomes 4, rent is due → balance = 1 - 150 = -149 → loss.
-	GameState.balance = GameState.INGREDIENT_COST + 1.0
+	var rent_loss_recipe_cost := GameState.get_recipe_cost(GameState.current_recipe)
+	GameState.balance = rent_loss_recipe_cost + 1.0
 	GameState.turn_counter = GameState.RENT_INTERVAL - 1
 	GameState.deduct_ingredient_cost()
 	# Do NOT add revenue
@@ -212,9 +220,10 @@ func test_execute_brew_runs_full_cycle():
 	assert_eq(GameState.turn_counter, 1, "turn_counter must increment after results advance")
 
 func test_execute_brew_fails_when_balance_insufficient():
-	# If balance < INGREDIENT_COST, execute_brew must return {} and touch nothing.
+	# If balance < recipe cost, execute_brew must return {} and touch nothing.
 	GameState.current_state = GameState.State.BREWING_PHASES
-	GameState.balance = GameState.INGREDIENT_COST - 1.0
+	var insuf_recipe_cost := GameState.get_recipe_cost(GameState.current_recipe)
+	GameState.balance = insuf_recipe_cost - 1.0
 	var balance_before := GameState.balance
 	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
 	var result := GameState.execute_brew(sliders)
