@@ -53,17 +53,37 @@ autowrap_mode = 2
 theme_override_constants/separation = 4
 
 [node name="MashingTitle" type="Label" parent="CardPanel/MarginContainer/VBox/MashingRow"]
-text = "MASHING  (Technique-heavy)"
+text = "MASHING"
 theme_override_font_sizes/font_size = 24
 
-[node name="MashingSlider" type="HSlider" parent="CardPanel/MarginContainer/VBox/MashingRow"]
-min_value = 0.0
-max_value = 100.0
-value = 50.0
+[node name="MashingSubtitle" type="Label" parent="CardPanel/MarginContainer/VBox/MashingRow"]
+text = "Mash Temperature"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.541, 0.608, 0.694, 1)
+
+[node name="MashingSliderRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox/MashingRow"]
+theme_override_constants/separation = 8
+
+[node name="MashingMin" type="Label" parent="CardPanel/MarginContainer/VBox/MashingRow/MashingSliderRow"]
+text = "62°C"
+theme_override_font_sizes/font_size = 16
+
+[node name="MashingSlider" type="HSlider" parent="CardPanel/MarginContainer/VBox/MashingRow/MashingSliderRow"]
+size_flags_horizontal = 3
+min_value = 62.0
+max_value = 69.0
+step = 1.0
+value = 65.0
+tick_count = 8
+ticks_on_borders = true
 custom_minimum_size = Vector2(0, 32)
 
+[node name="MashingMax" type="Label" parent="CardPanel/MarginContainer/VBox/MashingRow/MashingSliderRow"]
+text = "69°C"
+theme_override_font_sizes/font_size = 16
+
 [node name="MashingValue" type="Label" parent="CardPanel/MarginContainer/VBox/MashingRow"]
-text = "50"
+text = "65°C"
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
@@ -71,17 +91,37 @@ horizontal_alignment = 1
 theme_override_constants/separation = 4
 
 [node name="BoilingTitle" type="Label" parent="CardPanel/MarginContainer/VBox/BoilingRow"]
-text = "BOILING  (Balanced)"
+text = "BOILING"
 theme_override_font_sizes/font_size = 24
 
-[node name="BoilingSlider" type="HSlider" parent="CardPanel/MarginContainer/VBox/BoilingRow"]
-min_value = 0.0
-max_value = 100.0
-value = 50.0
+[node name="BoilingSubtitle" type="Label" parent="CardPanel/MarginContainer/VBox/BoilingRow"]
+text = "Boil Duration"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.541, 0.608, 0.694, 1)
+
+[node name="BoilingSliderRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox/BoilingRow"]
+theme_override_constants/separation = 8
+
+[node name="BoilingMin" type="Label" parent="CardPanel/MarginContainer/VBox/BoilingRow/BoilingSliderRow"]
+text = "30 min"
+theme_override_font_sizes/font_size = 16
+
+[node name="BoilingSlider" type="HSlider" parent="CardPanel/MarginContainer/VBox/BoilingRow/BoilingSliderRow"]
+size_flags_horizontal = 3
+min_value = 30.0
+max_value = 90.0
+step = 10.0
+value = 60.0
+tick_count = 7
+ticks_on_borders = true
 custom_minimum_size = Vector2(0, 32)
 
+[node name="BoilingMax" type="Label" parent="CardPanel/MarginContainer/VBox/BoilingRow/BoilingSliderRow"]
+text = "90 min"
+theme_override_font_sizes/font_size = 16
+
 [node name="BoilingValue" type="Label" parent="CardPanel/MarginContainer/VBox/BoilingRow"]
-text = "50"
+text = "60 min"
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
@@ -89,17 +129,37 @@ horizontal_alignment = 1
 theme_override_constants/separation = 4
 
 [node name="FermentingTitle" type="Label" parent="CardPanel/MarginContainer/VBox/FermentingRow"]
-text = "FERMENTING  (Flavor-heavy)"
+text = "FERMENTING"
 theme_override_font_sizes/font_size = 24
 
-[node name="FermentingSlider" type="HSlider" parent="CardPanel/MarginContainer/VBox/FermentingRow"]
-min_value = 0.0
-max_value = 100.0
-value = 50.0
+[node name="FermentingSubtitle" type="Label" parent="CardPanel/MarginContainer/VBox/FermentingRow"]
+text = "Fermentation Temperature"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.541, 0.608, 0.694, 1)
+
+[node name="FermentingSliderRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox/FermentingRow"]
+theme_override_constants/separation = 8
+
+[node name="FermentingMin" type="Label" parent="CardPanel/MarginContainer/VBox/FermentingRow/FermentingSliderRow"]
+text = "15°C"
+theme_override_font_sizes/font_size = 16
+
+[node name="FermentingSlider" type="HSlider" parent="CardPanel/MarginContainer/VBox/FermentingRow/FermentingSliderRow"]
+size_flags_horizontal = 3
+min_value = 15.0
+max_value = 25.0
+step = 1.0
+value = 20.0
+tick_count = 11
+ticks_on_borders = true
 custom_minimum_size = Vector2(0, 32)
 
+[node name="FermentingMax" type="Label" parent="CardPanel/MarginContainer/VBox/FermentingRow/FermentingSliderRow"]
+text = "25°C"
+theme_override_font_sizes/font_size = 16
+
 [node name="FermentingValue" type="Label" parent="CardPanel/MarginContainer/VBox/FermentingRow"]
-text = "50"
+text = "20°C"
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
