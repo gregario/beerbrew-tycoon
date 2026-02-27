@@ -17,6 +17,8 @@ signal brew_confirmed(sliders: Dictionary)
 @onready var boiling_value: Label = $CardPanel/MarginContainer/VBox/BoilingRow/BoilingValue
 @onready var fermenting_value: Label = $CardPanel/MarginContainer/VBox/FermentingRow/FermentingValue
 
+var _bonus_label: Label = null
+
 func _ready() -> void:
 	_reset_sliders()
 	mashing_slider.value_changed.connect(_on_slider_changed.unbind(1))
@@ -58,3 +60,34 @@ func refresh() -> void:
 	boiling_value.text = "60 min"
 	fermenting_value.text = "20°C"
 	_update_preview()
+	_update_bonus_label()
+
+func _update_bonus_label() -> void:
+	if not is_instance_valid(EquipmentManager):
+		return
+	# Create label on first use
+	if _bonus_label == null:
+		_bonus_label = Label.new()
+		_bonus_label.add_theme_color_override("font_color", Color("#8A9BB1"))
+		_bonus_label.add_theme_font_size_override("font_size", 16)
+		_bonus_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		# Insert above the sliders (after header)
+		var vbox: VBoxContainer = $CardPanel/MarginContainer/VBox
+		vbox.add_child(_bonus_label)
+		vbox.move_child(_bonus_label, 0)
+	var bonuses := EquipmentManager.active_bonuses
+	var parts: Array[String] = []
+	var san: int = bonuses.get("sanitation", 0)
+	var temp: int = bonuses.get("temp_control", 0)
+	var eff: float = bonuses.get("efficiency", 0.0)
+	if san > 0:
+		parts.append("+%d sanitation" % san)
+	if temp > 0:
+		parts.append("+%d temp control" % temp)
+	if eff > 0.0:
+		parts.append("+%d%% efficiency" % int(eff * 100))
+	if parts.size() > 0:
+		_bonus_label.text = "Equipment: " + ", ".join(parts)
+		_bonus_label.visible = true
+	else:
+		_bonus_label.visible = false
