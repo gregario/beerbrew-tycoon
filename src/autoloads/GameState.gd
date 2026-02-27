@@ -166,6 +166,39 @@ func calculate_revenue(quality_score: float) -> float:
 	return current_style.base_price * quality_mult * demand_multiplier
 
 # ---------------------------------------------------------------------------
+# Brew execution — canonical entry point for a complete brew turn
+# ---------------------------------------------------------------------------
+## Executes the full brew cycle: deduct cost → calculate quality → calculate
+## revenue → add revenue → record brew → store result → advance state.
+## Returns the result Dictionary (with "final_score" and "revenue" keys),
+## or an empty Dictionary if the ingredient cost could not be deducted.
+func execute_brew(sliders: Dictionary) -> Dictionary:
+	if not deduct_ingredient_cost():
+		return {}
+
+	set_brewing(true)
+
+	var result := QualityCalculator.calculate_quality(
+		current_style,
+		current_recipe,
+		sliders,
+		recipe_history
+	)
+
+	var revenue := calculate_revenue(result["final_score"])
+	add_revenue(revenue)
+	result["revenue"] = revenue
+
+	record_brew(result["final_score"])
+
+	last_brew_result = result
+
+	set_brewing(false)
+	advance_state()
+
+	return result
+
+# ---------------------------------------------------------------------------
 # Reset (new run)
 # ---------------------------------------------------------------------------
 func reset() -> void:

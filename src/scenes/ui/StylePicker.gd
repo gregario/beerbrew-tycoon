@@ -72,6 +72,10 @@ func _refresh_balance() -> void:
 func _on_balance_changed(_new_balance: float) -> void:
 	_refresh_balance()
 
+func _exit_tree() -> void:
+	if GameState.balance_changed.is_connected(_on_balance_changed):
+		GameState.balance_changed.disconnect(_on_balance_changed)
+
 ## Called when this overlay becomes visible — refresh demand indicators.
 func refresh() -> void:
 	_selected_style = null

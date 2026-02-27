@@ -1,52 +1,51 @@
-# BeerBrew Tycoon — Project Instructions
+# beerbrew-tycoon/CLAUDE.md — Project Rules (Design Required)
 
-This is a project inside the AI-Factory workspace. It follows the spec-driven workflow defined in the parent CLAUDE.md.
+This project follows AI-Factory's Spec → Design → Execution workflow.
 
 ## Product Summary
 
 A brewery management sim inspired by Game Dev Tycoon, with roguelite meta-progression between runs. Built with Godot 4 for Steam.
 
-See `reference/product.md` and `reference/mvp.md` for the initial product thinking that should be fed into OpenSpec when creating the first specs.
+See `reference/product.md` and `reference/mvp.md` for the initial product thinking.
 
-## Workflow Overview
+## Workflow
 
-- **OpenSpec** — Product thinking. Creates specs, designs changes, manages the product lifecycle.
-- **Superpowers** — Engineering. Implements tasks with TDD, code review, and subagent execution.
+Spec Mode (OpenSpec) → Design Mode → Execution Mode (Superpowers).
 
-## Spec Mode (OpenSpec)
+Do NOT use `/opsx:apply` to implement tasks in this project. Use Superpowers instead.
+
+### Design Mode Requirements
+
+Before implementing any task that touches UI or scenes, Design Mode deliverables must exist:
+
+1. `design/wireframes/<task>.md` — layout + notes
+2. `design/mockups/<task>.png` or `.tscn` — annotated mockup
+3. `design/theme.json` — project theme tokens (already created)
+
+Once deliverables are approved, switch to Execution Mode and invoke Superpowers.
+
+### Spec Mode (OpenSpec)
 
 Use OpenSpec for:
-- Defining product specs (first run: feed content from `reference/` into `/opsx:propose`)
+- Defining product specs
 - Proposing new features or large enhancements
 - Reviewing and updating specs after Superpowers iterations
 
 Key commands:
 - `/opsx:propose "idea"` — Propose a change with proposal, design, specs, and tasks.
 - `/opsx:explore` — Review the current state of specs.
-- `/opsx:apply` — Implement an approved change.
 - `/opsx:archive` — Archive a completed change and update master specs.
 
 ### Spec Sync Rule
 
 Before proposing new features, OpenSpec must review the current codebase to update its understanding. Code may have evolved through Superpowers iterations since the last spec was written.
 
-## Execution Mode (Superpowers)
+### Execution Mode (Superpowers)
 
 Use Superpowers for:
 - Implementing tasks from OpenSpec proposals
 - Small enhancements and iterations
 - Bug fixes and refactoring
-
-Superpowers activates automatically and enforces TDD, systematic debugging, and code review.
-
-## When to Use Which
-
-| Situation | Tool |
-|---|---|
-| New feature or large enhancement | OpenSpec → Superpowers |
-| Small enhancement or iteration | Superpowers |
-| Bug fix | Superpowers |
-| Specs and code have diverged | OpenSpec (sync first) |
 
 ## Stack Profile
 
@@ -65,13 +64,14 @@ Before writing any code, read: `../../stacks/godot/STACK.md`
 ## Project State
 
 - MVP complete. OpenSpec change `define-product-core` archived 2026-02-27.
+- OpenSpec change `godot-stack-refactor` in progress — tasks ready for Design Mode → Execution.
 - 45/45 GUT tests passing (`make test`).
 - Godot binary (Steam): `/Users/gregario/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot`
-- Manual tasks outstanding: 14.6 (60fps profiler check), 14.7 (pixel aliasing at 1080p).
+- Manual tasks outstanding: 14.6 (60fps profiler check), 14.7 (pixel aliasing at 1080p), 6.1–6.5 (UI folder restructure via Godot editor).
 
 ## Development Rules
 
-1. Never write code before specs exist. Use OpenSpec to create them.
+1. Do not implement code until Design Mode deliverables exist for the task.
 2. All source code goes in `src/`.
 3. All tests go in `src/tests/`. Run `make test` after every change.
 4. Work in small iterative commits.
