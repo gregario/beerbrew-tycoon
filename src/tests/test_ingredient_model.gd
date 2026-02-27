@@ -78,3 +78,19 @@ func test_adjunct_has_typed_properties():
 	assert_eq(a.adjunct_type, "sugar")
 	assert_eq(a.effect_description, "Adds body without ABV")
 	assert_true(a is Ingredient)
+
+func test_beer_style_has_preferred_ingredients():
+	var s := BeerStyle.new()
+	s.preferred_ingredients = {"roasted_barley": 0.9, "pale_malt": 0.7}
+	assert_eq(s.preferred_ingredients["roasted_barley"], 0.9)
+
+func test_beer_style_has_ideal_flavor_profile():
+	var s := BeerStyle.new()
+	s.ideal_flavor_profile = {"bitterness": 0.3, "sweetness": 0.2, "roastiness": 0.8, "fruitiness": 0.1, "funkiness": 0.0}
+	assert_eq(s.ideal_flavor_profile["roastiness"], 0.8)
+
+func test_beer_style_get_ingredient_compatibility():
+	var s := BeerStyle.new()
+	s.preferred_ingredients = {"roasted_barley": 0.9}
+	assert_eq(s.get_ingredient_compatibility("roasted_barley"), 0.9)
+	assert_eq(s.get_ingredient_compatibility("unknown_ingredient"), 0.5)

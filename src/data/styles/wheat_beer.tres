@@ -10,3 +10,5 @@ description = "Hazy, fruity, and refreshing. Yeast character is everything — l
 ideal_flavor_ratio = 0.65
 base_price = 190.0
 base_demand_weight = 1.0
+preferred_ingredients = {"wheat_malt": 0.95, "pilsner_malt": 0.8, "pale_malt": 0.7, "hallertau": 0.85, "saaz": 0.7, "wb06_wheat": 0.95, "belle_saison": 0.6, "flaked_oats": 0.6}
+ideal_flavor_profile = {"bitterness": 0.2, "sweetness": 0.3, "roastiness": 0.0, "fruitiness": 0.6, "funkiness": 0.2}

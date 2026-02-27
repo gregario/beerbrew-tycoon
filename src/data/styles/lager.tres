@@ -10,3 +10,5 @@ description = "Clean, crisp, and refreshing. Technique-focused brewing rewards p
 ideal_flavor_ratio = 0.35
 base_price = 180.0
 base_demand_weight = 1.0
+preferred_ingredients = {"pilsner_malt": 0.95, "pale_malt": 0.7, "munich_malt": 0.6, "saaz": 0.9, "hallertau": 0.85, "cascade": 0.4, "w3470_lager": 0.95, "us05_clean_ale": 0.5}
+ideal_flavor_profile = {"bitterness": 0.4, "sweetness": 0.2, "roastiness": 0.0, "fruitiness": 0.1, "funkiness": 0.0}

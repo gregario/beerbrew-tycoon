@@ -10,3 +10,5 @@ description = "Bright hop character with a balanced malt backbone. Flavor-forwar
 ideal_flavor_ratio = 0.55
 base_price = 200.0
 base_demand_weight = 1.0
+preferred_ingredients = {"pale_malt": 0.9, "maris_otter": 0.85, "crystal_60": 0.6, "cascade": 0.95, "centennial": 0.9, "citra": 0.85, "simcoe": 0.8, "east_kent_goldings": 0.7, "us05_clean_ale": 0.9, "s04_english_ale": 0.7}
+ideal_flavor_profile = {"bitterness": 0.6, "sweetness": 0.2, "roastiness": 0.1, "fruitiness": 0.5, "funkiness": 0.0}
