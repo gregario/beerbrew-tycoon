@@ -75,6 +75,11 @@ func _on_state_changed(new_state: GameState.State) -> void:
 			_show_overlay(results_overlay)
 			_play_sfx(sfx_results)
 
+		GameState.State.EQUIPMENT_MANAGE:
+			brewery_scene.set_brewing(false)
+			# Auto-advance for now (UI added in Tasks 6-8)
+			GameState.advance_state()
+
 		GameState.State.GAME_OVER:
 			game_over_screen.populate()
 			_show_overlay(game_over_screen)

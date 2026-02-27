@@ -21,6 +21,7 @@ enum State {
 	RECIPE_DESIGN,   # Player picks malt, hop, yeast
 	BREWING_PHASES,  # Player adjusts phase sliders and confirms brew
 	RESULTS,         # Show quality score, revenue, balance
+	EQUIPMENT_MANAGE, # Player manages equipment between brews
 	GAME_OVER        # Win or loss end screen
 }
 
@@ -73,6 +74,8 @@ func advance_state() -> void:
 			_set_state(State.RESULTS)
 		State.RESULTS:
 			_on_results_continue()
+		State.EQUIPMENT_MANAGE:
+			_set_state(State.MARKET_CHECK)
 		State.GAME_OVER:
 			pass  # Handled by reset() or quit
 
@@ -93,7 +96,7 @@ func _on_results_continue() -> void:
 		_set_state(State.GAME_OVER)
 		game_lost.emit()
 	else:
-		_set_state(State.MARKET_CHECK)
+		_set_state(State.EQUIPMENT_MANAGE)
 
 func _set_state(new_state: State) -> void:
 	current_state = new_state
@@ -327,5 +330,8 @@ func reset() -> void:
 	discoveries = {}
 	temp_control_quality = 50
 	sanitation_quality = 50
+	if is_instance_valid(EquipmentManager):
+		EquipmentManager.reset()
+		EquipmentManager.initialize_starting_equipment()
 	MarketSystem.initialize_demand()
 	_set_state(State.MARKET_CHECK)

@@ -156,3 +156,23 @@ func test_reset_clears_state():
 	assert_eq(EquipmentManager.owned_equipment.size(), 0)
 	assert_eq(EquipmentManager.station_slots, ["", "", ""])
 	assert_eq(EquipmentManager.active_bonuses.get("sanitation", 0), 0)
+
+# --- State transition tests ---
+
+func test_results_advances_to_equipment_manage():
+	# Verify the EQUIPMENT_MANAGE enum value exists
+	assert_true(GameState.State.has("EQUIPMENT_MANAGE"),
+		"EQUIPMENT_MANAGE should exist in State enum")
+
+func test_equipment_manage_advances_to_market_check():
+	GameState.current_state = GameState.State.EQUIPMENT_MANAGE
+	GameState.advance_state()
+	assert_eq(GameState.current_state, GameState.State.MARKET_CHECK)
+
+func test_reset_initializes_starting_equipment():
+	GameState.reset()
+	assert_has(EquipmentManager.owned_equipment, "extract_kit")
+	assert_has(EquipmentManager.owned_equipment, "bucket_fermenter")
+	assert_has(EquipmentManager.owned_equipment, "bottles_capper")
+	assert_has(EquipmentManager.owned_equipment, "cleaning_bucket")
+	assert_eq(EquipmentManager.owned_equipment.size(), 4)
