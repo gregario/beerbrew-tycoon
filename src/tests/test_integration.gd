@@ -23,6 +23,8 @@ func _make_style(style_id: String = "lager") -> BeerStyle:
 	s.ideal_flavor_ratio = 0.5  # balanced: 50/50/50 sliders are perfect
 	s.base_price = 200.0
 	s.base_demand_weight = 1.0
+	s.preferred_ingredients = {"pale_malt": 0.7, "centennial": 0.5, "us05_clean_ale": 0.5}
+	s.ideal_flavor_profile = {"bitterness": 0.4, "sweetness": 0.2, "roastiness": 0.0, "fruitiness": 0.1, "funkiness": 0.0}
 	return s
 
 func _make_recipe(style_id: String = "lager") -> Dictionary:
@@ -32,21 +34,21 @@ func _make_recipe(style_id: String = "lager") -> Dictionary:
 	malt.category = 0
 	malt.cost = 20
 	malt.is_base_malt = true
-	malt.style_compatibility = {style_id: 0.5}
+	malt.flavor_profile = {"bitterness": 0.0, "sweetness": 0.3, "roastiness": 0.05, "fruitiness": 0.0, "funkiness": 0.0}
 
 	var hop := Hop.new()
 	hop.ingredient_id = "centennial"
 	hop.ingredient_name = "Centennial"
 	hop.category = 1
 	hop.cost = 25
-	hop.style_compatibility = {style_id: 0.5}
+	hop.flavor_profile = {"bitterness": 0.6, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.4, "funkiness": 0.0}
 
 	var yeast := Yeast.new()
-	yeast.ingredient_id = "ale_yeast"
-	yeast.ingredient_name = "Ale Yeast"
+	yeast.ingredient_id = "us05_clean_ale"
+	yeast.ingredient_name = "US-05 (Clean Ale)"
 	yeast.category = 2
 	yeast.cost = 15
-	yeast.style_compatibility = {style_id: 0.5}
+	yeast.flavor_profile = {"bitterness": 0.0, "sweetness": 0.1, "roastiness": 0.0, "fruitiness": 0.05, "funkiness": 0.0}
 
 	return {"malts": [malt], "hops": [hop], "yeast": yeast, "adjuncts": []}
 
