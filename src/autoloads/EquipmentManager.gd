@@ -170,6 +170,18 @@ func initialize_starting_equipment() -> void:
 		if id not in owned_equipment:
 			owned_equipment.append(id)
 
+# --- Persistence ---
+func save_state() -> Dictionary:
+	return {
+		"owned_equipment": owned_equipment.duplicate(),
+		"station_slots": station_slots.duplicate(),
+	}
+
+func load_state(data: Dictionary) -> void:
+	owned_equipment = data.get("owned_equipment", [])
+	station_slots = data.get("station_slots", ["", "", ""])
+	recalculate_bonuses()
+
 # --- Reset ---
 func reset() -> void:
 	owned_equipment = []

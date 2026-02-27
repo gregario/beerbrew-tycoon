@@ -222,3 +222,90 @@ func test_batch_size_affects_revenue():
 	# All current equipment has batch_size_multiplier = 1.0, so revenue
 	# should be the same with or without equipment.
 	# This test validates the integration point exists.
+
+# --- Persistence tests ---
+
+func test_save_and_load_state():
+	EquipmentManager.owned_equipment = ["extract_kit", "biab_setup", "glass_carboy"]
+	EquipmentManager.station_slots = ["extract_kit", "biab_setup", ""]
+	EquipmentManager.recalculate_bonuses()
+
+	var save_data := EquipmentManager.save_state()
+	EquipmentManager.reset()
+
+	assert_eq(EquipmentManager.owned_equipment.size(), 0)
+
+	EquipmentManager.load_state(save_data)
+	assert_eq(EquipmentManager.owned_equipment.size(), 3)
+	assert_has(EquipmentManager.owned_equipment, "biab_setup")
+	assert_eq(EquipmentManager.station_slots[0], "extract_kit")
+	assert_eq(EquipmentManager.station_slots[1], "biab_setup")
+	assert_eq(EquipmentManager.station_slots[2], "")
+	# Bonuses recalculated: extract_kit has 0 bonuses, biab_setup has +5/+5
+	assert_eq(EquipmentManager.active_bonuses["sanitation"], 5)
+	assert_eq(EquipmentManager.active_bonuses["temp_control"], 5)
+
+# --- Economy balance tests ---
+
+func test_tier2_affordable_within_few_brews():
+	assert_gte(GameState.STARTING_BALANCE, 60,
+		"Starting balance should cover cheapest tier-2 equipment (Star San Kit $60)")
+
+func test_tier3_requires_saving():
+	var cheapest_tier3 := 300  # CIP Pump
+	assert_gt(cheapest_tier3, GameState.MINIMUM_RECIPE_COST,
+		"Tier 3 should cost more than a single brew's ingredients")
+
+func test_tier4_is_endgame_purchase():
+	var most_expensive := 1200  # 3-Vessel + Pumps
+	assert_gt(most_expensive, GameState.STARTING_BALANCE,
+		"Tier 4 should not be affordable at game start")
+
+func test_upgrade_cheaper_than_direct_buy():
+	for equip in EquipmentManager.get_all_equipment():
+		if equip.upgrades_to != "":
+			var target := EquipmentManager.get_equipment(equip.upgrades_to)
+			if target:
+				assert_lt(equip.upgrade_cost, target.cost,
+					"Upgrading %s should cost less than buying %s" % [
+						equip.equipment_id, target.equipment_id])
+
+# --- Full integration test ---
+
+func test_full_equipment_workflow():
+	GameState.reset()
+
+	# Starting state
+	assert_eq(EquipmentManager.owned_equipment.size(), 4)
+	assert_eq(EquipmentManager.station_slots, ["", "", ""])
+
+	# Assign starting equipment
+	EquipmentManager.assign_to_slot(0, "extract_kit")
+	EquipmentManager.assign_to_slot(1, "bucket_fermenter")
+	EquipmentManager.assign_to_slot(2, "cleaning_bucket")
+
+	# Verify bonuses (only cleaning_bucket has +5 sanitation)
+	assert_eq(GameState.sanitation_quality, 55)
+	assert_eq(GameState.temp_control_quality, 50)
+
+	# Purchase upgrade
+	var balance_before := GameState.balance
+	assert_true(EquipmentManager.purchase("star_san_kit"))
+	assert_almost_eq(GameState.balance, balance_before - 60.0, 0.01)
+
+	# Swap into slot
+	EquipmentManager.assign_to_slot(2, "star_san_kit")
+	assert_eq(GameState.sanitation_quality, 60)  # 50 + 10 (star_san)
+
+	# Upgrade extract_kit -> biab_setup (in slot 0)
+	assert_true(EquipmentManager.upgrade("extract_kit"))
+	assert_eq(EquipmentManager.station_slots[0], "biab_setup")
+	assert_eq(GameState.sanitation_quality, 65)  # 50 + 5(biab) + 10(star_san)
+	assert_eq(GameState.temp_control_quality, 55)  # 50 + 5(biab)
+
+	# Save and restore
+	var save_data := EquipmentManager.save_state()
+	EquipmentManager.reset()
+	EquipmentManager.load_state(save_data)
+	assert_eq(GameState.sanitation_quality, 65)
+	assert_eq(GameState.temp_control_quality, 55)
