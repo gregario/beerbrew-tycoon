@@ -1,6 +1,38 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://ui/BrewingPhases.gd" id="1_brewing"]
+
+[sub_resource type="StyleBoxFlat" id="card_panel_style"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.043, 0.071, 0.125, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.541, 0.608, 0.694, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="inner_panel_style"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.043, 0.071, 0.125, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.541, 0.608, 0.694, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="BrewingPhases" type="Control"]
 anchor_right = 1.0
@@ -18,9 +50,10 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -450.0
-offset_top = -300.0
+offset_top = -340.0
 offset_right = 450.0
-offset_bottom = 300.0
+offset_bottom = 340.0
+theme_override_styles/panel = SubResource("card_panel_style")
 
 [node name="MarginContainer" type="MarginContainer" parent="CardPanel"]
 anchor_right = 1.0
@@ -44,10 +77,6 @@ text = "BREWING PHASES"
 theme_override_font_sizes/font_size = 32
 
 [node name="HSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
-
-[node name="Hint" type="Label" parent="CardPanel/MarginContainer/VBox"]
-text = "Adjust effort across brewing phases. More effort = better scores."
-autowrap_mode = 2
 
 [node name="MashingRow" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox"]
 theme_override_constants/separation = 4
@@ -164,6 +193,7 @@ theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
 [node name="PreviewPanel" type="PanelContainer" parent="CardPanel/MarginContainer/VBox"]
+theme_override_styles/panel = SubResource("inner_panel_style")
 
 [node name="PreviewHBox" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox/PreviewPanel"]
 theme_override_constants/separation = 32

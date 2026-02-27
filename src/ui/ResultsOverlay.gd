@@ -6,21 +6,21 @@ extends Control
 const STAR_FILLED := preload("res://assets/ui/kenney/Green/Default/star.png")
 const STAR_EMPTY := preload("res://assets/ui/kenney/Green/Default/star_outline_depth.png")
 
-@onready var style_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/StyleLabel
-@onready var recipe_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/RecipeLabel
-@onready var score_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/ScorePanel/ScoreVBox/ScoreLabel
-@onready var stars_row: HBoxContainer = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/ScorePanel/ScoreVBox/StarsRow
-@onready var ratio_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/RatioLabel
-@onready var ingredients_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/IngredientsLabel
-@onready var novelty_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/NoveltyLabel
-@onready var effort_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/EffortLabel
-@onready var science_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/ScienceLabel
-@onready var tasting_notes: RichTextLabel = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/TastingNotes
-@onready var palate_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/PalateLabel
-@onready var revenue_label: Label = $CardPanel/MarginContainer/VBox/MoneyRow/RevenueLabel
-@onready var balance_label: Label = $CardPanel/MarginContainer/VBox/MoneyRow/BalanceLabel
-@onready var rent_label: Label = $CardPanel/MarginContainer/VBox/RentLabel
-@onready var continue_button: Button = $CardPanel/MarginContainer/VBox/FooterRow/ContinueButton
+@onready var style_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/StyleLabel
+@onready var recipe_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/RecipeLabel
+@onready var score_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/ScorePanel/ScoreVBox/ScoreLabel
+@onready var stars_row: HBoxContainer = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/ScorePanel/ScoreVBox/StarsRow
+@onready var ratio_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/BreakdownGrid/RatioLabel
+@onready var ingredients_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/BreakdownGrid/IngredientsLabel
+@onready var novelty_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/BreakdownGrid/NoveltyLabel
+@onready var effort_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/BreakdownGrid/EffortLabel
+@onready var science_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/BreakdownGrid/ScienceLabel
+@onready var tasting_notes: RichTextLabel = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/TastingNotes
+@onready var palate_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/PalateLabel
+@onready var revenue_label: Label = $CardPanel/MarginContainer/OuterVBox/MoneyRow/RevenueLabel
+@onready var balance_label: Label = $CardPanel/MarginContainer/OuterVBox/MoneyRow/BalanceLabel
+@onready var rent_label: Label = $CardPanel/MarginContainer/OuterVBox/RentLabel
+@onready var continue_button: Button = $CardPanel/MarginContainer/OuterVBox/FooterRow/ContinueButton
 
 var failure_container: VBoxContainer = null
 
@@ -114,7 +114,7 @@ func _create_failure_container() -> void:
 	failure_container = VBoxContainer.new()
 	failure_container.name = "FailureContainer"
 	failure_container.add_theme_constant_override("separation", 8)
-	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox
+	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox
 	var score_panel_idx: int = score_label.get_parent().get_parent().get_index()
 	scroll_vbox.add_child(failure_container)
 	scroll_vbox.move_child(failure_container, score_panel_idx + 1)
