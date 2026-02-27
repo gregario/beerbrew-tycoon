@@ -47,6 +47,7 @@ var general_taste: int = 0
 var style_taste: Dictionary = {}
 var discoveries: Dictionary = {}
 var temp_control_quality: int = 50
+var sanitation_quality: int = 50
 
 # Run statistics
 var total_revenue: float = 0.0
@@ -298,5 +299,6 @@ func reset() -> void:
 	style_taste = {}
 	discoveries = {}
 	temp_control_quality = 50
+	sanitation_quality = 50
 	MarketSystem.initialize_demand()
 	_set_state(State.MARKET_CHECK)
