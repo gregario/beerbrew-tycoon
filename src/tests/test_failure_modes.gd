@@ -238,3 +238,52 @@ func test_final_gravity_check_returns_reading() -> void:
 	assert_has(check, "fg", "Final gravity check should have fg reading")
 	assert_has(check, "attenuation_pct", "Final gravity check should have attenuation %")
 	assert_has(check, "assessment", "Final gravity check should have assessment")
+
+# ---------------------------------------------------------------------------
+# Edge cases
+# ---------------------------------------------------------------------------
+
+func test_infection_and_off_flavor_can_stack() -> void:
+	var both_count: int = 0
+	for i in range(500):
+		var result: Dictionary = FailureSystem.roll_failures(100.0, 0, 0)
+		if result["infected"] and result["off_flavor_tags"].size() > 0:
+			both_count += 1
+	assert_gt(both_count, 0, "Infection and off-flavor should be able to stack")
+
+func test_stacked_penalties_severely_reduce_score() -> void:
+	var found_both: bool = false
+	for i in range(500):
+		var result: Dictionary = FailureSystem.roll_failures(100.0, 0, 0)
+		if result["infected"] and result["off_flavor_tags"].size() > 0:
+			assert_lte(result["final_score"], 51.0, "Stacked penalties should severely reduce score")
+			assert_gte(result["final_score"], 28.0, "Score should not go below minimum penalty range")
+			found_both = true
+			break
+	assert_true(found_both, "Should find stacked failure in 500 rolls at stat=0")
+
+func test_zero_score_stays_zero_after_failures() -> void:
+	var result: Dictionary = FailureSystem.roll_failures(0.0, 0, 0)
+	assert_gte(result["final_score"], 0.0, "Score should never go negative")
+
+func test_infection_chance_at_zero_sanitation() -> void:
+	var chance: float = FailureSystem.calc_infection_chance(0)
+	assert_almost_eq(chance, 0.5, 0.01, "Sanitation 0 should give 50% infection chance")
+
+func test_pre_boil_gravity_extreme_temps() -> void:
+	var low: Dictionary = FailureSystem.calc_pre_boil_gravity(62.0)
+	var high: Dictionary = FailureSystem.calc_pre_boil_gravity(69.0)
+	assert_lt(low["og"], high["og"], "Lower mash temp should give lower OG")
+
+func test_final_gravity_high_attenuation_yeast() -> void:
+	var check: Dictionary = FailureSystem.calc_final_gravity(65.0, 0.90)
+	assert_eq(check["assessment"], "high", "90% attenuation should be assessed as high")
+
+func test_boil_vigor_long_boil_high_assessment() -> void:
+	var check: Dictionary = FailureSystem.calc_boil_vigor(90.0)
+	assert_eq(check["assessment"], "high", "90 min boil should give high assessment")
+	assert_eq(check["vigor"], "strong", "90 min boil should give strong vigor")
+
+func test_pre_boil_gravity_high_mash_temp() -> void:
+	var check: Dictionary = FailureSystem.calc_pre_boil_gravity(71.0)
+	assert_eq(check["assessment"], "high", "71°C mash should give high OG assessment")
