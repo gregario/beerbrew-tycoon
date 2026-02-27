@@ -42,6 +42,12 @@ var current_recipe: Dictionary = {}  # {malts: Array, hops: Array, yeast: Yeast,
 var recipe_history: Array = []       # Array of {style_id, malt_ids, hop_ids, yeast_id, adjunct_ids}
 var last_brew_result: Dictionary = {}
 
+# Taste skill
+var general_taste: int = 0
+var style_taste: Dictionary = {}
+var discoveries: Dictionary = {}
+var temp_control_quality: int = 50
+
 # Run statistics
 var total_revenue: float = 0.0
 var best_quality: float = 0.0
@@ -137,6 +143,23 @@ func check_win_condition() -> bool:
 func check_loss_condition() -> bool:
 	return balance <= 0.0 or balance < MINIMUM_RECIPE_COST
 
+## Increment taste after a brew. Called with the style name.
+func increment_taste(style_name: String) -> void:
+	general_taste += 1
+	var current: int = style_taste.get(style_name, 0)
+	style_taste[style_name] = current + 1
+
+## Returns the palate level display name.
+func get_palate_name() -> String:
+	if general_taste <= 1:
+		return "Novice"
+	elif general_taste <= 3:
+		return "Developing"
+	elif general_taste <= 5:
+		return "Experienced"
+	else:
+		return "Expert"
+
 func check_rent_due() -> bool:
 	return turn_counter > 0 and turn_counter % RENT_INTERVAL == 0
 
@@ -216,6 +239,9 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 
 	record_brew(result["final_score"])
 
+	if current_style:
+		increment_taste(current_style.style_name)
+
 	last_brew_result = result
 
 	set_brewing(false)
@@ -238,5 +264,9 @@ func reset() -> void:
 	is_brewing = false
 	run_won = false
 	rent_due_this_turn = false
+	general_taste = 0
+	style_taste = {}
+	discoveries = {}
+	temp_control_quality = 50
 	MarketSystem.initialize_demand()
 	_set_state(State.MARKET_CHECK)
