@@ -1,6 +1,11 @@
 extends Control
 
 ## BrewingPhases — the core brewing interaction: three phase sliders.
+## Emits brew_confirmed(sliders) when the player confirms. Has no direct
+## No dependency on GameState. QualityCalculator is used only for the
+## read-only slider preview (pure calculation, no state mutation).
+
+signal brew_confirmed(sliders: Dictionary)
 
 @onready var mashing_slider: HSlider = $Panel/VBox/MashingRow/MashingSlider
 @onready var boiling_slider: HSlider = $Panel/VBox/BoilingRow/BoilingSlider
@@ -41,36 +46,7 @@ func _update_preview() -> void:
 	]
 
 func _on_brew_pressed() -> void:
-	var sliders := _get_sliders()
-
-	# Deduct cost before calculating (spec: deducted before brewing phases begin)
-	if not GameState.deduct_ingredient_cost():
-		# Shouldn't reach here if loss check is correct, but guard anyway
-		return
-
-	GameState.set_brewing(true)
-
-	# Calculate quality
-	var result := QualityCalculator.calculate_quality(
-		GameState.current_style,
-		GameState.current_recipe,
-		sliders,
-		GameState.recipe_history
-	)
-
-	# Calculate revenue and add to balance immediately
-	var revenue := GameState.calculate_revenue(result["final_score"])
-	GameState.add_revenue(revenue)
-	result["revenue"] = revenue
-
-	# Record brew history
-	GameState.record_brew(result["final_score"])
-
-	# Store result for results screen
-	GameState.last_brew_result = result
-
-	GameState.set_brewing(false)
-	GameState.advance_state()
+	brew_confirmed.emit(_get_sliders())
 
 ## Reset sliders when panel reopens.
 func refresh() -> void:

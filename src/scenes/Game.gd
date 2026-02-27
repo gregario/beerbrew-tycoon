@@ -31,6 +31,9 @@ func _ready() -> void:
 	# Connect GameState signals
 	GameState.state_changed.connect(_on_state_changed)
 
+	# Wire brew confirmation: BrewingPhases emits → GameState executes
+	brewing_phases.brew_confirmed.connect(GameState.execute_brew)
+
 	# Start a fresh run
 	GameState.reset()
 
