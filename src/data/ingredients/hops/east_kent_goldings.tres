@@ -14,4 +14,4 @@ flavor_profile = {"bitterness": 0.35, "sweetness": 0.1, "roastiness": 0.0, "frui
 unlocked = true
 alpha_acid_pct = 5.5
 aroma_intensity = 0.6
-variety_family = "british"
+variety_family = "english"
