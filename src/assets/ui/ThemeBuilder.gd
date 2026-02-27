@@ -1,13 +1,13 @@
-@tool
-extends EditorScript
+extends SceneTree
 
-## Run from Editor > Run Script to generate the game theme.
+## Theme generator — run headlessly:
+##   godot --headless --script res://assets/ui/ThemeBuilder.gd --path .
 ## Reads Kenney assets and design tokens to produce theme.tres.
 
 const KENNEY_GREEN := "res://assets/ui/kenney/Green/Default/"
 const KENNEY_GREY := "res://assets/ui/kenney/Grey/Default/"
 
-func _run() -> void:
+func _init() -> void:
 	var theme := Theme.new()
 
 	# Fonts
@@ -92,6 +92,8 @@ func _run() -> void:
 		print("Theme saved to res://assets/ui/theme.tres")
 	else:
 		print("ERROR saving theme: ", err)
+
+	quit()
 
 
 func _make_nine_slice(path: String) -> StyleBoxTexture:
