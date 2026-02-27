@@ -74,6 +74,19 @@ func calculate_quality(
 		0.0, 100.0
 	)
 
+	# --- 8. Detect flavor attributes for discovery system ---
+	var yeast_for_attrs: Yeast = recipe.get("yeast", null) as Yeast
+	var hops_for_attrs: Array = recipe.get("hops", [])
+	var brew_attributes: Array[String] = []
+	if yeast_for_attrs != null:
+		brew_attributes = BrewingScience.detect_brew_attributes(
+			sliders.get("mashing", 65.0),
+			sliders.get("boiling", 60.0),
+			sliders.get("fermenting", 20.0),
+			yeast_for_attrs,
+			hops_for_attrs
+		)
+
 	return {
 		"final_score": final_score,
 		"ratio_score": ratio_score,
@@ -84,6 +97,7 @@ func calculate_quality(
 		"total_flavor_points": total_flavor,
 		"total_technique_points": total_technique,
 		"novelty_modifier": novelty_modifier,
+		"brew_attributes": brew_attributes,
 	}
 
 # ---------------------------------------------------------------------------

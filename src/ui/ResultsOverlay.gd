@@ -14,6 +14,9 @@ const STAR_EMPTY := preload("res://assets/ui/kenney/Green/Default/star_outline_d
 @onready var ingredients_label: Label = $CardPanel/MarginContainer/VBox/BreakdownGrid/IngredientsLabel
 @onready var novelty_label: Label = $CardPanel/MarginContainer/VBox/BreakdownGrid/NoveltyLabel
 @onready var effort_label: Label = $CardPanel/MarginContainer/VBox/BreakdownGrid/EffortLabel
+@onready var science_label: Label = $CardPanel/MarginContainer/VBox/BreakdownGrid/ScienceLabel
+@onready var tasting_notes: RichTextLabel = $CardPanel/MarginContainer/VBox/TastingNotes
+@onready var palate_label: Label = $CardPanel/MarginContainer/VBox/PalateLabel
 @onready var revenue_label: Label = $CardPanel/MarginContainer/VBox/MoneyRow/RevenueLabel
 @onready var balance_label: Label = $CardPanel/MarginContainer/VBox/MoneyRow/BalanceLabel
 @onready var rent_label: Label = $CardPanel/MarginContainer/VBox/RentLabel
@@ -29,16 +32,15 @@ func populate() -> void:
 	var style := GameState.current_style
 	var recipe := GameState.current_recipe
 
-	# Style and recipe identity
+	# Style and recipe identity (Stage 1A: multi-ingredient)
 	style_label.text = "Style: %s" % (style.style_name if style else "—")
-	var malt  := recipe.get("malt",  null) as Ingredient
-	var hop   := recipe.get("hop",   null) as Ingredient
-	var yeast := recipe.get("yeast", null) as Ingredient
-	recipe_label.text = "Recipe: %s / %s / %s" % [
-		malt.ingredient_name  if malt  else "—",
-		hop.ingredient_name   if hop   else "—",
-		yeast.ingredient_name if yeast else "—",
-	]
+	var malts: Array = recipe.get("malts", [])
+	var hops: Array = recipe.get("hops", [])
+	var yeast_ingredient = recipe.get("yeast", null)
+	var malt_names: String = ", ".join(malts.map(func(m): return m.ingredient_name)) if malts.size() > 0 else "—"
+	var hop_names: String = ", ".join(hops.map(func(h): return h.ingredient_name)) if hops.size() > 0 else "—"
+	var yeast_name: String = yeast_ingredient.ingredient_name if yeast_ingredient else "—"
+	recipe_label.text = "Recipe: %s / %s / %s" % [malt_names, hop_names, yeast_name]
 
 	# Quality score and breakdown
 	var final_score: float = result.get("final_score", 0.0)
@@ -48,6 +50,7 @@ func populate() -> void:
 	ingredients_label.text = "Ingredients: %.0f" % result.get("ingredient_score", 0.0)
 	novelty_label.text = "Novelty: %.0f" % result.get("novelty_score", 0.0)
 	effort_label.text = "Effort: %.0f" % result.get("base_score", 0.0)
+	science_label.text = "Science: %.0f" % result.get("science_score", 0.0)
 
 	# Revenue and current balance (revenue already in balance from BrewingPhases)
 	var revenue: float = result.get("revenue", 0.0)
@@ -60,6 +63,13 @@ func populate() -> void:
 	rent_label.visible = rent_upcoming
 	if rent_upcoming:
 		rent_label.text = "Rent due: -$%.0f (charged when you continue)" % GameState.RENT_AMOUNT
+
+	# Tasting notes
+	var notes: String = result.get("tasting_notes", "")
+	tasting_notes.text = "[i]%s[/i]" % notes if notes != "" else ""
+
+	# Palate level
+	palate_label.text = "Your palate: %s (Lv %d)" % [GameState.get_palate_name(), GameState.general_taste]
 
 func _update_stars(score: float) -> void:
 	for child in stars_row.get_children():

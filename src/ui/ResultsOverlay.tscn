@@ -18,9 +18,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -450.0
-offset_top = -275.0
+offset_top = -350.0
 offset_right = 450.0
-offset_bottom = 275.0
+offset_bottom = 350.0
 
 [node name="MarginContainer" type="MarginContainer" parent="CardPanel"]
 anchor_right = 1.0
@@ -87,6 +87,27 @@ size_flags_horizontal = 3
 [node name="EffortLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
 text = "Effort: —"
 size_flags_horizontal = 3
+
+[node name="ScienceLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+text = "Science: —"
+size_flags_horizontal = 3
+
+[node name="TastingSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
+
+[node name="TastingHeader" type="Label" parent="CardPanel/MarginContainer/VBox"]
+text = "TASTING NOTES"
+theme_override_font_sizes/font_size = 20
+
+[node name="TastingNotes" type="RichTextLabel" parent="CardPanel/MarginContainer/VBox"]
+bbcode_enabled = true
+fit_content = true
+custom_minimum_size = Vector2(0, 40)
+
+[node name="PalateLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
+text = "Your palate: Novice (Lv 0)"
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.541, 0.608, 0.694, 1)
+horizontal_alignment = 2
 
 [node name="HSeparator2" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
 

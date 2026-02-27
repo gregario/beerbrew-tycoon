@@ -242,6 +242,36 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 	if current_style:
 		increment_taste(current_style.style_name)
 
+	# Discovery rolls
+	var brew_attributes: Array[String] = []
+	if result.has("brew_attributes"):
+		for attr in result["brew_attributes"]:
+			brew_attributes.append(attr)
+	var discovery_result: Dictionary = TasteSystem.roll_discoveries(brew_attributes, current_style.style_name if current_style else "")
+	result["discovery_result"] = discovery_result
+
+	# Generate tasting notes
+	var tasting_notes: String = TasteSystem.generate_tasting_notes(
+		brew_attributes, current_style.style_name if current_style else "", sliders
+	)
+	result["tasting_notes"] = tasting_notes
+
+	# Discovery toasts
+	if discovery_result.get("attribute_discovered", "") != "":
+		var attr_name: String = TasteSystem.ATTRIBUTE_NAMES.get(
+			discovery_result["attribute_discovered"],
+			discovery_result["attribute_discovered"]
+		)
+		if is_instance_valid(ToastManager):
+			ToastManager.show_toast("You noticed something... this beer has %s." % attr_name)
+
+	if discovery_result.get("process_linked", "") != "":
+		var linked_attr: String = discovery_result["process_linked"]
+		var attr_name: String = TasteSystem.ATTRIBUTE_NAMES.get(linked_attr, linked_attr)
+		var link_detail: String = discoveries[linked_attr].get("linked_detail", "")
+		if is_instance_valid(ToastManager):
+			ToastManager.show_toast("%s seems to come from %s." % [attr_name, link_detail])
+
 	last_brew_result = result
 
 	set_brewing(false)
