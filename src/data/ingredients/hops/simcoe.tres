@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Hop.gd" id="1_hop"]
+
+[resource]
+script = ExtResource("1_hop")
+ingredient_id = "simcoe"
+ingredient_name = "Simcoe"
+description = "Bold American hop with piney, earthy backbone and citrus overtones. High alpha acid makes it a potent bittering hop too."
+category = 1
+cost = 30
+flavor_tags = ["pine", "earthy", "citrus"]
+flavor_profile = {"bitterness": 0.65, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.5, "funkiness": 0.0}
+unlocked = false
+alpha_acid_pct = 13.0
+aroma_intensity = 0.8
+variety_family = "american"

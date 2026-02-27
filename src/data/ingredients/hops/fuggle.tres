@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Hop.gd" id="1_hop"]
+
+[resource]
+script = ExtResource("1_hop")
+ingredient_id = "fuggle"
+ingredient_name = "Fuggle"
+description = "Heritage English hop with woody, earthy character and a hint of mint. Pairs beautifully with malty bitters and milds."
+category = 1
+cost = 20
+flavor_tags = ["woody", "earthy", "minty"]
+flavor_profile = {"bitterness": 0.3, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.05, "funkiness": 0.0}
+unlocked = true
+alpha_acid_pct = 4.5
+aroma_intensity = 0.5
+variety_family = "british"

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Malt.gd" id="1_malt"]
+
+[resource]
+script = ExtResource("1_malt")
+ingredient_id = "chocolate_malt"
+ingredient_name = "Chocolate Malt"
+description = "Deeply roasted malt with rich chocolate and coffee notes. Use sparingly for dark color and complex roast flavor."
+category = 0
+cost = 25
+flavor_tags = ["chocolate", "coffee"]
+flavor_profile = {"bitterness": 0.2, "sweetness": 0.1, "roastiness": 0.8, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = false
+color_srm = 400.0
+body_contribution = 0.6
+sweetness = 0.2
+fermentability = 0.15
+is_base_malt = false

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Adjunct.gd" id="1_adjunct"]
+
+[resource]
+script = ExtResource("1_adjunct")
+ingredient_id = "irish_moss"
+ingredient_name = "Irish Moss"
+description = "A natural seaweed fining agent. Added during the boil to coagulate proteins and dramatically improve beer clarity."
+category = 3
+cost = 10
+flavor_tags = []
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = false
+fermentable = false
+adjunct_type = "fining"
+effect_description = "Improves clarity"

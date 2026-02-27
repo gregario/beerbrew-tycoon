@@ -1,0 +1,19 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Malt.gd" id="1_malt"]
+
+[resource]
+script = ExtResource("1_malt")
+ingredient_id = "maris_otter"
+ingredient_name = "Maris Otter"
+description = "Premium English heritage malt. Rich biscuit character with a smooth, full body. A brewer's favorite."
+category = 0
+cost = 20
+flavor_tags = ["biscuit", "rich"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.35, "roastiness": 0.1, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = true
+color_srm = 5.0
+body_contribution = 0.5
+sweetness = 0.35
+fermentability = 0.8
+is_base_malt = true

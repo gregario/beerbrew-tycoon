@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Adjunct.gd" id="1_adjunct"]
+
+[resource]
+script = ExtResource("1_adjunct")
+ingredient_id = "brewing_sugar"
+ingredient_name = "Brewing Sugar"
+description = "Simple fermentable sugar. Boosts ABV while thinning body and drying out the finish. Used in Belgian tripels and strong ales."
+category = 3
+cost = 10
+flavor_tags = ["light", "dry"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.1, "roastiness": 0.0, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = false
+fermentable = true
+adjunct_type = "sugar"
+effect_description = "Boosts ABV, thins body"

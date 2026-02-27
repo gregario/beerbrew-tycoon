@@ -1,0 +1,19 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Malt.gd" id="1_malt"]
+
+[resource]
+script = ExtResource("1_malt")
+ingredient_id = "crystal_60"
+ingredient_name = "Crystal 60"
+description = "Caramelized specialty malt with toffee and caramel sweetness. Adds reddish color and residual body."
+category = 0
+cost = 25
+flavor_tags = ["caramel", "toffee"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.7, "roastiness": 0.2, "fruitiness": 0.1, "funkiness": 0.0}
+unlocked = false
+color_srm = 60.0
+body_contribution = 0.7
+sweetness = 0.7
+fermentability = 0.3
+is_base_malt = false

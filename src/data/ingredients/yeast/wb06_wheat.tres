@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Yeast.gd" id="1_yeast"]
+
+[resource]
+script = ExtResource("1_yeast")
+ingredient_id = "wb06_wheat"
+ingredient_name = "WB-06 (Wheat)"
+description = "Bavarian wheat beer yeast. Produces signature banana and clove phenolics. Low flocculation leaves the classic wheat haze."
+category = 2
+cost = 20
+flavor_tags = ["banana", "clove", "wheat"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.15, "roastiness": 0.0, "fruitiness": 0.4, "funkiness": 0.15}
+unlocked = false
+attenuation_pct = 0.86
+ideal_temp_min_c = 15.0
+ideal_temp_max_c = 24.0
+flocculation = "low"

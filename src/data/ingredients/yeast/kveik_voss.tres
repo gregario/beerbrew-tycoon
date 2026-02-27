@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Yeast.gd" id="1_yeast"]
+
+[resource]
+script = ExtResource("1_yeast")
+ingredient_id = "kveik_voss"
+ingredient_name = "Kveik (Voss)"
+description = "Ancient Norwegian farmhouse yeast. Ferments blazingly fast at extreme temperatures with orange and tropical fruit character."
+category = 2
+cost = 25
+flavor_tags = ["orange", "tropical", "fast"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.1, "roastiness": 0.0, "fruitiness": 0.5, "funkiness": 0.1}
+unlocked = false
+attenuation_pct = 0.78
+ideal_temp_min_c = 20.0
+ideal_temp_max_c = 40.0
+flocculation = "high"

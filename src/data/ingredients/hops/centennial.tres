@@ -1,13 +1,17 @@
 [gd_resource type="Resource" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+[ext_resource type="Script" path="res://scripts/Hop.gd" id="1_hop"]
 
 [resource]
-script = ExtResource("1_ingredient")
+script = ExtResource("1_hop")
 ingredient_id = "centennial"
 ingredient_name = "Centennial"
-description = "High bitterness with floral and citrus character. Versatile workhorse hop."
+description = "A balanced dual-purpose American hop. Citrus and pine with medium-high bitterness. Sometimes called 'Super Cascade'."
 category = 1
-flavor_bonus = 2.0
-technique_bonus = 2.0
-style_compatibility = {"lager": 0.5, "pale_ale": 0.85, "wheat_beer": 0.5, "stout": 0.5}
+cost = 25
+flavor_tags = ["citrus", "pine", "balanced"]
+flavor_profile = {"bitterness": 0.6, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.4, "funkiness": 0.0}
+unlocked = false
+alpha_acid_pct = 10.0
+aroma_intensity = 0.7
+variety_family = "american"

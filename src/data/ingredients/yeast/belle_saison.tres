@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Yeast.gd" id="1_yeast"]
+
+[resource]
+script = ExtResource("1_yeast")
+ingredient_id = "belle_saison"
+ingredient_name = "Belle Saison"
+description = "Belgian-style saison yeast. Spicy, peppery, bone-dry finish. Thrives at high temperatures that would stress other strains."
+category = 2
+cost = 25
+flavor_tags = ["spicy", "dry", "peppery"]
+flavor_profile = {"bitterness": 0.05, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.3, "funkiness": 0.4}
+unlocked = false
+attenuation_pct = 0.9
+ideal_temp_min_c = 17.0
+ideal_temp_max_c = 35.0
+flocculation = "low"

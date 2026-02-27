@@ -1,13 +1,17 @@
 [gd_resource type="Resource" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+[ext_resource type="Script" path="res://scripts/Hop.gd" id="1_hop"]
 
 [resource]
-script = ExtResource("1_ingredient")
+script = ExtResource("1_hop")
 ingredient_id = "east_kent_goldings"
 ingredient_name = "East Kent Goldings"
-description = "Earthy, spicy, and slightly floral. Classic British hop used in Stouts and traditional ales."
+description = "Quintessential English hop. Smooth earthy aroma with honey-like sweetness. A staple of traditional British ales."
 category = 1
-flavor_bonus = 2.0
-technique_bonus = 1.0
-style_compatibility = {"lager": 0.4, "pale_ale": 0.7, "wheat_beer": 0.4, "stout": 0.9}
+cost = 20
+flavor_tags = ["earthy", "honey", "smooth"]
+flavor_profile = {"bitterness": 0.35, "sweetness": 0.1, "roastiness": 0.0, "fruitiness": 0.1, "funkiness": 0.0}
+unlocked = true
+alpha_acid_pct = 5.5
+aroma_intensity = 0.6
+variety_family = "british"

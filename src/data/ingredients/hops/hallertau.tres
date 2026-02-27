@@ -1,13 +1,17 @@
 [gd_resource type="Resource" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+[ext_resource type="Script" path="res://scripts/Hop.gd" id="1_hop"]
 
 [resource]
-script = ExtResource("1_ingredient")
+script = ExtResource("1_hop")
 ingredient_id = "hallertau"
 ingredient_name = "Hallertau"
-description = "Noble German hop. Earthy, herbal, and subtle. Essential for authentic Lagers and Wheat Beers."
+description = "German noble hop with mild floral character. Elegant and restrained, perfect for lagers and wheat beers."
 category = 1
-flavor_bonus = 1.0
-technique_bonus = 3.0
-style_compatibility = {"lager": 0.95, "pale_ale": 0.4, "wheat_beer": 0.9, "stout": 0.3}
+cost = 20
+flavor_tags = ["floral", "mild", "noble"]
+flavor_profile = {"bitterness": 0.25, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.15, "funkiness": 0.0}
+unlocked = true
+alpha_acid_pct = 4.0
+aroma_intensity = 0.8
+variety_family = "noble"

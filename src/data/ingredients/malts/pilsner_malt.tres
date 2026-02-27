@@ -1,0 +1,19 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Malt.gd" id="1_malt"]
+
+[resource]
+script = ExtResource("1_malt")
+ingredient_id = "pilsner_malt"
+ingredient_name = "Pilsner Malt"
+description = "Very light base malt. Clean, delicate, bready flavor. The foundation of lagers and pilsners."
+category = 0
+cost = 15
+flavor_tags = ["light", "clean", "bready"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.2, "roastiness": 0.0, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = true
+color_srm = 2.0
+body_contribution = 0.3
+sweetness = 0.2
+fermentability = 0.9
+is_base_malt = true

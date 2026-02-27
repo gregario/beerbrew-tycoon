@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Yeast.gd" id="1_yeast"]
+
+[resource]
+script = ExtResource("1_yeast")
+ingredient_id = "w3470_lager"
+ingredient_name = "W-34/70 (Lager)"
+description = "The world's most-used lager yeast. Crisp, clean fermentation at cool temperatures. Produces brilliantly clear beer."
+category = 2
+cost = 20
+flavor_tags = ["clean", "crisp", "lager"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.05, "roastiness": 0.0, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = true
+attenuation_pct = 0.83
+ideal_temp_min_c = 9.0
+ideal_temp_max_c = 15.0
+flocculation = "high"

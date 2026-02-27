@@ -1,13 +1,19 @@
 [gd_resource type="Resource" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+[ext_resource type="Script" path="res://scripts/Malt.gd" id="1_malt"]
 
 [resource]
-script = ExtResource("1_ingredient")
+script = ExtResource("1_malt")
 ingredient_id = "roasted_barley"
 ingredient_name = "Roasted Barley"
-description = "Dark roast, coffee and chocolate notes. Defines the Stout character."
+description = "Intensely roasted unmalted barley. Imparts sharp, dry, burnt flavors and jet-black color. The soul of a dry stout."
 category = 0
-flavor_bonus = 4.0
-technique_bonus = 1.0
-style_compatibility = {"lager": 0.1, "pale_ale": 0.2, "wheat_beer": 0.1, "stout": 1.0}
+cost = 25
+flavor_tags = ["roasty", "burnt", "dry"]
+flavor_profile = {"bitterness": 0.3, "sweetness": 0.0, "roastiness": 0.95, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = false
+color_srm = 550.0
+body_contribution = 0.5
+sweetness = 0.1
+fermentability = 0.1
+is_base_malt = false

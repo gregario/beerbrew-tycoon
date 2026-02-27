@@ -1,13 +1,19 @@
 [gd_resource type="Resource" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+[ext_resource type="Script" path="res://scripts/Malt.gd" id="1_malt"]
 
 [resource]
-script = ExtResource("1_ingredient")
+script = ExtResource("1_malt")
 ingredient_id = "munich_malt"
 ingredient_name = "Munich Malt"
-description = "Rich, bready malt character. The backbone of traditional Lagers and Wheat Beers."
+description = "Toasty, deeply malty German base malt. Adds warm bread-crust flavors and amber color."
 category = 0
-flavor_bonus = 1.0
-technique_bonus = 2.0
-style_compatibility = {"lager": 0.9, "pale_ale": 0.5, "wheat_beer": 0.85, "stout": 0.4}
+cost = 20
+flavor_tags = ["toasty", "malty"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.4, "roastiness": 0.2, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = true
+color_srm = 10.0
+body_contribution = 0.5
+sweetness = 0.4
+fermentability = 0.75
+is_base_malt = true

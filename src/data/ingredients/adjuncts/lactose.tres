@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Adjunct.gd" id="1_adjunct"]
+
+[resource]
+script = ExtResource("1_adjunct")
+ingredient_id = "lactose"
+ingredient_name = "Lactose"
+description = "Unfermentable milk sugar. Adds residual sweetness and a creamy body without boosting alcohol. Key to milk stouts and pastry styles."
+category = 3
+cost = 20
+flavor_tags = ["sweet", "creamy"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.6, "roastiness": 0.0, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = false
+fermentable = false
+adjunct_type = "sugar"
+effect_description = "Adds body + sweetness without ABV"

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Hop.gd" id="1_hop"]
+
+[resource]
+script = ExtResource("1_hop")
+ingredient_id = "citra"
+ingredient_name = "Citra"
+description = "Intensely aromatic American hop bursting with tropical fruit. Mango, passion fruit, and citrus dominate. A modern IPA staple."
+category = 1
+cost = 30
+flavor_tags = ["tropical", "mango", "passion_fruit"]
+flavor_profile = {"bitterness": 0.5, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.9, "funkiness": 0.0}
+unlocked = false
+alpha_acid_pct = 12.0
+aroma_intensity = 0.95
+variety_family = "american"

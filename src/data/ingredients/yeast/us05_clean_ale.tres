@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Yeast.gd" id="1_yeast"]
+
+[resource]
+script = ExtResource("1_yeast")
+ingredient_id = "us05_clean_ale"
+ingredient_name = "US-05 (Clean Ale)"
+description = "The most popular dry ale yeast worldwide. Clean, neutral fermentation that lets malt and hops shine through."
+category = 2
+cost = 15
+flavor_tags = ["clean", "neutral", "versatile"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.1, "roastiness": 0.0, "fruitiness": 0.05, "funkiness": 0.0}
+unlocked = true
+attenuation_pct = 0.77
+ideal_temp_min_c = 15.0
+ideal_temp_max_c = 24.0
+flocculation = "medium"

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Adjunct.gd" id="1_adjunct"]
+
+[resource]
+script = ExtResource("1_adjunct")
+ingredient_id = "flaked_oats"
+ingredient_name = "Flaked Oats"
+description = "Pre-gelatinized oat flakes. Adds a silky smooth mouthfeel and improves head retention. Essential for oatmeal stouts and hazy IPAs."
+category = 3
+cost = 15
+flavor_tags = ["smooth", "silky"]
+flavor_profile = {"bitterness": 0.0, "sweetness": 0.15, "roastiness": 0.0, "fruitiness": 0.0, "funkiness": 0.0}
+unlocked = false
+fermentable = true
+adjunct_type = "grain"
+effect_description = "Head retention + mouthfeel"

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Hop.gd" id="1_hop"]
+
+[resource]
+script = ExtResource("1_hop")
+ingredient_id = "saaz"
+ingredient_name = "Saaz"
+description = "Classic Czech noble hop. Delicate spicy and herbal aroma with earthy undertones. Defines the pilsner style."
+category = 1
+cost = 20
+flavor_tags = ["spicy", "herbal", "earthy"]
+flavor_profile = {"bitterness": 0.3, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.1, "funkiness": 0.0}
+unlocked = true
+alpha_acid_pct = 3.5
+aroma_intensity = 0.7
+variety_family = "noble"

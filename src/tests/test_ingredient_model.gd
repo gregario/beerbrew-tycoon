@@ -94,3 +94,71 @@ func test_beer_style_get_ingredient_compatibility():
 	s.preferred_ingredients = {"roasted_barley": 0.9}
 	assert_eq(s.get_ingredient_compatibility("roasted_barley"), 0.9)
 	assert_eq(s.get_ingredient_compatibility("unknown_ingredient"), 0.5)
+
+func test_catalog_loads_all_malts():
+	var paths := [
+		"res://data/ingredients/malts/pilsner_malt.tres",
+		"res://data/ingredients/malts/pale_malt.tres",
+		"res://data/ingredients/malts/maris_otter.tres",
+		"res://data/ingredients/malts/munich_malt.tres",
+		"res://data/ingredients/malts/crystal_60.tres",
+		"res://data/ingredients/malts/chocolate_malt.tres",
+		"res://data/ingredients/malts/roasted_barley.tres",
+		"res://data/ingredients/malts/wheat_malt.tres",
+	]
+	for path in paths:
+		var m = load(path)
+		assert_not_null(m, "Should load malt at %s" % path)
+		assert_true(m is Malt, "%s should be a Malt" % path)
+	var pilsner = load(paths[0]) as Malt
+	var roasted = load(paths[6]) as Malt
+	assert_lt(pilsner.color_srm, 5.0, "Pilsner SRM should be < 5")
+	assert_gt(roasted.color_srm, 400.0, "Roasted Barley SRM should be > 400")
+
+func test_catalog_loads_all_hops():
+	var paths := [
+		"res://data/ingredients/hops/saaz.tres",
+		"res://data/ingredients/hops/hallertau.tres",
+		"res://data/ingredients/hops/east_kent_goldings.tres",
+		"res://data/ingredients/hops/fuggle.tres",
+		"res://data/ingredients/hops/cascade.tres",
+		"res://data/ingredients/hops/centennial.tres",
+		"res://data/ingredients/hops/citra.tres",
+		"res://data/ingredients/hops/simcoe.tres",
+	]
+	for path in paths:
+		var h = load(path)
+		assert_not_null(h, "Should load hop at %s" % path)
+		assert_true(h is Hop, "%s should be a Hop" % path)
+	var saaz = load(paths[0]) as Hop
+	var citra = load(paths[6]) as Hop
+	assert_lt(saaz.alpha_acid_pct, 5.0, "Saaz alpha should be < 5")
+	assert_gt(citra.alpha_acid_pct, 12.0 - 0.01, "Citra alpha should be >= 12")
+
+func test_catalog_loads_all_yeasts():
+	var paths := [
+		"res://data/ingredients/yeast/us05_clean_ale.tres",
+		"res://data/ingredients/yeast/s04_english_ale.tres",
+		"res://data/ingredients/yeast/w3470_lager.tres",
+		"res://data/ingredients/yeast/wb06_wheat.tres",
+		"res://data/ingredients/yeast/belle_saison.tres",
+		"res://data/ingredients/yeast/kveik_voss.tres",
+	]
+	for path in paths:
+		var y = load(path)
+		assert_not_null(y, "Should load yeast at %s" % path)
+		assert_true(y is Yeast, "%s should be a Yeast" % path)
+
+func test_catalog_loads_all_adjuncts():
+	var paths := [
+		"res://data/ingredients/adjuncts/lactose.tres",
+		"res://data/ingredients/adjuncts/brewing_sugar.tres",
+		"res://data/ingredients/adjuncts/irish_moss.tres",
+		"res://data/ingredients/adjuncts/flaked_oats.tres",
+	]
+	for path in paths:
+		var a = load(path)
+		assert_not_null(a, "Should load adjunct at %s" % path)
+		assert_true(a is Adjunct, "%s should be an Adjunct" % path)
+	var lactose = load(paths[0]) as Adjunct
+	assert_false(lactose.fermentable, "Lactose should not be fermentable")
