@@ -28,6 +28,7 @@ QualityCalculator="*res://autoloads/QualityCalculator.gd"
 MarketSystem="*res://autoloads/MarketSystem.gd"
 ToastManager="*res://autoloads/ToastManager.gd"
 BrewingScience="*res://autoloads/BrewingScience.gd"
+TasteSystem="*res://autoloads/TasteSystem.gd"
 
 [display]
 
