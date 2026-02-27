@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(openspec status --change \"define-product-core\" --json)",
+      "WebSearch",
+      "WebFetch(domain:gut.readthedocs.io)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(make test 2>&1)"
+    ]
+  }
+}

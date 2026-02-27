@@ -1,0 +1,12 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "pale_ale"
+style_name = "Pale Ale"
+description = "Bright hop character with a balanced malt backbone. Flavor-forward but needs solid technique to shine."
+ideal_flavor_ratio = 0.55
+base_price = 200.0
+base_demand_weight = 1.0

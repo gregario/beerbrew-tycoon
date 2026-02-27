@@ -1,0 +1,60 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/ResultsOverlay.gd" id="1_results"]
+
+[node name="ResultsOverlay" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_results")
+
+[node name="Panel" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+theme_override_constants/separation = 5
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+text = "Brew Complete!"
+theme_override_font_sizes/font_size = 10
+
+[node name="StyleLabel" type="Label" parent="Panel/VBox"]
+text = "Style: —"
+theme_override_font_sizes/font_size = 8
+
+[node name="RecipeLabel" type="Label" parent="Panel/VBox"]
+text = "Recipe: — / — / —"
+theme_override_font_sizes/font_size = 7
+
+[node name="ScoreLabel" type="Label" parent="Panel/VBox"]
+text = "Quality: — / 100"
+theme_override_font_sizes/font_size = 12
+
+[node name="BreakdownLabel" type="Label" parent="Panel/VBox"]
+text = "Ratio: —  |  Ingredients: —  |  Novelty: —  |  Effort: —"
+theme_override_font_sizes/font_size = 7
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VBox"]
+
+[node name="RevenueLabel" type="Label" parent="Panel/VBox"]
+text = "Revenue: +$—"
+theme_override_font_sizes/font_size = 9
+
+[node name="BalanceLabel" type="Label" parent="Panel/VBox"]
+text = "Balance: $—"
+theme_override_font_sizes/font_size = 9
+
+[node name="RentLabel" type="Label" parent="Panel/VBox"]
+text = ""
+theme_override_font_sizes/font_size = 8
+visible = false
+
+[node name="ContinueButton" type="Button" parent="Panel/VBox"]
+text = "Continue →"
+theme_override_font_sizes/font_size = 9

@@ -1,0 +1,70 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/RecipeDesigner.gd" id="1_recipe"]
+
+[node name="RecipeDesigner" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_recipe")
+
+[node name="Panel" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+text = "Design Your Recipe"
+theme_override_font_sizes/font_size = 10
+
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox"]
+theme_override_constants/separation = 6
+
+[node name="MaltPanel" type="VBoxContainer" parent="Panel/VBox/HBox"]
+size_flags_horizontal = 3
+
+[node name="MaltTitle" type="Label" parent="Panel/VBox/HBox/MaltPanel"]
+text = "— Malt —"
+theme_override_font_sizes/font_size = 8
+horizontal_alignment = 1
+
+[node name="VBox" type="VBoxContainer" parent="Panel/VBox/HBox/MaltPanel"]
+theme_override_constants/separation = 2
+
+[node name="HopPanel" type="VBoxContainer" parent="Panel/VBox/HBox"]
+size_flags_horizontal = 3
+
+[node name="HopTitle" type="Label" parent="Panel/VBox/HBox/HopPanel"]
+text = "— Hops —"
+theme_override_font_sizes/font_size = 8
+horizontal_alignment = 1
+
+[node name="VBox" type="VBoxContainer" parent="Panel/VBox/HBox/HopPanel"]
+theme_override_constants/separation = 2
+
+[node name="YeastPanel" type="VBoxContainer" parent="Panel/VBox/HBox"]
+size_flags_horizontal = 3
+
+[node name="YeastTitle" type="Label" parent="Panel/VBox/HBox/YeastPanel"]
+text = "— Yeast —"
+theme_override_font_sizes/font_size = 8
+horizontal_alignment = 1
+
+[node name="VBox" type="VBoxContainer" parent="Panel/VBox/HBox/YeastPanel"]
+theme_override_constants/separation = 2
+
+[node name="Summary" type="Label" parent="Panel/VBox"]
+text = "Malt: —  |  Hop: —  |  Yeast: —"
+theme_override_font_sizes/font_size = 7
+
+[node name="BrewButton" type="Button" parent="Panel/VBox"]
+text = "Start Brewing →"
+disabled = true
+theme_override_font_sizes/font_size = 9

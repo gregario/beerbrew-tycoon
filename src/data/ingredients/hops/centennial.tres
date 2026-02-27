@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+
+[resource]
+script = ExtResource("1_ingredient")
+ingredient_id = "centennial"
+ingredient_name = "Centennial"
+description = "High bitterness with floral and citrus character. Versatile workhorse hop."
+category = 1
+flavor_bonus = 2.0
+technique_bonus = 2.0
+style_compatibility = {"lager": 0.5, "pale_ale": 0.85, "wheat_beer": 0.5, "stout": 0.5}

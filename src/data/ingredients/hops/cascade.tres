@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+
+[resource]
+script = ExtResource("1_ingredient")
+ingredient_id = "cascade"
+ingredient_name = "Cascade"
+description = "Bright citrus and floral aroma. The signature hop of American Pale Ales."
+category = 1
+flavor_bonus = 4.0
+technique_bonus = 0.0
+style_compatibility = {"lager": 0.3, "pale_ale": 1.0, "wheat_beer": 0.6, "stout": 0.3}

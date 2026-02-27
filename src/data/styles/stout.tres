@@ -1,0 +1,12 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "stout"
+style_name = "Stout"
+description = "Dark, roasty, and complex. Balancing roast bitterness with smooth body demands both skill and the right ingredients."
+ideal_flavor_ratio = 0.45
+base_price = 220.0
+base_demand_weight = 1.0

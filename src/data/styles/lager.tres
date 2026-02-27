@@ -1,0 +1,12 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "lager"
+style_name = "Lager"
+description = "Clean, crisp, and refreshing. Technique-focused brewing rewards precise temperature control and patience."
+ideal_flavor_ratio = 0.35
+base_price = 180.0
+base_demand_weight = 1.0

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+
+[resource]
+script = ExtResource("1_ingredient")
+ingredient_id = "wheat_yeast"
+ingredient_name = "Wheat Yeast"
+description = "The defining character of Wheat Beers. Produces banana and clove flavors through careful temperature control."
+category = 2
+flavor_bonus = 4.0
+technique_bonus = 1.0
+style_compatibility = {"lager": 0.2, "pale_ale": 0.4, "wheat_beer": 1.0, "stout": 0.3}

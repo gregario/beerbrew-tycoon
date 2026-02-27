@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+
+[resource]
+script = ExtResource("1_ingredient")
+ingredient_id = "hallertau"
+ingredient_name = "Hallertau"
+description = "Noble German hop. Earthy, herbal, and subtle. Essential for authentic Lagers and Wheat Beers."
+category = 1
+flavor_bonus = 1.0
+technique_bonus = 3.0
+style_compatibility = {"lager": 0.95, "pale_ale": 0.4, "wheat_beer": 0.9, "stout": 0.3}

@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/Game.gd" id="1_game"]
+[ext_resource type="PackedScene" path="res://scenes/BreweryScene.tscn" id="2_brewery"]
+[ext_resource type="PackedScene" path="res://scenes/ui/StylePicker.tscn" id="3_style"]
+[ext_resource type="PackedScene" path="res://scenes/ui/RecipeDesigner.tscn" id="4_recipe"]
+[ext_resource type="PackedScene" path="res://scenes/ui/BrewingPhases.tscn" id="5_brewing"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ResultsOverlay.tscn" id="6_results"]
+[ext_resource type="PackedScene" path="res://scenes/ui/GameOverScreen.tscn" id="7_gameover"]
+
+[node name="Game" type="Node"]
+script = ExtResource("1_game")
+
+[node name="BreweryScene" parent="." instance=ExtResource("2_brewery")]
+
+[node name="StylePicker" parent="." instance=ExtResource("3_style")]
+visible = false
+
+[node name="RecipeDesigner" parent="." instance=ExtResource("4_recipe")]
+visible = false
+
+[node name="BrewingPhases" parent="." instance=ExtResource("5_brewing")]
+visible = false
+
+[node name="ResultsOverlay" parent="." instance=ExtResource("6_results")]
+visible = false
+
+[node name="GameOverScreen" parent="." instance=ExtResource("7_gameover")]
+visible = false
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
+autoplay = false
+bus = "Music"
+
+[node name="SFX" type="Node" parent="."]
+
+[node name="BrewSFX" type="AudioStreamPlayer" parent="SFX"]
+bus = "SFX"
+
+[node name="ResultsSFX" type="AudioStreamPlayer" parent="SFX"]
+bus = "SFX"
+
+[node name="WinSFX" type="AudioStreamPlayer" parent="SFX"]
+bus = "SFX"
+
+[node name="LoseSFX" type="AudioStreamPlayer" parent="SFX"]
+bus = "SFX"

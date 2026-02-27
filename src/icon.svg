@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+  <rect width="128" height="128" fill="#3a2010"/>
+  <rect x="40" y="20" width="48" height="60" rx="6" fill="#c8a050"/>
+  <rect x="50" y="80" width="28" height="20" fill="#a08030"/>
+  <circle cx="64" cy="50" r="20" fill="#f0c040" opacity="0.8"/>
+  <text x="64" y="118" text-anchor="middle" font-size="14" fill="#f0c040" font-family="monospace">BREW</text>
+</svg>

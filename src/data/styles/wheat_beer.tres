@@ -1,0 +1,12 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "wheat_beer"
+style_name = "Wheat Beer"
+description = "Hazy, fruity, and refreshing. Yeast character is everything — let the flavor run free."
+ideal_flavor_ratio = 0.65
+base_price = 190.0
+base_demand_weight = 1.0

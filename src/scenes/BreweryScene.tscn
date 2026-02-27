@@ -1,0 +1,55 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/BreweryScene.gd" id="1_brewery"]
+
+[node name="BreweryScene" type="Node2D"]
+script = ExtResource("1_brewery")
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.18, 0.12, 0.08, 1)
+size = Vector2(320, 180)
+position = Vector2(0, 0)
+
+[node name="Floor" type="ColorRect" parent="."]
+color = Color(0.35, 0.28, 0.18, 1)
+size = Vector2(320, 60)
+position = Vector2(0, 120)
+
+[node name="Stations" type="Node2D" parent="."]
+
+[node name="Kettle" type="ColorRect" parent="Stations"]
+color = Color(0.6, 0.6, 0.7, 1)
+size = Vector2(28, 32)
+position = Vector2(60, 88)
+
+[node name="KettleLabel" type="Label" parent="Stations"]
+text = "Kettle"
+position = Vector2(52, 122)
+theme_override_font_sizes/font_size = 6
+
+[node name="Fermenter" type="ColorRect" parent="Stations"]
+color = Color(0.5, 0.7, 0.5, 1)
+size = Vector2(24, 36)
+position = Vector2(130, 84)
+
+[node name="FermenterLabel" type="Label" parent="Stations"]
+text = "Fermenter"
+position = Vector2(118, 122)
+theme_override_font_sizes/font_size = 6
+
+[node name="Bottler" type="ColorRect" parent="Stations"]
+color = Color(0.7, 0.6, 0.4, 1)
+size = Vector2(20, 28)
+position = Vector2(210, 92)
+
+[node name="BottlerLabel" type="Label" parent="Stations"]
+text = "Bottler"
+position = Vector2(204, 122)
+theme_override_font_sizes/font_size = 6
+
+[node name="Character" type="ColorRect" parent="."]
+color = Color(0.8, 0.6, 0.4, 1)
+size = Vector2(12, 20)
+position = Vector2(148, 98)
+
+[node name="BrewAnimation" type="AnimationPlayer" parent="."]

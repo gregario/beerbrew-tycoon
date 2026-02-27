@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Ingredient.gd" id="1_ingredient"]
+
+[resource]
+script = ExtResource("1_ingredient")
+ingredient_id = "pale_malt"
+ingredient_name = "Pale Malt"
+description = "The workhorse of brewing. Clean, neutral base malt that works with any style."
+category = 0
+flavor_bonus = 0.0
+technique_bonus = 0.0
+style_compatibility = {"lager": 0.8, "pale_ale": 0.8, "wheat_beer": 0.6, "stout": 0.6}
