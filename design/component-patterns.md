@@ -49,6 +49,28 @@ Reusable UI patterns for BeerBrew Tycoon. All screens must use these patterns.
 - PanelContainer using Panel stylebox (lighter bg, 1px border, 16px padding)
 - Use for: summary bars, score panels, preview sections
 
+## Failure Panel
+
+- PanelContainer using StyleBoxFlat (danger variant of Inner Panel)
+- bg_color: danger (#FF7B7B) at 10% opacity
+- border_width_left: 4px solid danger (#FF7B7B)
+- border_color: danger (#FF7B7B) at 40% opacity
+- corner_radius: 4px, content_margin: 16px all sides
+- Inner VBoxContainer, separation=8
+  - Title: sm/20px, Display-Bold, danger color
+  - Description: xs/16px, muted, autowrap
+  - Tip: xs/16px, primary (#5AA9FF), autowrap, prefixed with "Tip: "
+- Use for: infection alerts, off-flavor alerts in ResultsOverlay
+
+## QA Toast
+
+- Uses existing toast system (slide in from right)
+- HBoxContainer, separation=12
+  - Left: ColorRect 4px wide (primary/warning/danger based on reading)
+  - Right: VBoxContainer (title sm/20px Display-Bold + reading xs/16px muted)
+- Auto-dismiss after 3 seconds
+- Use for: pre-boil gravity, boil vigor, final gravity checkpoints
+
 ## Star Rating
 
 - HBoxContainer, alignment=CENTER, separation=4

@@ -7,6 +7,7 @@
     "surface": "#0B1220",
     "muted": "#8A9BB1",
     "success": "#5EE8A4",
+    "warning": "#FFB347",
     "danger": "#FF7B7B"
   },
   "typography": {

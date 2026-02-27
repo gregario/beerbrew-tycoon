@@ -28,6 +28,8 @@ func _show_animated() -> void:
 | Star rating | Sequential fade-in per star | 0.1s each | EASE_OUT |
 | Toast appear | Slide in from right | 0.3s | EASE_OUT |
 | Toast dismiss | Fade out | 0.2s | EASE_IN |
+| Toast auto-dismiss | Wait then fade out | 3.0s hold + 0.2s | EASE_IN |
+| Failure panel appear | Fade in (with results) | 0.2s | EASE_OUT |
 | Tooltip appear | Instant | 0s | — |
 
 ## Principles
