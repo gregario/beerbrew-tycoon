@@ -12,10 +12,11 @@ const PHASE_PROFILES := {
 }
 
 # Score component weights (must sum to 1.0)
-const WEIGHT_RATIO: float = 0.50
-const WEIGHT_INGREDIENTS: float = 0.25
-const WEIGHT_NOVELTY: float = 0.15
+const WEIGHT_RATIO: float = 0.40
+const WEIGHT_INGREDIENTS: float = 0.20
+const WEIGHT_NOVELTY: float = 0.10
 const WEIGHT_BASE: float = 0.10
+const WEIGHT_SCIENCE: float = 0.20
 
 # Novelty config (also in specs)
 const NOVELTY_PENALTY_PER_REPEAT: float = 0.15
@@ -60,14 +61,18 @@ func calculate_quality(
 	# mashing max: 30 + 70 = 100, boiling: 50 + 50 = 100, fermenting: 70 + 30 = 100 → total 300
 	var base_score: float = clampf((total_points / 300.0) * 100.0, 0.0, 100.0)
 
-	# --- 6. Weighted final score ---
-	var final_score: float = (
+	# --- 6. Brewing science score ---
+	var science_score: float = _compute_science_score(style, recipe, sliders)
+
+	# --- 7. Weighted final score ---
+	var final_score: float = clampf(
 		ratio_score * WEIGHT_RATIO +
 		ingredient_score * WEIGHT_INGREDIENTS +
 		novelty_score * WEIGHT_NOVELTY +
-		base_score * WEIGHT_BASE
+		base_score * WEIGHT_BASE +
+		science_score * WEIGHT_SCIENCE,
+		0.0, 100.0
 	)
-	final_score = clampf(final_score, 0.0, 100.0)
 
 	return {
 		"final_score": final_score,
@@ -75,6 +80,7 @@ func calculate_quality(
 		"ingredient_score": ingredient_score,
 		"novelty_score": novelty_score,
 		"base_score": base_score,
+		"science_score": science_score,
 		"total_flavor_points": total_flavor,
 		"total_technique_points": total_technique,
 		"novelty_modifier": novelty_modifier,
@@ -211,6 +217,21 @@ func _compute_novelty_modifier(
 			repeat_count += 1
 
 	return maxf(1.0 - (repeat_count * NOVELTY_PENALTY_PER_REPEAT), NOVELTY_FLOOR)
+
+## Compute brewing science score from mash temp, boil duration, and ferment temp.
+## Returns 0–100.
+func _compute_science_score(style: BeerStyle, recipe: Dictionary, sliders: Dictionary) -> float:
+	var mash_temp: float = sliders.get("mashing", 65.0)
+	var boil_duration: float = sliders.get("boiling", 60.0)
+	var ferment_temp: float = sliders.get("fermenting", 20.0)
+	var mash_score: float = BrewingScience.calc_mash_score(mash_temp, style)
+	var boil_score: float = BrewingScience.calc_boil_score(boil_duration, style)
+	var yeast: Yeast = recipe.get("yeast", null) as Yeast
+	var yeast_score: float = 0.5
+	if yeast != null:
+		var yeast_result: Dictionary = BrewingScience.calc_yeast_accuracy(ferment_temp, yeast)
+		yeast_score = yeast_result["quality_bonus"]
+	return (mash_score * 33.0 + boil_score * 33.0 + yeast_score * 34.0)
 
 ## Compute just the raw points for a preview (used by BrewingPhases UI).
 func preview_points(sliders: Dictionary) -> Dictionary:

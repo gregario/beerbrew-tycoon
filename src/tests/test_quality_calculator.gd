@@ -262,3 +262,57 @@ func test_flavor_profile_match_scores_higher():
 	var bad_result := QualityCalculator.calculate_quality(style, bad_recipe, sliders, [])
 	assert_gt(good_result["ingredient_score"], bad_result["ingredient_score"],
 		"Matching flavor profile should score higher")
+
+# ---------------------------------------------------------------------------
+# Tests: brewing science scoring component
+# ---------------------------------------------------------------------------
+
+func _make_style_with_science(style_id: String, ideal_flavor_ratio: float,
+		mash_min: float, mash_max: float, boil_min: float, boil_max: float) -> BeerStyle:
+	var s := _make_style(style_id, ideal_flavor_ratio)
+	s.ideal_mash_temp_min = mash_min
+	s.ideal_mash_temp_max = mash_max
+	s.ideal_boil_min = boil_min
+	s.ideal_boil_max = boil_max
+	return s
+
+func _make_yeast_with_temp(id: String, temp_min: float, temp_max: float) -> Yeast:
+	var y := _make_yeast_res(id, _default_fp)
+	y.ideal_temp_min_c = temp_min
+	y.ideal_temp_max_c = temp_max
+	return y
+
+func test_result_has_science_score():
+	var style := _make_style_with_science("test", 0.5, 64.0, 66.0, 50.0, 70.0)
+	var recipe := _make_neutral_recipe("test")
+	recipe["yeast"] = _make_yeast_with_temp("test_yeast", 18.0, 22.0)
+	var sliders := {"mashing": 65.0, "boiling": 60.0, "fermenting": 20.0}
+	var result := QualityCalculator.calculate_quality(style, recipe, sliders, [])
+	assert_has(result, "science_score")
+
+func test_perfect_science_scores_high():
+	var style := _make_style_with_science("stout", 0.45, 66.0, 69.0, 60.0, 90.0)
+	var recipe := _make_neutral_recipe("stout")
+	recipe["yeast"] = _make_yeast_with_temp("test_yeast", 18.0, 22.0)
+	var sliders := {"mashing": 67.0, "boiling": 70.0, "fermenting": 20.0}
+	var result := QualityCalculator.calculate_quality(style, recipe, sliders, [])
+	assert_gte(result["science_score"], 90.0, "Perfect science should score high")
+
+func test_bad_science_scores_low():
+	var style := _make_style_with_science("stout", 0.45, 66.0, 69.0, 60.0, 90.0)
+	var recipe := _make_neutral_recipe("stout")
+	recipe["yeast"] = _make_yeast_with_temp("test_yeast", 18.0, 22.0)
+	var sliders := {"mashing": 60.0, "boiling": 25.0, "fermenting": 26.0}
+	var result := QualityCalculator.calculate_quality(style, recipe, sliders, [])
+	assert_lte(result["science_score"], 50.0, "Bad science should score low")
+
+func test_science_affects_final_score():
+	var style := _make_style_with_science("test", 0.5, 64.0, 66.0, 50.0, 70.0)
+	var recipe := _make_neutral_recipe("test")
+	recipe["yeast"] = _make_yeast_with_temp("test_yeast", 18.0, 22.0)
+	var good_sliders := {"mashing": 65.0, "boiling": 60.0, "fermenting": 20.0}
+	var bad_sliders := {"mashing": 60.0, "boiling": 25.0, "fermenting": 26.0}
+	var good_result := QualityCalculator.calculate_quality(style, recipe, good_sliders, [])
+	var bad_result := QualityCalculator.calculate_quality(style, recipe, bad_sliders, [])
+	assert_gt(good_result["final_score"], bad_result["final_score"],
+		"Good brewing science should improve final score")
