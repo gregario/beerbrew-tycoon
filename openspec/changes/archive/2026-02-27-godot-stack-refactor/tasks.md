@@ -13,7 +13,7 @@
 ## 3. Game.gd — wire the signal
 
 - [x] 3.1 In `Game.gd _ready()`, connect `brewing_phases.brew_confirmed` to `GameState.execute_brew`
-- [ ] 3.2 Verify game runs end-to-end: complete a full brew cycle from style select through results screen — **MANUAL: smoke test in Godot editor after task 6**
+- [x] 3.2 Verify game runs end-to-end: complete a full brew cycle from style select through results screen — **MANUAL: smoke test in Godot editor after task 6**
 
 ## 4. Signal cleanup — _exit_tree()
 
@@ -33,12 +33,12 @@
 **Must be done in the Godot editor. Do not use `mv` or terminal commands — this will silently break all `res://` path references in `.tscn` files.**
 
 Steps:
-- [ ] 6.1 Open the project in the Godot editor: open `src/project.godot`
-- [ ] 6.2 In the FileSystem dock, right-click `res://scenes/ui/` → Move, drag to `res://` root, rename to `ui/`
-- [ ] 6.3 When the editor prompts "Fix broken references?" — click **Yes** (this updates all `ext_resource` paths in `.tscn` files automatically)
-- [ ] 6.4 Verify `Game.tscn` opens without errors in the editor (no missing node warnings)
-- [ ] 6.5 Run `make test` one final time — all 48 tests pass, exits 0
-- [ ] 6.6 Smoke test: play one full brew cycle from style select → brew → results screen
+- [x] 6.1 Open the project in the Godot editor: open `src/project.godot`
+- [x] 6.2 In the FileSystem dock, right-click `res://scenes/ui/` → Move, drag to `res://` root, rename to `ui/`
+- [x] 6.3 When the editor prompts "Fix broken references?" — click **Yes** (this updates all `ext_resource` paths in `.tscn` files automatically)
+- [x] 6.4 Verify `Game.tscn` opens without errors in the editor (no missing node warnings)
+- [x] 6.5 Run `make test` one final time — all 48 tests pass, exits 0
+- [x] 6.6 Smoke test: play one full brew cycle from style select → brew → results screen
 
 After completing 6.1–6.6:
 - Commit the moved files: `git add -A && git commit -m "refactor: move scenes/ui/ to ui/ per Godot stack profile"`

@@ -19,11 +19,15 @@ The system SHALL define for each phase how slider position maps to Flavor vs. Te
 - **THEN** the total Flavor and Technique point mix SHALL reflect each phase's distinct contribution profile
 
 ### Requirement: Player can confirm the brew
-The system SHALL provide a "Brew" button that, when pressed, finalizes slider positions, triggers quality score calculation, and transitions to the results screen.
+The system SHALL provide a "Brew" button that, when pressed, finalizes slider positions and emits a `brew_confirmed(sliders: Dictionary)` signal. The BrewingPhases scene SHALL NOT call any GameState methods directly. The brew cycle is executed by the system in response to the signal.
 
-#### Scenario: Brew button triggers calculation
+#### Scenario: Brew button emits signal
 - **WHEN** the player presses the "Brew" button
-- **THEN** quality is calculated from the current slider positions and recipe, and the results screen is shown
+- **THEN** the `brew_confirmed` signal is emitted with the current slider values as a Dictionary
+
+#### Scenario: BrewingPhases has no direct GameState dependency
+- **WHEN** the BrewingPhases scene is loaded
+- **THEN** it SHALL NOT reference GameState, QualityCalculator, or any autoload — it only reads slider values and emits a signal
 
 ### Requirement: Sliders have sensible defaults
 The system SHALL initialize each phase slider to a neutral midpoint (50%) when the brewing phases screen opens. Players may adjust from that default.
