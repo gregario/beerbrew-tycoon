@@ -51,7 +51,6 @@ theme_override_font_sizes/font_size = 24
 
 [node name="RecipeLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
 text = "— · — · —"
-theme_override_font_sizes/font_size = 20
 
 [node name="ScorePanel" type="PanelContainer" parent="CardPanel/MarginContainer/VBox"]
 size_flags_horizontal = 4
@@ -75,22 +74,18 @@ theme_override_constants/v_separation = 8
 
 [node name="RatioLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
 text = "Ratio: —"
-theme_override_font_sizes/font_size = 20
 size_flags_horizontal = 3
 
 [node name="IngredientsLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
 text = "Ingredients: —"
-theme_override_font_sizes/font_size = 20
 size_flags_horizontal = 3
 
 [node name="NoveltyLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
 text = "Novelty: —"
-theme_override_font_sizes/font_size = 20
 size_flags_horizontal = 3
 
 [node name="EffortLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
 text = "Effort: —"
-theme_override_font_sizes/font_size = 20
 size_flags_horizontal = 3
 
 [node name="HSeparator2" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
@@ -110,7 +105,6 @@ horizontal_alignment = 2
 
 [node name="RentLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
 text = ""
-theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(1, 0.482, 0.482, 1)
 visible = false
 

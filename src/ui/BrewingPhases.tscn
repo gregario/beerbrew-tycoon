@@ -47,7 +47,6 @@ theme_override_font_sizes/font_size = 32
 
 [node name="Hint" type="Label" parent="CardPanel/MarginContainer/VBox"]
 text = "Adjust effort across brewing phases. More effort = better scores."
-theme_override_font_sizes/font_size = 20
 autowrap_mode = 2
 
 [node name="MashingRow" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox"]
@@ -111,13 +110,11 @@ theme_override_constants/separation = 32
 
 [node name="FlavorLabel" type="Label" parent="CardPanel/MarginContainer/VBox/PreviewPanel/PreviewHBox"]
 text = "Flavor: 75"
-theme_override_font_sizes/font_size = 20
 size_flags_horizontal = 3
 horizontal_alignment = 1
 
 [node name="TechniqueLabel" type="Label" parent="CardPanel/MarginContainer/VBox/PreviewPanel/PreviewHBox"]
 text = "Technique: 75"
-theme_override_font_sizes/font_size = 20
 size_flags_horizontal = 3
 horizontal_alignment = 1
 
