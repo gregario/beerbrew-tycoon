@@ -26,6 +26,7 @@ config/icon="res://icon.svg"
 GameState="*res://autoloads/GameState.gd"
 QualityCalculator="*res://autoloads/QualityCalculator.gd"
 MarketSystem="*res://autoloads/MarketSystem.gd"
+ToastManager="*res://autoloads/ToastManager.gd"
 
 [display]
 
