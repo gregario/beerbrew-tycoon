@@ -234,6 +234,22 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 		recipe_history
 	)
 
+	# QA checkpoint toasts (Stage 1C)
+	if is_instance_valid(ToastManager):
+		var mash_temp: float = sliders.get("mashing", 65.0)
+		var boil_min: float = sliders.get("boiling", 60.0)
+		var yeast: Yeast = current_recipe.get("yeast", null) as Yeast
+
+		var pre_boil: Dictionary = FailureSystem.calc_pre_boil_gravity(mash_temp)
+		ToastManager.show_toast("Pre-Boil Gravity: OG %s — %s efficiency" % [pre_boil["og"], pre_boil["assessment"].capitalize()])
+
+		var boil_check: Dictionary = FailureSystem.calc_boil_vigor(boil_min)
+		ToastManager.show_toast("Boil Vigor: %s — %s" % [boil_check["vigor"].capitalize(), boil_check["dms_note"]])
+
+		if yeast != null:
+			var fg_check: Dictionary = FailureSystem.calc_final_gravity(mash_temp, yeast.attenuation_pct / 100.0)
+			ToastManager.show_toast("Final Gravity: FG %s — Attenuation: %s%%" % [fg_check["fg"], fg_check["attenuation_pct"]])
+
 	# Failure mode rolls (Stage 1C)
 	var failure_result: Dictionary = FailureSystem.roll_failures(
 		result["final_score"], sanitation_quality, temp_control_quality

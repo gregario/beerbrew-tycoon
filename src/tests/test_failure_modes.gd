@@ -210,3 +210,31 @@ func test_execute_brew_perfect_stats_preserves_score() -> void:
 	var result: Dictionary = GameState.execute_brew(sliders)
 	assert_false(result["infected"], "Perfect sanitation should not cause infection")
 	assert_eq(result["off_flavor_tags"].size(), 0, "Perfect temp control should produce no off-flavors")
+
+# ---------------------------------------------------------------------------
+# QA checkpoints
+# ---------------------------------------------------------------------------
+
+func test_pre_boil_gravity_check_returns_reading() -> void:
+	var check: Dictionary = FailureSystem.calc_pre_boil_gravity(65.0)
+	assert_has(check, "og", "Pre-boil check should have og reading")
+	assert_has(check, "assessment", "Pre-boil check should have assessment")
+
+func test_pre_boil_gravity_normal_mash_temp() -> void:
+	var check: Dictionary = FailureSystem.calc_pre_boil_gravity(65.0)
+	assert_eq(check["assessment"], "normal", "65°C mash should give normal efficiency")
+
+func test_boil_vigor_check_returns_reading() -> void:
+	var check: Dictionary = FailureSystem.calc_boil_vigor(60.0)
+	assert_has(check, "vigor", "Boil check should have vigor reading")
+	assert_has(check, "assessment", "Boil check should have assessment")
+
+func test_boil_vigor_short_boil_warns() -> void:
+	var check: Dictionary = FailureSystem.calc_boil_vigor(30.0)
+	assert_eq(check["assessment"], "low", "30 min boil should warn about low vigor")
+
+func test_final_gravity_check_returns_reading() -> void:
+	var check: Dictionary = FailureSystem.calc_final_gravity(65.0, 0.75)
+	assert_has(check, "fg", "Final gravity check should have fg reading")
+	assert_has(check, "attenuation_pct", "Final gravity check should have attenuation %")
+	assert_has(check, "assessment", "Final gravity check should have assessment")
