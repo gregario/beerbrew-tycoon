@@ -22,6 +22,8 @@ const STAR_EMPTY := preload("res://assets/ui/kenney/Green/Default/star_outline_d
 @onready var rent_label: Label = $CardPanel/MarginContainer/VBox/RentLabel
 @onready var continue_button: Button = $CardPanel/MarginContainer/VBox/FooterRow/ContinueButton
 
+var failure_container: VBoxContainer = null
+
 func _ready() -> void:
 	continue_button.pressed.connect(_on_continue_pressed)
 	rent_label.visible = false
@@ -52,6 +54,26 @@ func populate() -> void:
 	effort_label.text = "Effort: %.0f" % result.get("base_score", 0.0)
 	science_label.text = "Science: %.0f" % result.get("science_score", 0.0)
 
+	# Failure panels (Stage 1C)
+	_clear_failure_panels()
+	var infected: bool = result.get("infected", false)
+	var off_flavor_tags: Array = result.get("off_flavor_tags", [])
+
+	if infected or off_flavor_tags.size() > 0:
+		_create_failure_container()
+
+	if infected:
+		var infection_msg: String = result.get("infection_message", "Bacteria contaminated your batch.")
+		_add_failure_panel("INFECTION DETECTED", infection_msg,
+			"Upgrade your sanitation equipment to reduce infection risk.")
+
+	if off_flavor_tags.size() > 0:
+		var off_flavor_msg: String = result.get("off_flavor_message", "Off-flavors detected.")
+		var tip: String = "Better temperature control during fermentation helps avoid off-flavors."
+		if off_flavor_tags.has("dms"):
+			tip = "A longer, more vigorous boil drives off DMS precursors."
+		_add_failure_panel("OFF-FLAVORS DETECTED", off_flavor_msg, tip)
+
 	# Revenue and current balance (revenue already in balance from BrewingPhases)
 	var revenue: float = result.get("revenue", 0.0)
 	revenue_label.text = "Revenue: +$%.0f" % revenue
@@ -81,6 +103,65 @@ func _update_stars(score: float) -> void:
 		star.custom_minimum_size = Vector2(28, 28)
 		star.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		stars_row.add_child(star)
+
+func _clear_failure_panels() -> void:
+	if failure_container != null:
+		failure_container.queue_free()
+		failure_container = null
+
+
+func _create_failure_container() -> void:
+	failure_container = VBoxContainer.new()
+	failure_container.name = "FailureContainer"
+	failure_container.add_theme_constant_override("separation", 8)
+	var vbox: VBoxContainer = $CardPanel/MarginContainer/VBox
+	var score_panel_idx: int = score_label.get_parent().get_parent().get_index()
+	vbox.add_child(failure_container)
+	vbox.move_child(failure_container, score_panel_idx + 1)
+
+
+func _add_failure_panel(title_text: String, description: String, tip: String) -> void:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("#FF7B7B", 0.1)
+	style.border_color = Color("#FF7B7B", 0.4)
+	style.border_width_left = 4
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_left = 4
+	style.corner_radius_bottom_right = 4
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	style.content_margin_top = 16
+	style.content_margin_bottom = 16
+	panel.add_theme_stylebox_override("panel", style)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+
+	var title := Label.new()
+	title.text = title_text
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color("#FF7B7B"))
+	vbox.add_child(title)
+
+	var desc := Label.new()
+	desc.text = description
+	desc.add_theme_font_size_override("font_size", 16)
+	desc.add_theme_color_override("font_color", Color("#8A9BB1"))
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(desc)
+
+	var tip_label := Label.new()
+	tip_label.text = "Tip: %s" % tip
+	tip_label.add_theme_font_size_override("font_size", 16)
+	tip_label.add_theme_color_override("font_color", Color("#5AA9FF"))
+	tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(tip_label)
+
+	panel.add_child(vbox)
+	failure_container.add_child(panel)
+
 
 func _on_continue_pressed() -> void:
 	GameState.advance_state()
