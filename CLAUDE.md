@@ -48,19 +48,36 @@ Superpowers activates automatically and enforces TDD, systematic debugging, and 
 | Bug fix | Superpowers |
 | Specs and code have diverged | OpenSpec (sync first) |
 
+## Stack Profile
+
+This project uses the **Godot 4 stack profile**.
+
+Before writing any code, read: `../../stacks/godot/STACK.md`
+
+| File | Read When |
+|------|-----------|
+| `stacks/godot/project_structure.md` | Creating files or scenes |
+| `stacks/godot/coding_standards.md` | Writing GDScript |
+| `stacks/godot/testing.md` | Writing or running tests |
+| `stacks/godot/performance.md` | Optimising |
+| `stacks/godot/pitfalls.md` | Debugging unexpected behaviour |
+
+## Project State
+
+- MVP complete. OpenSpec change `define-product-core` archived 2026-02-27.
+- 45/45 GUT tests passing (`make test`).
+- Godot binary (Steam): `/Users/gregario/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot`
+- Manual tasks outstanding: 14.6 (60fps profiler check), 14.7 (pixel aliasing at 1080p).
+
 ## Development Rules
 
 1. Never write code before specs exist. Use OpenSpec to create them.
-2. All source code goes in `/src/`.
-3. All tests go in `/tests/`.
-4. Run tests after every change.
-5. Work in small iterative commits.
+2. All source code goes in `src/`.
+3. All tests go in `src/tests/`. Run `make test` after every change.
+4. Work in small iterative commits.
+5. Always read the Godot stack profile before implementing.
 
 ## Reference Material
 
-The `reference/` folder contains initial product thinking created before OpenSpec was properly integrated. This content should be used as input when running the first `/opsx:propose` to create proper OpenSpec-managed specs. Once specs are created in OpenSpec, the `reference/` folder can be deleted.
-
 - `reference/product.md` — Product definition, core concept, game mechanics
 - `reference/mvp.md` — MVP scope, user flow, acceptance criteria
-- `reference/architecture.md` — Starter architecture template (unfilled)
-- `reference/roadmap.md` — Starter roadmap template (unfilled)
