@@ -7,64 +7,93 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_recipe")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="DimOverlay" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+color = Color(0.059, 0.09, 0.141, 0.6)
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="CardPanel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -450.0
+offset_top = -275.0
+offset_right = 450.0
+offset_bottom = 275.0
+
+[node name="MarginContainer" type="MarginContainer" parent="CardPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 6.0
-offset_right = -8.0
-offset_bottom = -6.0
-theme_override_constants/separation = 4
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
 
-[node name="Title" type="Label" parent="Panel/VBox"]
-text = "Design Your Recipe"
-theme_override_font_sizes/font_size = 10
-
-[node name="HBox" type="HBoxContainer" parent="Panel/VBox"]
-theme_override_constants/separation = 6
-
-[node name="MaltPanel" type="VBoxContainer" parent="Panel/VBox/HBox"]
+[node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
 
-[node name="MaltTitle" type="Label" parent="Panel/VBox/HBox/MaltPanel"]
-text = "— Malt —"
-theme_override_font_sizes/font_size = 8
-horizontal_alignment = 1
+[node name="Title" type="Label" parent="CardPanel/MarginContainer/VBox"]
+text = "DESIGN YOUR RECIPE"
+theme_override_font_sizes/font_size = 32
 
-[node name="VBox" type="VBoxContainer" parent="Panel/VBox/HBox/MaltPanel"]
-theme_override_constants/separation = 2
+[node name="HSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
 
-[node name="HopPanel" type="VBoxContainer" parent="Panel/VBox/HBox"]
+[node name="HBox" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox"]
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="MaltPanel" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox"]
 size_flags_horizontal = 3
+theme_override_constants/separation = 8
 
-[node name="HopTitle" type="Label" parent="Panel/VBox/HBox/HopPanel"]
-text = "— Hops —"
-theme_override_font_sizes/font_size = 8
-horizontal_alignment = 1
+[node name="MaltTitle" type="Label" parent="CardPanel/MarginContainer/VBox/HBox/MaltPanel"]
+text = "MALT"
+theme_override_font_sizes/font_size = 24
 
-[node name="VBox" type="VBoxContainer" parent="Panel/VBox/HBox/HopPanel"]
-theme_override_constants/separation = 2
+[node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox/MaltPanel"]
+theme_override_constants/separation = 8
 
-[node name="YeastPanel" type="VBoxContainer" parent="Panel/VBox/HBox"]
+[node name="HopPanel" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox"]
 size_flags_horizontal = 3
+theme_override_constants/separation = 8
 
-[node name="YeastTitle" type="Label" parent="Panel/VBox/HBox/YeastPanel"]
-text = "— Yeast —"
-theme_override_font_sizes/font_size = 8
-horizontal_alignment = 1
+[node name="HopTitle" type="Label" parent="CardPanel/MarginContainer/VBox/HBox/HopPanel"]
+text = "HOPS"
+theme_override_font_sizes/font_size = 24
 
-[node name="VBox" type="VBoxContainer" parent="Panel/VBox/HBox/YeastPanel"]
-theme_override_constants/separation = 2
+[node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox/HopPanel"]
+theme_override_constants/separation = 8
 
-[node name="Summary" type="Label" parent="Panel/VBox"]
+[node name="YeastPanel" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="YeastTitle" type="Label" parent="CardPanel/MarginContainer/VBox/HBox/YeastPanel"]
+text = "YEAST"
+theme_override_font_sizes/font_size = 24
+
+[node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox/YeastPanel"]
+theme_override_constants/separation = 8
+
+[node name="SummaryPanel" type="PanelContainer" parent="CardPanel/MarginContainer/VBox"]
+
+[node name="Summary" type="Label" parent="CardPanel/MarginContainer/VBox/SummaryPanel"]
 text = "Malt: —  |  Hop: —  |  Yeast: —"
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
 
-[node name="BrewButton" type="Button" parent="Panel/VBox"]
+[node name="FooterRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox"]
+alignment = 2
+
+[node name="BrewButton" type="Button" parent="CardPanel/MarginContainer/VBox/FooterRow"]
 text = "Start Brewing →"
 disabled = true
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 24
+custom_minimum_size = Vector2(200, 44)
