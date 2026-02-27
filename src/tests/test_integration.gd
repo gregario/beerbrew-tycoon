@@ -183,3 +183,64 @@ func test_loss_triggers_via_rent_wipe():
 	GameState.advance_state()
 	assert_true(_lost, "game_lost should emit when rent wipes balance below 0")
 	assert_eq(GameState.current_state, GameState.State.GAME_OVER)
+
+# ---------------------------------------------------------------------------
+# Tests: execute_brew() integration — Task 5
+# ---------------------------------------------------------------------------
+
+func test_execute_brew_runs_full_cycle():
+	# execute_brew() must: deduct cost, calculate quality+revenue, record brew,
+	# populate last_brew_result, and advance state BREWING_PHASES → RESULTS.
+	# Turn counter increments when the results screen advances (separate step).
+	GameState.current_state = GameState.State.BREWING_PHASES
+	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var initial_balance := GameState.balance
+	var result := GameState.execute_brew(sliders)
+	assert_false(result.is_empty(), "execute_brew should return a non-empty result")
+	assert_true(result.has("final_score"), "result must contain final_score key")
+	assert_true(result.has("revenue"), "result must contain revenue key")
+	assert_eq(GameState.current_state, GameState.State.RESULTS,
+		"state must be RESULTS after execute_brew")
+	assert_false(GameState.last_brew_result.is_empty(),
+		"last_brew_result must be populated after execute_brew")
+	assert_eq(GameState.last_brew_result, result,
+		"last_brew_result must match the returned Dictionary")
+	assert_ne(GameState.balance, initial_balance,
+		"balance must have changed after execute_brew")
+	# Advance through results to verify the full turn lifecycle completes
+	GameState.advance_state()
+	assert_eq(GameState.turn_counter, 1, "turn_counter must increment after results advance")
+
+func test_execute_brew_fails_when_balance_insufficient():
+	# If balance < INGREDIENT_COST, execute_brew must return {} and touch nothing.
+	GameState.current_state = GameState.State.BREWING_PHASES
+	GameState.balance = GameState.INGREDIENT_COST - 1.0
+	var balance_before := GameState.balance
+	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var result := GameState.execute_brew(sliders)
+	assert_true(result.is_empty(), "execute_brew must return {} when balance is insufficient")
+	assert_almost_eq(GameState.balance, balance_before, 0.01,
+		"balance must be unchanged on failed execute_brew")
+	assert_eq(GameState.turn_counter, 0,
+		"turn_counter must not increment on failed execute_brew")
+	assert_true(GameState.last_brew_result.is_empty(),
+		"last_brew_result must remain empty on failed execute_brew")
+
+func test_execute_brew_win_condition():
+	# execute_brew advances to RESULTS; win check fires in _on_results_continue
+	# when the results screen advances. Minimum revenue: base_price=200, quality=0 → 100.
+	# 9999 - 50 + 100 = 10049 >= 10000 → win on results advance.
+	GameState.current_state = GameState.State.BREWING_PHASES
+	GameState.balance = GameState.WIN_TARGET - 1.0
+	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	GameState.execute_brew(sliders)
+	assert_eq(GameState.current_state, GameState.State.RESULTS,
+		"state must be RESULTS after execute_brew with winning balance")
+	assert_gte(GameState.balance, GameState.WIN_TARGET,
+		"balance must be >= WIN_TARGET after execute_brew")
+	# Advance through results — triggers _on_results_continue → win check → game_won
+	GameState.advance_state()
+	assert_true(_won, "game_won must emit after results advance when balance >= WIN_TARGET")
+	assert_eq(GameState.current_state, GameState.State.GAME_OVER,
+		"state must be GAME_OVER after winning")
+	assert_true(GameState.run_won, "run_won must be true after a win")
