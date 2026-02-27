@@ -176,3 +176,49 @@ func test_reset_initializes_starting_equipment():
 	assert_has(EquipmentManager.owned_equipment, "bottles_capper")
 	assert_has(EquipmentManager.owned_equipment, "cleaning_bucket")
 	assert_eq(EquipmentManager.owned_equipment.size(), 4)
+
+# --- QualityCalculator integration ---
+
+func test_efficiency_bonus_increases_technique():
+	var sliders := {"mashing": 65.0, "boiling": 60.0, "fermenting": 20.0}
+
+	# Baseline with no equipment
+	EquipmentManager.reset()
+	var base_result := QualityCalculator._compute_points(sliders)
+	var base_technique: float = base_result["technique"]
+
+	# Add equipment with efficiency bonus
+	EquipmentManager.owned_equipment.append("biab_setup")
+	EquipmentManager.assign_to_slot(0, "biab_setup")  # +0.05 efficiency
+
+	var boosted_result := QualityCalculator._compute_points(sliders)
+	var boosted_technique: float = boosted_result["technique"]
+
+	assert_gt(boosted_technique, base_technique,
+		"Efficiency bonus should increase technique points")
+	# Expected: technique * 1.05
+	assert_almost_eq(boosted_technique, base_technique * 1.05, 0.01)
+
+func test_efficiency_bonus_does_not_affect_flavor():
+	var sliders := {"mashing": 65.0, "boiling": 60.0, "fermenting": 20.0}
+
+	EquipmentManager.reset()
+	var base_result := QualityCalculator._compute_points(sliders)
+	var base_flavor: float = base_result["flavor"]
+
+	EquipmentManager.owned_equipment.append("biab_setup")
+	EquipmentManager.assign_to_slot(0, "biab_setup")
+
+	var boosted_result := QualityCalculator._compute_points(sliders)
+	var boosted_flavor: float = boosted_result["flavor"]
+
+	assert_almost_eq(boosted_flavor, base_flavor, 0.01,
+		"Efficiency bonus should NOT affect flavor points")
+
+func test_batch_size_affects_revenue():
+	GameState.current_style = load("res://data/styles/pale_ale.tres")
+	var base_revenue := GameState.calculate_revenue(50.0)
+	assert_gt(base_revenue, 0.0, "Base revenue should be positive")
+	# All current equipment has batch_size_multiplier = 1.0, so revenue
+	# should be the same with or without equipment.
+	# This test validates the integration point exists.

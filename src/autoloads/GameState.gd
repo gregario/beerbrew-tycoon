@@ -215,7 +215,10 @@ func calculate_revenue(quality_score: float) -> float:
 	var style_id: String = current_style.style_id
 	var demand_multiplier := MarketSystem.get_demand_weight(style_id)
 	var quality_mult := quality_to_multiplier(quality_score)
-	return current_style.base_price * quality_mult * demand_multiplier
+	var batch_mult := 1.0
+	if is_instance_valid(EquipmentManager):
+		batch_mult = EquipmentManager.active_bonuses.get("batch_size", 1.0)
+	return current_style.base_price * quality_mult * demand_multiplier * batch_mult
 
 # ---------------------------------------------------------------------------
 # Brew execution — canonical entry point for a complete brew turn

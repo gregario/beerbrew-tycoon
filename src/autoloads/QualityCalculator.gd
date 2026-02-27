@@ -125,6 +125,10 @@ func _compute_points(sliders: Dictionary) -> Dictionary:
 		var profile: Array = PHASE_PROFILES[phase_name]
 		flavor += value * profile[0]
 		technique += value * profile[1]
+	# Apply equipment efficiency bonus
+	if is_instance_valid(EquipmentManager):
+		var eff_bonus: float = EquipmentManager.active_bonuses.get("efficiency", 0.0)
+		technique *= (1.0 + eff_bonus)
 	return {"flavor": flavor, "technique": technique}
 
 ## Compare player's flavor ratio to style's ideal.
