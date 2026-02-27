@@ -7,31 +7,61 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_style_picker")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="DimOverlay" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+color = Color(0.059, 0.09, 0.141, 0.6)
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="CardPanel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -450.0
+offset_top = -275.0
+offset_right = 450.0
+offset_bottom = 275.0
+
+[node name="MarginContainer" type="MarginContainer" parent="CardPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 6.0
-offset_right = -8.0
-offset_bottom = -6.0
-theme_override_constants/separation = 4
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
 
-[node name="Title" type="Label" parent="Panel/VBox"]
-text = "Choose a Beer Style"
-theme_override_font_sizes/font_size = 10
+[node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
 
-[node name="BalanceLabel" type="Label" parent="Panel/VBox"]
+[node name="HeaderRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox"]
+
+[node name="Title" type="Label" parent="CardPanel/MarginContainer/VBox/HeaderRow"]
+text = "CHOOSE A BEER STYLE"
+theme_override_font_sizes/font_size = 32
+size_flags_horizontal = 3
+
+[node name="BalanceLabel" type="Label" parent="CardPanel/MarginContainer/VBox/HeaderRow"]
 text = "Balance: $500"
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
 
-[node name="StyleButtons" type="VBoxContainer" parent="Panel/VBox"]
-theme_override_constants/separation = 3
+[node name="HSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
 
-[node name="NextButton" type="Button" parent="Panel/VBox"]
+[node name="StyleButtons" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox"]
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="FooterRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox"]
+alignment = 2
+
+[node name="NextButton" type="Button" parent="CardPanel/MarginContainer/VBox/FooterRow"]
 text = "Design Recipe →"
 disabled = true
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 24
+custom_minimum_size = Vector2(200, 44)

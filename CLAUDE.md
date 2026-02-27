@@ -76,6 +76,8 @@ Before writing any code, read: `../../stacks/godot/STACK.md`
 3. All tests go in `src/tests/`. Run `make test` after every change.
 4. Work in small iterative commits.
 5. Always read the Godot stack profile before implementing.
+6. After changing design tokens or ThemeBuilder.gd, run `make theme` to regenerate theme.tres.
+7. UI assets (fonts, Kenney textures) must live in `src/assets/ui/` for Godot `res://` access.
 
 ## Reference Material
 

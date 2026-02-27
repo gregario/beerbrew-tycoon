@@ -7,46 +7,99 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_gameover")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="DimOverlay" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+color = Color(0.059, 0.09, 0.141, 0.6)
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="CardPanel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -450.0
+offset_top = -275.0
+offset_right = 450.0
+offset_bottom = 275.0
+
+[node name="MarginContainer" type="MarginContainer" parent="CardPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 6.0
-offset_right = -8.0
-offset_bottom = -6.0
-theme_override_constants/separation = 8
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
 
-[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+[node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
 text = "Game Over"
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 40
 horizontal_alignment = 1
 
-[node name="MessageLabel" type="Label" parent="Panel/VBox"]
+[node name="MessageLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
 text = ""
-theme_override_font_sizes/font_size = 8
 horizontal_alignment = 1
-autowrap_mode = 3
+autowrap_mode = 2
 
-[node name="HSeparator" type="HSeparator" parent="Panel/VBox"]
+[node name="HSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
 
-[node name="StatsLabel" type="Label" parent="Panel/VBox"]
-text = ""
-theme_override_font_sizes/font_size = 8
+[node name="StatsGrid" type="GridContainer" parent="CardPanel/MarginContainer/VBox"]
+columns = 2
+theme_override_constants/h_separation = 32
+theme_override_constants/v_separation = 8
 
-[node name="HSeparator2" type="HSeparator" parent="Panel/VBox"]
+[node name="TurnsKeyLabel" type="Label" parent="CardPanel/MarginContainer/VBox/StatsGrid"]
+text = "Turns Played"
+size_flags_horizontal = 3
 
-[node name="Buttons" type="HBoxContainer" parent="Panel/VBox"]
+[node name="TurnsValueLabel" type="Label" parent="CardPanel/MarginContainer/VBox/StatsGrid"]
+text = "—"
+horizontal_alignment = 2
+
+[node name="QualityKeyLabel" type="Label" parent="CardPanel/MarginContainer/VBox/StatsGrid"]
+text = "Best Quality"
+size_flags_horizontal = 3
+
+[node name="QualityValueLabel" type="Label" parent="CardPanel/MarginContainer/VBox/StatsGrid"]
+text = "—"
+horizontal_alignment = 2
+
+[node name="RevenueKeyLabel" type="Label" parent="CardPanel/MarginContainer/VBox/StatsGrid"]
+text = "Total Revenue"
+size_flags_horizontal = 3
+
+[node name="RevenueValueLabel" type="Label" parent="CardPanel/MarginContainer/VBox/StatsGrid"]
+text = "—"
+horizontal_alignment = 2
+
+[node name="BalanceKeyLabel" type="Label" parent="CardPanel/MarginContainer/VBox/StatsGrid"]
+text = "Final Balance"
+size_flags_horizontal = 3
+
+[node name="BalanceValueLabel" type="Label" parent="CardPanel/MarginContainer/VBox/StatsGrid"]
+text = "—"
+horizontal_alignment = 2
+
+[node name="HSeparator2" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
+
+[node name="Buttons" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox"]
 alignment = 1
-theme_override_constants/separation = 8
+theme_override_constants/separation = 24
 
-[node name="NewRunButton" type="Button" parent="Panel/VBox/Buttons"]
+[node name="NewRunButton" type="Button" parent="CardPanel/MarginContainer/VBox/Buttons"]
 text = "New Run"
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 24
+custom_minimum_size = Vector2(150, 44)
 
-[node name="QuitButton" type="Button" parent="Panel/VBox/Buttons"]
+[node name="QuitButton" type="Button" parent="CardPanel/MarginContainer/VBox/Buttons"]
 text = "Quit"
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 24
+custom_minimum_size = Vector2(150, 44)

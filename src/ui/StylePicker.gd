@@ -11,10 +11,10 @@ const STYLE_PATHS := [
 	"res://data/styles/stout.tres",
 ]
 
-@onready var style_buttons_container: VBoxContainer = $Panel/VBox/StyleButtons
-@onready var next_button: Button = $Panel/VBox/NextButton
-@onready var title_label: Label = $Panel/VBox/Title
-@onready var balance_label: Label = $Panel/VBox/BalanceLabel
+@onready var style_buttons_container: VBoxContainer = $CardPanel/MarginContainer/VBox/StyleButtons
+@onready var next_button: Button = $CardPanel/MarginContainer/VBox/FooterRow/NextButton
+@onready var title_label: Label = $CardPanel/MarginContainer/VBox/HeaderRow/Title
+@onready var balance_label: Label = $CardPanel/MarginContainer/VBox/HeaderRow/BalanceLabel
 
 var _styles: Array = []
 var _selected_style: Resource = null
@@ -47,6 +47,7 @@ func _build_ui() -> void:
 		var btn := Button.new()
 		btn.text = "%s  [%s]" % [style.style_name, demand_label]
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn.custom_minimum_size.y = 60
 		btn.pressed.connect(_on_style_button_pressed.bind(style, btn))
 		style_buttons_container.add_child(btn)
 		_style_buttons.append(btn)

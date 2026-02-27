@@ -7,54 +7,111 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_results")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="DimOverlay" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+color = Color(0.059, 0.09, 0.141, 0.6)
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="CardPanel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -450.0
+offset_top = -275.0
+offset_right = 450.0
+offset_bottom = 275.0
+
+[node name="MarginContainer" type="MarginContainer" parent="CardPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 6.0
-offset_right = -8.0
-offset_bottom = -6.0
-theme_override_constants/separation = 5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
 
-[node name="Title" type="Label" parent="Panel/VBox"]
-text = "Brew Complete!"
-theme_override_font_sizes/font_size = 10
+[node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
 
-[node name="StyleLabel" type="Label" parent="Panel/VBox"]
+[node name="Title" type="Label" parent="CardPanel/MarginContainer/VBox"]
+text = "BREW COMPLETE!"
+theme_override_font_sizes/font_size = 32
+
+[node name="HSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
+
+[node name="StyleLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
 text = "Style: —"
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 24
 
-[node name="RecipeLabel" type="Label" parent="Panel/VBox"]
-text = "Recipe: — / — / —"
-theme_override_font_sizes/font_size = 7
+[node name="RecipeLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
+text = "— · — · —"
 
-[node name="ScoreLabel" type="Label" parent="Panel/VBox"]
-text = "Quality: — / 100"
-theme_override_font_sizes/font_size = 12
+[node name="ScorePanel" type="PanelContainer" parent="CardPanel/MarginContainer/VBox"]
+size_flags_horizontal = 4
 
-[node name="BreakdownLabel" type="Label" parent="Panel/VBox"]
-text = "Ratio: —  |  Ingredients: —  |  Novelty: —  |  Effort: —"
-theme_override_font_sizes/font_size = 7
+[node name="ScoreVBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/ScorePanel"]
+theme_override_constants/separation = 4
 
-[node name="HSeparator" type="HSeparator" parent="Panel/VBox"]
+[node name="ScoreLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScorePanel/ScoreVBox"]
+text = "— / 100"
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
 
-[node name="RevenueLabel" type="Label" parent="Panel/VBox"]
+[node name="StarsRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox/ScorePanel/ScoreVBox"]
+alignment = 1
+theme_override_constants/separation = 4
+
+[node name="BreakdownGrid" type="GridContainer" parent="CardPanel/MarginContainer/VBox"]
+columns = 2
+theme_override_constants/h_separation = 32
+theme_override_constants/v_separation = 8
+
+[node name="RatioLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+text = "Ratio: —"
+size_flags_horizontal = 3
+
+[node name="IngredientsLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+text = "Ingredients: —"
+size_flags_horizontal = 3
+
+[node name="NoveltyLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+text = "Novelty: —"
+size_flags_horizontal = 3
+
+[node name="EffortLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+text = "Effort: —"
+size_flags_horizontal = 3
+
+[node name="HSeparator2" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
+
+[node name="MoneyRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox"]
+
+[node name="RevenueLabel" type="Label" parent="CardPanel/MarginContainer/VBox/MoneyRow"]
 text = "Revenue: +$—"
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.369, 0.91, 0.643, 1)
 
-[node name="BalanceLabel" type="Label" parent="Panel/VBox"]
+[node name="BalanceLabel" type="Label" parent="CardPanel/MarginContainer/VBox/MoneyRow"]
 text = "Balance: $—"
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 24
+size_flags_horizontal = 3
+horizontal_alignment = 2
 
-[node name="RentLabel" type="Label" parent="Panel/VBox"]
+[node name="RentLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
 text = ""
-theme_override_font_sizes/font_size = 8
+theme_override_colors/font_color = Color(1, 0.482, 0.482, 1)
 visible = false
 
-[node name="ContinueButton" type="Button" parent="Panel/VBox"]
+[node name="FooterRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox"]
+alignment = 2
+
+[node name="ContinueButton" type="Button" parent="CardPanel/MarginContainer/VBox/FooterRow"]
 text = "Continue →"
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 24
+custom_minimum_size = Vector2(200, 44)

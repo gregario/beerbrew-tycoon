@@ -22,11 +22,11 @@ const YEAST_PATHS := [
 	"res://data/ingredients/yeast/wheat_yeast.tres",
 ]
 
-@onready var malt_container: VBoxContainer = $Panel/VBox/HBox/MaltPanel/VBox
-@onready var hop_container: VBoxContainer = $Panel/VBox/HBox/HopPanel/VBox
-@onready var yeast_container: VBoxContainer = $Panel/VBox/HBox/YeastPanel/VBox
-@onready var summary_label: Label = $Panel/VBox/Summary
-@onready var brew_button: Button = $Panel/VBox/BrewButton
+@onready var malt_container: VBoxContainer = $CardPanel/MarginContainer/VBox/HBox/MaltPanel/VBox
+@onready var hop_container: VBoxContainer = $CardPanel/MarginContainer/VBox/HBox/HopPanel/VBox
+@onready var yeast_container: VBoxContainer = $CardPanel/MarginContainer/VBox/HBox/YeastPanel/VBox
+@onready var summary_label: Label = $CardPanel/MarginContainer/VBox/SummaryPanel/Summary
+@onready var brew_button: Button = $CardPanel/MarginContainer/VBox/FooterRow/BrewButton
 
 var _selected := {"malt": null, "hop": null, "yeast": null}
 var _ingredients := {"malt": [], "hop": [], "yeast": []}
@@ -62,6 +62,7 @@ func _build_category(container: VBoxContainer, slot: String, ingredients: Array)
 		var btn := Button.new()
 		btn.text = ing.ingredient_name
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn.custom_minimum_size.y = 44
 		btn.pressed.connect(_on_ingredient_pressed.bind(slot, ing, btn))
 		container.add_child(btn)
 

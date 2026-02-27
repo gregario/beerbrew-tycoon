@@ -15,4 +15,12 @@ test:
 		-gconfig=res://.gutconfig.json \
 		-gexit
 
-.PHONY: test
+# Generate the Godot Theme resource from design tokens + Kenney assets.
+# Run after changing ThemeBuilder.gd or design tokens.
+theme:
+	@echo "→ Importing resources..."
+	@cd $(SRC) && "$(GODOT)" --headless --import --quit --path . 2>/dev/null || true
+	@echo "→ Generating theme..."
+	@cd $(SRC) && "$(GODOT)" --headless --script res://assets/ui/ThemeBuilder.gd --path . 2>/dev/null
+
+.PHONY: test theme
