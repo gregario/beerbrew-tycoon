@@ -114,6 +114,7 @@ static func calc_pre_boil_gravity(mash_temp_c: float) -> Dictionary:
 		assessment = "high"
 	return {"og": snapped(og, 0.001), "assessment": assessment}
 
+
 ## Boil vigor assessment from boil duration.
 static func calc_boil_vigor(boil_min: float) -> Dictionary:
 	var vigor: String = "good"
@@ -127,7 +128,9 @@ static func calc_boil_vigor(boil_min: float) -> Dictionary:
 	var dms_note: String = "DMS driven off" if boil_min >= 60.0 else "DMS risk — consider longer boil"
 	return {"vigor": vigor, "assessment": assessment, "dms_note": dms_note}
 
+
 ## Final gravity estimate from mash temp and yeast attenuation.
+## yeast_attenuation: fraction in range 0.0-1.0 (e.g., 0.75 for 75%)
 static func calc_final_gravity(mash_temp_c: float, yeast_attenuation: float) -> Dictionary:
 	var og: float = 1.050 + (mash_temp_c - 65.0) * 0.002
 	var fg: float = og - (og - 1.0) * yeast_attenuation
