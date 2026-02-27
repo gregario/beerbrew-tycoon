@@ -1,14 +1,24 @@
 class_name Ingredient
 extends Resource
 
-## Defines a brewing ingredient with flavor/technique contributions and style compatibility.
+## Base ingredient class. Extended by Malt, Hop, Yeast, Adjunct.
 
-enum Category { MALT, HOP, YEAST }
+enum Category { MALT, HOP, YEAST, ADJUNCT }
 
 @export var ingredient_id: String = ""
 @export var ingredient_name: String = ""
 @export var description: String = ""
 @export var category: Category = Category.MALT
+@export var cost: int = 0
+@export var flavor_tags: Array[String] = []
+@export var flavor_profile: Dictionary = {
+	"bitterness": 0.0,
+	"sweetness": 0.0,
+	"roastiness": 0.0,
+	"fruitiness": 0.0,
+	"funkiness": 0.0,
+}
+@export var unlocked: bool = true
 
 ## Direct Flavor point contribution per 1% of slider effort in the relevant phase.
 ## Used to scale the ingredient's flavor output on top of phase contribution.
