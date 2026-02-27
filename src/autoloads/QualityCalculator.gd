@@ -4,7 +4,7 @@ extends Node
 ## All methods are stateless. Pass all inputs; receive score + breakdown.
 
 # Phase contribution profiles: [flavor_weight, technique_weight]
-# Slider value (0–100) is multiplied by these weights to get raw points.
+# Physical slider values are normalized to 0–100 before multiplying by weights.
 const PHASE_PROFILES := {
 	"mashing":    [0.3, 0.7],  # Technique-heavy: grain conversion, temperature
 	"boiling":    [0.5, 0.5],  # Balanced: hop additions, timing
@@ -104,13 +104,24 @@ func calculate_quality(
 # Private helpers
 # ---------------------------------------------------------------------------
 
+## Normalizes physical slider values to 0–100 for points calculation.
+## Mashing: 62–69°C, Boiling: 30–90 min, Fermenting: 15–25°C.
+## Values outside physical ranges are clamped to 0–100 after normalization.
+static func _normalize_sliders(sliders: Dictionary) -> Dictionary:
+	return {
+		"mashing": clampf((sliders.get("mashing", 65.0) - 62.0) / 7.0 * 100.0, 0.0, 100.0),
+		"boiling": clampf((sliders.get("boiling", 60.0) - 30.0) / 60.0 * 100.0, 0.0, 100.0),
+		"fermenting": clampf((sliders.get("fermenting", 20.0) - 15.0) / 10.0 * 100.0, 0.0, 100.0),
+	}
+
 ## Compute raw Flavor and Technique points from slider values.
-## sliders: {mashing: float, boiling: float, fermenting: float} each 0–100.
+## Sliders are in physical units; normalized to 0–100 internally.
 func _compute_points(sliders: Dictionary) -> Dictionary:
+	var normalized := _normalize_sliders(sliders)
 	var flavor := 0.0
 	var technique := 0.0
 	for phase_name in PHASE_PROFILES:
-		var value: float = sliders.get(phase_name, 50.0)
+		var value: float = normalized.get(phase_name, 50.0)
 		var profile: Array = PHASE_PROFILES[phase_name]
 		flavor += value * profile[0]
 		technique += value * profile[1]

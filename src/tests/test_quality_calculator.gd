@@ -55,11 +55,9 @@ func _make_neutral_recipe(style_id: String) -> Dictionary:
 	}
 
 func _ideal_sliders_for(style: BeerStyle) -> Dictionary:
-	# Approximation: solve for slider values that produce the style's ideal_flavor_ratio.
-	# At equal sliders (50/50/50) the ratio = 0.5.
-	# Lager needs ratio ~0.35 -> increase technique (mashing up, fermenting down).
-	# This helper just returns midpoint sliders and lets tests check the logic.
-	return {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	# Physical midpoint sliders that normalize to ~50/50/50 for balanced ratio.
+	# Mashing: 65.5°C (mid of 62-69), Boiling: 60min (mid of 30-90), Fermenting: 20°C (mid of 15-25).
+	return {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 
 # ---------------------------------------------------------------------------
 # Tests: ratio scoring
@@ -67,10 +65,10 @@ func _ideal_sliders_for(style: BeerStyle) -> Dictionary:
 
 func test_perfect_ratio_scores_high():
 	# Style with ideal_flavor_ratio = 0.5 (balanced).
-	# At 50/50/50 sliders, total flavor = 75, total technique = 75 -> ratio = 0.5. Perfect.
+	# Physical midpoint sliders normalize to 50/50/50 -> flavor=75, technique=75 -> ratio=0.5. Perfect.
 	var style := _make_style("balanced", 0.5)
 	var recipe := _make_neutral_recipe("balanced")
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	var result := QualityCalculator.calculate_quality(style, recipe, sliders, [])
 	assert_gte(result["ratio_score"], 90.0, "Perfect ratio should score >= 90")
 
@@ -78,21 +76,22 @@ func test_poor_ratio_scores_low():
 	# Style with ideal = 0.35 (technique-heavy), but player pushes all flavor (fermenting=100).
 	var style := _make_style("lager_test", 0.35)
 	var recipe := _make_neutral_recipe("lager_test")
-	# All flavor: mashing=0, boiling=0, fermenting=100 -> flavor=70, technique=30 -> ratio=0.7
+	# Use physical extremes: mashing min (62°C), boiling min (30min), fermenting max (25°C).
+	# After normalization: 0/0/100 -> flavor=70, technique=30 -> ratio=0.7
 	# Deviation from ideal = |0.7 - 0.35| = 0.35 -> exactly at RATIO_TOLERANCE -> score = 0
-	var sliders := {"mashing": 0.0, "boiling": 0.0, "fermenting": 100.0}
+	var sliders := {"mashing": 62.0, "boiling": 30.0, "fermenting": 25.0}
 	var result := QualityCalculator.calculate_quality(style, recipe, sliders, [])
 	assert_lte(result["ratio_score"], 10.0, "Poor ratio should score <= 10")
 
 func test_four_styles_have_different_optimal_positions():
-	# Each style's ideal ratio is distinct; confirm that scores at 50/50/50 differ.
+	# Each style's ideal ratio is distinct; confirm that scores at physical midpoints differ.
 	var styles := [
 		_make_style("lager", 0.35),
 		_make_style("pale_ale", 0.55),
 		_make_style("wheat_beer", 0.65),
 		_make_style("stout", 0.45),
 	]
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	var scores := []
 	for s in styles:
 		var result := QualityCalculator.calculate_quality(s, _make_neutral_recipe(s.style_id), sliders, [])
@@ -111,7 +110,7 @@ func test_high_compatibility_improves_score():
 	var preferred := {"good_malt": 0.9, "good_hop": 0.9, "good_yeast": 0.9,
 		"bad_malt": 0.1, "bad_hop": 0.1, "bad_yeast": 0.1}
 	var style := _make_style("test_style", 0.5, preferred)
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 
 	var good_recipe := {
 		"malts": [_make_malt("good_malt", _default_fp)],
@@ -139,14 +138,14 @@ func test_high_compatibility_improves_score():
 func test_first_brew_has_full_novelty():
 	var style := _make_style("lager", 0.35)
 	var recipe := _make_neutral_recipe("lager")
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	var result := QualityCalculator.calculate_quality(style, recipe, sliders, [])
 	assert_eq(result["novelty_modifier"], 1.0, "First brew of a recipe should have 1.0 novelty")
 
 func test_repeated_recipe_incurs_penalty():
 	var style := _make_style("lager", 0.35)
 	var recipe := _make_neutral_recipe("lager")
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	var history := [
 		{"style_id": "lager", "malt_ids": ["pale_malt"], "hop_ids": ["centennial"], "yeast_id": "ale_yeast", "adjunct_ids": []},
 		{"style_id": "lager", "malt_ids": ["pale_malt"], "hop_ids": ["centennial"], "yeast_id": "ale_yeast", "adjunct_ids": []},
@@ -159,7 +158,7 @@ func test_repeated_recipe_incurs_penalty():
 func test_novelty_modifier_is_floored():
 	var style := _make_style("lager", 0.35)
 	var recipe := _make_neutral_recipe("lager")
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	# 10 repeats -> would be 1.0 - 1.5 = -0.5, but floored at 0.4
 	var history := []
 	for i in range(10):
@@ -171,7 +170,7 @@ func test_novelty_modifier_is_floored():
 
 func test_different_ingredient_gets_no_penalty():
 	var style := _make_style("lager", 0.35)
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	# History has lager + pale_malt + cascade + ale_yeast
 	var history := [
 		{"style_id": "lager", "malt_ids": ["pale_malt"], "hop_ids": ["cascade"], "yeast_id": "ale_yeast", "adjunct_ids": []},
@@ -194,7 +193,7 @@ func test_different_ingredient_gets_no_penalty():
 func test_result_has_all_expected_keys():
 	var style := _make_style("test", 0.5)
 	var recipe := _make_neutral_recipe("test")
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	var result := QualityCalculator.calculate_quality(style, recipe, sliders, [])
 	assert_has(result, "final_score")
 	assert_has(result, "ratio_score")
@@ -208,7 +207,7 @@ func test_result_has_all_expected_keys():
 func test_final_score_within_valid_range():
 	var style := _make_style("test", 0.5)
 	var recipe := _make_neutral_recipe("test")
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	var result := QualityCalculator.calculate_quality(style, recipe, sliders, [])
 	assert_gte(result["final_score"], 0.0, "Score must be >= 0")
 	assert_lte(result["final_score"], 100.0, "Score must be <= 100")
@@ -234,7 +233,7 @@ func test_preferred_ingredient_scores_higher():
 		"yeast": _make_yeast_res("unknown_yeast", _default_fp),
 		"adjuncts": [],
 	}
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	var good_result := QualityCalculator.calculate_quality(style, good_recipe, sliders, [])
 	var bad_result := QualityCalculator.calculate_quality(style, bad_recipe, sliders, [])
 	assert_gt(good_result["ingredient_score"], bad_result["ingredient_score"],
@@ -257,7 +256,7 @@ func test_flavor_profile_match_scores_higher():
 		"yeast": _make_yeast_res("y2", mismatched_fp),
 		"adjuncts": [],
 	}
-	var sliders := {"mashing": 50.0, "boiling": 50.0, "fermenting": 50.0}
+	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	var good_result := QualityCalculator.calculate_quality(style, good_recipe, sliders, [])
 	var bad_result := QualityCalculator.calculate_quality(style, bad_recipe, sliders, [])
 	assert_gt(good_result["ingredient_score"], bad_result["ingredient_score"],
