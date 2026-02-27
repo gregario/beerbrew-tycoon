@@ -103,6 +103,8 @@ func test_roll_failures_returns_expected_keys() -> void:
 	assert_has(result, "infected", "Result should have infected flag")
 	assert_has(result, "off_flavor_tags", "Result should have off_flavor_tags")
 	assert_has(result, "failure_messages", "Result should have failure_messages")
+	assert_has(result, "infection_message", "Result should have infection_message")
+	assert_has(result, "off_flavor_message", "Result should have off_flavor_message")
 
 func test_roll_failures_perfect_stats_no_failures() -> void:
 	var infected_count: int = 0
@@ -129,3 +131,13 @@ func test_roll_failures_infection_reduces_score() -> void:
 			found_infection = true
 			break
 	assert_true(found_infection, "Should have found at least one infection in 200 rolls at sanitation=0")
+
+func test_roll_failures_off_flavor_reduces_score() -> void:
+	var found_off_flavor: bool = false
+	for i in range(200):
+		var result: Dictionary = FailureSystem.roll_failures(80.0, 100, 0)
+		if result["off_flavor_tags"].size() > 0:
+			assert_lt(result["final_score"], 80.0, "Off-flavor brew should have lower score")
+			found_off_flavor = true
+			break
+	assert_true(found_off_flavor, "Should have found at least one off-flavor in 200 rolls at temp_control=0")
