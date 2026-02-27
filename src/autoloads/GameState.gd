@@ -234,6 +234,17 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 		recipe_history
 	)
 
+	# Failure mode rolls (Stage 1C)
+	var failure_result: Dictionary = FailureSystem.roll_failures(
+		result["final_score"], sanitation_quality, temp_control_quality
+	)
+	result["final_score"] = failure_result["final_score"]
+	result["infected"] = failure_result["infected"]
+	result["infection_message"] = failure_result["infection_message"]
+	result["off_flavor_tags"] = failure_result["off_flavor_tags"]
+	result["off_flavor_message"] = failure_result["off_flavor_message"]
+	result["failure_messages"] = failure_result["failure_messages"]
+
 	var revenue := calculate_revenue(result["final_score"])
 	add_revenue(revenue)
 	result["revenue"] = revenue

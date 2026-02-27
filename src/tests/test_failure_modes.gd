@@ -141,3 +141,72 @@ func test_roll_failures_off_flavor_reduces_score() -> void:
 			found_off_flavor = true
 			break
 	assert_true(found_off_flavor, "Should have found at least one off-flavor in 200 rolls at temp_control=0")
+
+# ---------------------------------------------------------------------------
+# Integration: execute_brew includes failure rolls
+# ---------------------------------------------------------------------------
+
+func _make_test_style() -> BeerStyle:
+	var s := BeerStyle.new()
+	s.style_id = "test_ipa"
+	s.style_name = "IPA"
+	s.ideal_flavor_ratio = 0.5
+	s.base_price = 200.0
+	s.preferred_ingredients = {}
+	s.ideal_flavor_profile = {"bitterness": 0.8, "sweetness": 0.2, "roastiness": 0.0, "fruitiness": 0.3, "funkiness": 0.0}
+	s.ideal_mash_temp_min = 64.0
+	s.ideal_mash_temp_max = 66.0
+	s.ideal_boil_min = 50.0
+	s.ideal_boil_max = 70.0
+	return s
+
+func _make_test_malt() -> Malt:
+	var m := Malt.new()
+	m.ingredient_id = "pale_malt"
+	m.ingredient_name = "Pale Malt"
+	m.cost = 15
+	m.flavor_profile = {"bitterness": 0.1, "sweetness": 0.3, "roastiness": 0.1, "fruitiness": 0.0, "funkiness": 0.0}
+	return m
+
+func _make_test_hop() -> Hop:
+	var h := Hop.new()
+	h.ingredient_id = "centennial"
+	h.ingredient_name = "Centennial"
+	h.cost = 20
+	h.alpha_acid_pct = 10.0
+	h.flavor_profile = {"bitterness": 0.8, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.3, "funkiness": 0.0}
+	return h
+
+func _make_test_yeast() -> Yeast:
+	var y := Yeast.new()
+	y.ingredient_id = "ale_yeast"
+	y.ingredient_name = "Ale Yeast"
+	y.cost = 15
+	y.ideal_temp_min_c = 18.0
+	y.ideal_temp_max_c = 22.0
+	y.attenuation_pct = 75.0
+	y.flavor_profile = {"bitterness": 0.0, "sweetness": 0.1, "roastiness": 0.0, "fruitiness": 0.2, "funkiness": 0.0}
+	return y
+
+func test_execute_brew_result_has_failure_keys() -> void:
+	GameState.reset()
+	GameState.balance = 5000.0
+	GameState.current_style = _make_test_style()
+	GameState.current_recipe = {"malts": [_make_test_malt()], "hops": [_make_test_hop()], "yeast": _make_test_yeast(), "adjuncts": []}
+	var sliders: Dictionary = {"mashing": 65.0, "boiling": 60.0, "fermenting": 20.0}
+	var result: Dictionary = GameState.execute_brew(sliders)
+	assert_has(result, "infected", "Brew result should have infected flag")
+	assert_has(result, "off_flavor_tags", "Brew result should have off_flavor_tags")
+	assert_has(result, "failure_messages", "Brew result should have failure_messages")
+
+func test_execute_brew_perfect_stats_preserves_score() -> void:
+	GameState.reset()
+	GameState.balance = 5000.0
+	GameState.sanitation_quality = 100
+	GameState.temp_control_quality = 100
+	GameState.current_style = _make_test_style()
+	GameState.current_recipe = {"malts": [_make_test_malt()], "hops": [_make_test_hop()], "yeast": _make_test_yeast(), "adjuncts": []}
+	var sliders: Dictionary = {"mashing": 65.0, "boiling": 60.0, "fermenting": 20.0}
+	var result: Dictionary = GameState.execute_brew(sliders)
+	assert_false(result["infected"], "Perfect sanitation should not cause infection")
+	assert_eq(result["off_flavor_tags"].size(), 0, "Perfect temp control should produce no off-flavors")
