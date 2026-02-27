@@ -12,7 +12,29 @@
   "typography": {
     "ui_font": "res://assets/ui/fonts/Inter-Regular.ttf",
     "display_font": "res://assets/ui/fonts/Display-Bold.ttf",
-    "sizes": { "xs": 12, "sm": 14, "md": 16, "lg": 20, "xl": 28 }
+    "sizes": { "xs": 16, "sm": 20, "md": 24, "lg": 32, "xl": 40 },
+    "hierarchy": {
+      "page_title": { "size": "lg", "font": "display_font" },
+      "section_header": { "size": "md", "font": "ui_font" },
+      "body": { "size": "sm", "font": "ui_font" },
+      "caption": { "size": "xs", "font": "ui_font" },
+      "hero": { "size": "xl", "font": "display_font" }
+    }
   },
-  "spacing": { "xs": 4, "sm": 8, "md": 16, "lg": 24, "xl": 40 }
+  "spacing": { "xs": 8, "sm": 16, "md": 24, "lg": 32, "xl": 48 },
+  "card": {
+    "width": 900,
+    "height": 550,
+    "padding": 32,
+    "corner_radius": 4,
+    "border_width": 2,
+    "background_opacity": 0.95,
+    "dim_overlay_opacity": 0.6
+  },
+  "button_states": {
+    "normal": "button_rectangle_depth_line.png",
+    "hover": "button_rectangle_gloss.png",
+    "pressed": "button_rectangle_flat.png",
+    "disabled": "button_rectangle_border.png"
+  }
 }
