@@ -52,41 +52,48 @@ func _on_state_changed(new_state: GameState.State) -> void:
 		GameState.State.MARKET_CHECK:
 			# Auto-advance: market check is handled inside StylePicker refresh
 			style_picker.refresh()
-			style_picker.visible = true
+			_show_overlay(style_picker)
 			GameState.advance_state()  # MARKET_CHECK → STYLE_SELECT
 			return
 
 		GameState.State.STYLE_SELECT:
 			style_picker.refresh()
-			style_picker.visible = true
+			_show_overlay(style_picker)
 
 		GameState.State.RECIPE_DESIGN:
 			recipe_designer.refresh()
-			recipe_designer.visible = true
+			_show_overlay(recipe_designer)
 
 		GameState.State.BREWING_PHASES:
 			brewing_phases.refresh()
-			brewing_phases.visible = true
+			_show_overlay(brewing_phases)
 			brewery_scene.set_brewing(true)
 			_play_sfx(sfx_brew)
 
 		GameState.State.RESULTS:
 			results_overlay.populate()
-			results_overlay.visible = true
+			_show_overlay(results_overlay)
 			_play_sfx(sfx_results)
 
 		GameState.State.GAME_OVER:
 			game_over_screen.populate()
-			game_over_screen.visible = true
+			_show_overlay(game_over_screen)
 			if GameState.run_won:
 				_play_sfx(sfx_win)
 			else:
 				_play_sfx(sfx_lose)
 
+func _show_overlay(overlay: Control) -> void:
+	overlay.modulate.a = 0.0
+	overlay.visible = true
+	var tween := create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.2).set_ease(Tween.EASE_OUT)
+
 func _hide_all_overlays() -> void:
 	for overlay in _all_overlays:
 		if overlay:
 			overlay.visible = false
+			overlay.modulate.a = 0.0
 
 # ---------------------------------------------------------------------------
 # Audio helpers
