@@ -46,3 +46,35 @@ func test_malt_inherits_flavor_profile():
 	var m := Malt.new()
 	m.flavor_profile = {"bitterness": 0.0, "sweetness": 0.5, "roastiness": 0.0, "fruitiness": 0.0, "funkiness": 0.0}
 	assert_eq(m.flavor_profile["sweetness"], 0.5)
+
+func test_hop_has_typed_properties():
+	var h := Hop.new()
+	h.alpha_acid_pct = 12.0
+	h.aroma_intensity = 0.95
+	h.variety_family = "american"
+	assert_eq(h.alpha_acid_pct, 12.0)
+	assert_eq(h.aroma_intensity, 0.95)
+	assert_eq(h.variety_family, "american")
+	assert_true(h is Ingredient)
+
+func test_yeast_has_typed_properties():
+	var y := Yeast.new()
+	y.attenuation_pct = 0.77
+	y.ideal_temp_min_c = 15.0
+	y.ideal_temp_max_c = 24.0
+	y.flocculation = "medium"
+	assert_eq(y.attenuation_pct, 0.77)
+	assert_eq(y.ideal_temp_min_c, 15.0)
+	assert_eq(y.ideal_temp_max_c, 24.0)
+	assert_eq(y.flocculation, "medium")
+	assert_true(y is Ingredient)
+
+func test_adjunct_has_typed_properties():
+	var a := Adjunct.new()
+	a.fermentable = false
+	a.adjunct_type = "sugar"
+	a.effect_description = "Adds body without ABV"
+	assert_false(a.fermentable)
+	assert_eq(a.adjunct_type, "sugar")
+	assert_eq(a.effect_description, "Adds body without ABV")
+	assert_true(a is Ingredient)
