@@ -151,3 +151,88 @@ func test_boil_score_outside_range():
 	style.ideal_boil_max = 90.0
 	var score: float = BrewingScience.calc_boil_score(30.0, style)
 	assert_lt(score, 0.6, "Duration far outside ideal should score low")
+
+# ---------------------------------------------------------------------------
+# Integration: full brew flow with brewing science
+# ---------------------------------------------------------------------------
+
+func _make_full_style() -> BeerStyle:
+	var s := BeerStyle.new()
+	s.style_id = "test_ipa"
+	s.style_name = "IPA"
+	s.ideal_flavor_ratio = 0.55
+	s.base_price = 200.0
+	s.preferred_ingredients = {"pale_malt": 0.9, "cascade": 0.95, "us05_clean_ale": 0.9}
+	s.ideal_flavor_profile = {"bitterness": 0.6, "sweetness": 0.2, "roastiness": 0.1, "fruitiness": 0.5, "funkiness": 0.0}
+	s.ideal_mash_temp_min = 63.0
+	s.ideal_mash_temp_max = 66.0
+	s.ideal_boil_min = 60.0
+	s.ideal_boil_max = 90.0
+	return s
+
+func _make_full_recipe() -> Dictionary:
+	var malt := Malt.new()
+	malt.ingredient_id = "pale_malt"
+	malt.ingredient_name = "Pale Malt"
+	malt.category = Ingredient.Category.MALT
+	malt.cost = 20
+	malt.flavor_profile = {"bitterness": 0.1, "sweetness": 0.2, "roastiness": 0.1, "fruitiness": 0.1, "funkiness": 0.0}
+	malt.is_base_malt = true
+
+	var hop := Hop.new()
+	hop.ingredient_id = "cascade"
+	hop.ingredient_name = "Cascade"
+	hop.category = Ingredient.Category.HOP
+	hop.cost = 25
+	hop.alpha_acid_pct = 6.0
+	hop.aroma_intensity = 0.8
+	hop.variety_family = "american"
+	hop.flavor_profile = {"bitterness": 0.4, "sweetness": 0.0, "roastiness": 0.0, "fruitiness": 0.6, "funkiness": 0.0}
+
+	var yeast := Yeast.new()
+	yeast.ingredient_id = "us05_clean_ale"
+	yeast.ingredient_name = "US-05"
+	yeast.category = Ingredient.Category.YEAST
+	yeast.cost = 15
+	yeast.ideal_temp_min_c = 15.0
+	yeast.ideal_temp_max_c = 24.0
+	yeast.flavor_profile = {"bitterness": 0.0, "sweetness": 0.1, "roastiness": 0.0, "fruitiness": 0.05, "funkiness": 0.0}
+
+	return {"malts": [malt], "hops": [hop], "yeast": yeast, "adjuncts": []}
+
+func test_brew_attributes_detected_for_ipa():
+	var yeast := Yeast.new()
+	yeast.ideal_temp_min_c = 15.0
+	yeast.ideal_temp_max_c = 24.0
+	var hop := Hop.new()
+	hop.variety_family = "american"
+	var attrs: Array[String] = BrewingScience.detect_brew_attributes(63.0, 40.0, 20.0, yeast, [hop])
+	assert_has(attrs, "dry_body", "63C should produce dry body")
+	assert_has(attrs, "citrus_aroma", "Short boil + american hop = citrus aroma")
+	assert_has(attrs, "clean_ferment", "20C in range 15-24 = clean")
+
+func test_quality_includes_science_and_attributes():
+	var style := _make_full_style()
+	var recipe := _make_full_recipe()
+	var sliders := {"mashing": 65.0, "boiling": 70.0, "fermenting": 20.0}
+	var result: Dictionary = QualityCalculator.calculate_quality(style, recipe, sliders, [])
+	assert_has(result, "science_score", "Result should include science score")
+	assert_has(result, "brew_attributes", "Result should include brew attributes")
+	assert_gt(result["science_score"], 0.0, "Science score should be positive")
+	assert_gt(result["brew_attributes"].size(), 0, "Should detect some attributes")
+
+func test_full_brew_flow_produces_tasting_notes():
+	GameState.reset()
+	GameState.general_taste = 3
+	var style := _make_full_style()
+	var recipe := _make_full_recipe()
+	var sliders := {"mashing": 65.0, "boiling": 70.0, "fermenting": 20.0}
+	var result: Dictionary = QualityCalculator.calculate_quality(style, recipe, sliders, [])
+	var brew_attrs: Array[String] = []
+	var raw_attrs: Array = result.get("brew_attributes", [])
+	for attr in raw_attrs:
+		brew_attrs.append(str(attr))
+	var notes: String = TasteSystem.generate_tasting_notes(
+		brew_attrs, "IPA", sliders
+	)
+	assert_true(notes.length() > 0, "Should generate tasting notes")
