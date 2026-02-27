@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "extract_kit"
+equipment_name = "Extract Kit"
+description = "Basic stovetop setup for extract brewing. Simple but limited."
+tier = 1
+category = 0
+cost = 0
+sanitation_bonus = 0
+temp_control_bonus = 0
+efficiency_bonus = 0.0
+batch_size_multiplier = 1.0
+upgrades_to = "biab_setup"
+upgrade_cost = 90

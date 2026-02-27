@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "ss_conical"
+equipment_name = "SS Conical Fermenter"
+description = "Stainless steel conical with dump valve for easy yeast harvesting and minimal oxygen exposure."
+tier = 4
+category = 1
+cost = 900
+sanitation_bonus = 15
+temp_control_bonus = 10
+efficiency_bonus = 0.1
+batch_size_multiplier = 1.0
+upgrades_to = ""
+upgrade_cost = 0

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "cip_pump"
+equipment_name = "CIP Pump"
+description = "Clean-in-place recirculating pump that automates sanitization of kettles, fermenters, and lines."
+tier = 3
+category = 3
+cost = 300
+sanitation_bonus = 20
+temp_control_bonus = 0
+efficiency_bonus = 0.05
+batch_size_multiplier = 1.0
+upgrades_to = ""
+upgrade_cost = 0

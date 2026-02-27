@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "glass_carboy"
+equipment_name = "Glass Carboy"
+description = "Non-porous glass vessel that resists scratches and allows visual monitoring of fermentation."
+tier = 2
+category = 1
+cost = 100
+sanitation_bonus = 5
+temp_control_bonus = 5
+efficiency_bonus = 0.05
+batch_size_multiplier = 1.0
+upgrades_to = "temp_chamber"
+upgrade_cost = 240

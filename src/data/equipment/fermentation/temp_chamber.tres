@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "temp_chamber"
+equipment_name = "Temperature Chamber"
+description = "Converted chest freezer with temperature controller for precise fermentation temps."
+tier = 3
+category = 1
+cost = 400
+sanitation_bonus = 5
+temp_control_bonus = 15
+efficiency_bonus = 0.1
+batch_size_multiplier = 1.0
+upgrades_to = "ss_conical"
+upgrade_cost = 540

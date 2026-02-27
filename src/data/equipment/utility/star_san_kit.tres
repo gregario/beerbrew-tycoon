@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "star_san_kit"
+equipment_name = "Star San Kit"
+description = "No-rinse acid sanitizer with spray bottle for fast, reliable contact sanitization."
+tier = 2
+category = 3
+cost = 60
+sanitation_bonus = 10
+temp_control_bonus = 0
+efficiency_bonus = 0.05
+batch_size_multiplier = 1.0
+upgrades_to = "cip_pump"
+upgrade_cost = 180

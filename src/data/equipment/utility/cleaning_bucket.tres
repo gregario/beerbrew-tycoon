@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "cleaning_bucket"
+equipment_name = "Cleaning Bucket"
+description = "Dedicated sanitizing bucket with PBW and a bottle brush for basic equipment cleaning."
+tier = 1
+category = 3
+cost = 0
+sanitation_bonus = 5
+temp_control_bonus = 0
+efficiency_bonus = 0.0
+batch_size_multiplier = 1.0
+upgrades_to = "star_san_kit"
+upgrade_cost = 36

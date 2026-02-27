@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "biab_setup"
+equipment_name = "BIAB Setup"
+description = "Brew-in-a-bag system for all-grain brewing in a single vessel."
+tier = 2
+category = 0
+cost = 150
+sanitation_bonus = 5
+temp_control_bonus = 5
+efficiency_bonus = 0.05
+batch_size_multiplier = 1.0
+upgrades_to = "mash_tun"
+upgrade_cost = 300

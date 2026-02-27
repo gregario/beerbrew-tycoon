@@ -47,3 +47,60 @@ func test_equipment_upgrade_chain():
 	var base := _make_equipment({"equipment_id": "base", "upgrades_to": "upgraded", "upgrade_cost": 80})
 	assert_eq(base.upgrades_to, "upgraded")
 	assert_eq(base.upgrade_cost, 80)
+
+# --- Catalog tests (Task 2) ---
+
+const ALL_EQUIPMENT_PATHS := [
+	"res://data/equipment/brewing/extract_kit.tres",
+	"res://data/equipment/brewing/biab_setup.tres",
+	"res://data/equipment/brewing/mash_tun.tres",
+	"res://data/equipment/brewing/three_vessel.tres",
+	"res://data/equipment/fermentation/bucket_fermenter.tres",
+	"res://data/equipment/fermentation/glass_carboy.tres",
+	"res://data/equipment/fermentation/temp_chamber.tres",
+	"res://data/equipment/fermentation/ss_conical.tres",
+	"res://data/equipment/packaging/bottles_capper.tres",
+	"res://data/equipment/packaging/bench_capper.tres",
+	"res://data/equipment/packaging/kegging_kit.tres",
+	"res://data/equipment/packaging/counter_pressure.tres",
+	"res://data/equipment/utility/cleaning_bucket.tres",
+	"res://data/equipment/utility/star_san_kit.tres",
+	"res://data/equipment/utility/cip_pump.tres",
+]
+
+func test_all_equipment_loads():
+	for path in ALL_EQUIPMENT_PATHS:
+		var equip = load(path)
+		assert_not_null(equip, "Failed to load: %s" % path)
+		assert_true(equip is Equipment, "Not Equipment: %s" % path)
+		assert_ne(equip.equipment_id, "", "Missing equipment_id: %s" % path)
+		assert_ne(equip.equipment_name, "", "Missing equipment_name: %s" % path)
+		assert_gte(equip.tier, 1, "Invalid tier: %s" % path)
+		assert_lte(equip.tier, 4, "Tier > 4 in Stage 2A: %s" % path)
+
+func test_equipment_count():
+	var count := 0
+	for path in ALL_EQUIPMENT_PATHS:
+		var equip = load(path)
+		if equip:
+			count += 1
+	assert_eq(count, 15)
+
+func test_upgrade_chains_resolve():
+	var catalog := {}
+	for path in ALL_EQUIPMENT_PATHS:
+		var equip = load(path) as Equipment
+		catalog[equip.equipment_id] = equip
+	for id in catalog:
+		var equip: Equipment = catalog[id]
+		if equip.upgrades_to != "":
+			assert_has(catalog, equip.upgrades_to,
+				"%s upgrades_to '%s' which doesn't exist" % [id, equip.upgrades_to])
+			assert_gt(equip.upgrade_cost, 0,
+				"%s has upgrades_to but zero upgrade_cost" % id)
+
+func test_tier1_items_are_free():
+	for path in ALL_EQUIPMENT_PATHS:
+		var equip = load(path) as Equipment
+		if equip.tier == 1:
+			assert_eq(equip.cost, 0, "Tier 1 item %s should be free" % equip.equipment_id)

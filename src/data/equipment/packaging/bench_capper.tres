@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "bench_capper"
+equipment_name = "Bench Capper"
+description = "Lever-action bench capper with consistent crimps and less wrist fatigue on bottling day."
+tier = 2
+category = 2
+cost = 80
+sanitation_bonus = 5
+temp_control_bonus = 0
+efficiency_bonus = 0.05
+batch_size_multiplier = 1.0
+upgrades_to = "kegging_kit"
+upgrade_cost = 210
