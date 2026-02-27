@@ -6,17 +6,17 @@ extends Control
 const STAR_FILLED := preload("res://assets/ui/kenney/Green/Default/star.png")
 const STAR_EMPTY := preload("res://assets/ui/kenney/Green/Default/star_outline_depth.png")
 
-@onready var style_label: Label = $CardPanel/MarginContainer/VBox/StyleLabel
-@onready var recipe_label: Label = $CardPanel/MarginContainer/VBox/RecipeLabel
-@onready var score_label: Label = $CardPanel/MarginContainer/VBox/ScorePanel/ScoreVBox/ScoreLabel
-@onready var stars_row: HBoxContainer = $CardPanel/MarginContainer/VBox/ScorePanel/ScoreVBox/StarsRow
-@onready var ratio_label: Label = $CardPanel/MarginContainer/VBox/BreakdownGrid/RatioLabel
-@onready var ingredients_label: Label = $CardPanel/MarginContainer/VBox/BreakdownGrid/IngredientsLabel
-@onready var novelty_label: Label = $CardPanel/MarginContainer/VBox/BreakdownGrid/NoveltyLabel
-@onready var effort_label: Label = $CardPanel/MarginContainer/VBox/BreakdownGrid/EffortLabel
-@onready var science_label: Label = $CardPanel/MarginContainer/VBox/BreakdownGrid/ScienceLabel
-@onready var tasting_notes: RichTextLabel = $CardPanel/MarginContainer/VBox/TastingNotes
-@onready var palate_label: Label = $CardPanel/MarginContainer/VBox/PalateLabel
+@onready var style_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/StyleLabel
+@onready var recipe_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/RecipeLabel
+@onready var score_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/ScorePanel/ScoreVBox/ScoreLabel
+@onready var stars_row: HBoxContainer = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/ScorePanel/ScoreVBox/StarsRow
+@onready var ratio_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/RatioLabel
+@onready var ingredients_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/IngredientsLabel
+@onready var novelty_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/NoveltyLabel
+@onready var effort_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/EffortLabel
+@onready var science_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid/ScienceLabel
+@onready var tasting_notes: RichTextLabel = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/TastingNotes
+@onready var palate_label: Label = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/PalateLabel
 @onready var revenue_label: Label = $CardPanel/MarginContainer/VBox/MoneyRow/RevenueLabel
 @onready var balance_label: Label = $CardPanel/MarginContainer/VBox/MoneyRow/BalanceLabel
 @onready var rent_label: Label = $CardPanel/MarginContainer/VBox/RentLabel
@@ -114,10 +114,10 @@ func _create_failure_container() -> void:
 	failure_container = VBoxContainer.new()
 	failure_container.name = "FailureContainer"
 	failure_container.add_theme_constant_override("separation", 8)
-	var vbox: VBoxContainer = $CardPanel/MarginContainer/VBox
+	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox
 	var score_panel_idx: int = score_label.get_parent().get_parent().get_index()
-	vbox.add_child(failure_container)
-	vbox.move_child(failure_container, score_panel_idx + 1)
+	scroll_vbox.add_child(failure_container)
+	scroll_vbox.move_child(failure_container, score_panel_idx + 1)
 
 
 func _add_failure_panel(title_text: String, description: String, tip: String) -> void:

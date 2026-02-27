@@ -37,7 +37,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="CardPanel/MarginContainer/VBox"]
 text = "BREW COMPLETE!"
@@ -45,65 +45,73 @@ theme_override_font_sizes/font_size = 32
 
 [node name="HSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
 
-[node name="StyleLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
+[node name="ScrollContainer" type="ScrollContainer" parent="CardPanel/MarginContainer/VBox"]
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ScrollVBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/ScrollContainer"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="StyleLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox"]
 text = "Style: —"
 theme_override_font_sizes/font_size = 24
 
-[node name="RecipeLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
+[node name="RecipeLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox"]
 text = "— · — · —"
 
-[node name="ScorePanel" type="PanelContainer" parent="CardPanel/MarginContainer/VBox"]
+[node name="ScorePanel" type="PanelContainer" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox"]
 size_flags_horizontal = 4
 
-[node name="ScoreVBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/ScorePanel"]
+[node name="ScoreVBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/ScorePanel"]
 theme_override_constants/separation = 4
 
-[node name="ScoreLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScorePanel/ScoreVBox"]
+[node name="ScoreLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/ScorePanel/ScoreVBox"]
 text = "— / 100"
 theme_override_font_sizes/font_size = 40
 horizontal_alignment = 1
 
-[node name="StarsRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox/ScorePanel/ScoreVBox"]
+[node name="StarsRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/ScorePanel/ScoreVBox"]
 alignment = 1
 theme_override_constants/separation = 4
 
-[node name="BreakdownGrid" type="GridContainer" parent="CardPanel/MarginContainer/VBox"]
+[node name="BreakdownGrid" type="GridContainer" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox"]
 columns = 2
 theme_override_constants/h_separation = 32
 theme_override_constants/v_separation = 8
 
-[node name="RatioLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+[node name="RatioLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid"]
 text = "Ratio: —"
 size_flags_horizontal = 3
 
-[node name="IngredientsLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+[node name="IngredientsLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid"]
 text = "Ingredients: —"
 size_flags_horizontal = 3
 
-[node name="NoveltyLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+[node name="NoveltyLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid"]
 text = "Novelty: —"
 size_flags_horizontal = 3
 
-[node name="EffortLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+[node name="EffortLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid"]
 text = "Effort: —"
 size_flags_horizontal = 3
 
-[node name="ScienceLabel" type="Label" parent="CardPanel/MarginContainer/VBox/BreakdownGrid"]
+[node name="ScienceLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox/BreakdownGrid"]
 text = "Science: —"
 size_flags_horizontal = 3
 
-[node name="TastingSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
+[node name="TastingSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox"]
 
-[node name="TastingHeader" type="Label" parent="CardPanel/MarginContainer/VBox"]
+[node name="TastingHeader" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox"]
 text = "TASTING NOTES"
 theme_override_font_sizes/font_size = 20
 
-[node name="TastingNotes" type="RichTextLabel" parent="CardPanel/MarginContainer/VBox"]
+[node name="TastingNotes" type="RichTextLabel" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox"]
 bbcode_enabled = true
 fit_content = true
 custom_minimum_size = Vector2(0, 40)
 
-[node name="PalateLabel" type="Label" parent="CardPanel/MarginContainer/VBox"]
+[node name="PalateLabel" type="Label" parent="CardPanel/MarginContainer/VBox/ScrollContainer/ScrollVBox"]
 text = "Your palate: Novice (Lv 0)"
 theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.541, 0.608, 0.694, 1)
