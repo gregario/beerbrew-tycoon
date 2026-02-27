@@ -17,10 +17,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -450.0
-offset_top = -275.0
-offset_right = 450.0
-offset_bottom = 275.0
+offset_left = -550.0
+offset_top = -325.0
+offset_right = 550.0
+offset_bottom = 325.0
 
 [node name="MarginContainer" type="MarginContainer" parent="CardPanel"]
 anchor_right = 1.0
@@ -54,7 +54,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="MaltTitle" type="Label" parent="CardPanel/MarginContainer/VBox/HBox/MaltPanel"]
-text = "MALT"
+text = "MALTS (0/3)"
 theme_override_font_sizes/font_size = 24
 
 [node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox/MaltPanel"]
@@ -65,7 +65,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="HopTitle" type="Label" parent="CardPanel/MarginContainer/VBox/HBox/HopPanel"]
-text = "HOPS"
+text = "HOPS (0/2)"
 theme_override_font_sizes/font_size = 24
 
 [node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox/HopPanel"]
@@ -82,11 +82,69 @@ theme_override_font_sizes/font_size = 24
 [node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox/YeastPanel"]
 theme_override_constants/separation = 8
 
+[node name="AdjunctPanel" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="AdjunctTitle" type="Label" parent="CardPanel/MarginContainer/VBox/HBox/AdjunctPanel"]
+text = "ADJUNCTS (0/2)"
+theme_override_font_sizes/font_size = 24
+
+[node name="VBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/HBox/AdjunctPanel"]
+theme_override_constants/separation = 8
+
 [node name="SummaryPanel" type="PanelContainer" parent="CardPanel/MarginContainer/VBox"]
 
-[node name="Summary" type="Label" parent="CardPanel/MarginContainer/VBox/SummaryPanel"]
-text = "Malt: —  |  Hop: —  |  Yeast: —"
+[node name="SummaryVBox" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/SummaryPanel"]
+theme_override_constants/separation = 8
+
+[node name="FlavorBars" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox/SummaryPanel/SummaryVBox"]
+theme_override_constants/separation = 12
+
+[node name="Bitterness" type="ProgressBar" parent="CardPanel/MarginContainer/VBox/SummaryPanel/SummaryVBox/FlavorBars"]
+custom_minimum_size = Vector2(80, 20)
+size_flags_horizontal = 3
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="Sweetness" type="ProgressBar" parent="CardPanel/MarginContainer/VBox/SummaryPanel/SummaryVBox/FlavorBars"]
+custom_minimum_size = Vector2(80, 20)
+size_flags_horizontal = 3
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="Roastiness" type="ProgressBar" parent="CardPanel/MarginContainer/VBox/SummaryPanel/SummaryVBox/FlavorBars"]
+custom_minimum_size = Vector2(80, 20)
+size_flags_horizontal = 3
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="Fruitiness" type="ProgressBar" parent="CardPanel/MarginContainer/VBox/SummaryPanel/SummaryVBox/FlavorBars"]
+custom_minimum_size = Vector2(80, 20)
+size_flags_horizontal = 3
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="Funkiness" type="ProgressBar" parent="CardPanel/MarginContainer/VBox/SummaryPanel/SummaryVBox/FlavorBars"]
+custom_minimum_size = Vector2(80, 20)
+size_flags_horizontal = 3
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="CostLabel" type="Label" parent="CardPanel/MarginContainer/VBox/SummaryPanel/SummaryVBox"]
+text = "Total: $0"
 horizontal_alignment = 1
+
+[node name="WarningLabel" type="Label" parent="CardPanel/MarginContainer/VBox/SummaryPanel/SummaryVBox"]
+visible = false
+text = "Recipe requires at least one base malt"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.9, 0.3, 0.2, 1)
 
 [node name="FooterRow" type="HBoxContainer" parent="CardPanel/MarginContainer/VBox"]
 alignment = 2
