@@ -66,8 +66,9 @@ Before writing any code, read: `../../stacks/godot/STACK.md`
 - MVP complete. OpenSpec change `define-product-core` archived 2026-02-27.
 - **Stage 1A (Ingredient System) complete** — typed subclasses, 26-ingredient catalog, multi-select recipes, flavor scoring, dynamic costs.
 - **Stage 1B (Brewing Science) complete** — BrewingScience autoload (fermentability, hop utilization, yeast accuracy, noise), physical slider UI (°C/min with discrete stops), taste skill system (general + per-style, 6 feedback tiers), discovery system (attribute + process attribution chance rolls), QualityCalculator science scoring (20%).
-- **Stage 1C (Failure Modes & QA) complete** — FailureSystem autoload (infection probability, off-flavor probability, penalty application, combined roll). Sanitation/temp_control quality stats in GameState. QA checkpoint toasts (pre-boil gravity, boil vigor, final gravity). ResultsOverlay failure panels (infection/off-flavor with tips). 158/158 GUT tests passing (`make test`).
-- OpenSpec change `post-mvp-roadmap` has 6 stages. Next: Stage 2A (Equipment System).
+- **Stage 1C (Failure Modes & QA) complete** — FailureSystem autoload (infection probability, off-flavor probability, penalty application, combined roll). Sanitation/temp_control quality stats in GameState. QA checkpoint toasts (pre-boil gravity, boil vigor, final gravity). ResultsOverlay failure panels (infection/off-flavor with tips).
+- **Stage 2A (Equipment System) complete** — Equipment Resource class, 15-item catalog (4 categories, tiers 1-4 with upgrade chains), EquipmentManager autoload (purchase, upgrade, slot assignment, bonus aggregation, save/load), EQUIPMENT_MANAGE game state, QualityCalculator efficiency bonus, revenue batch_size multiplier, BreweryScene station slots, EquipmentPopup, EquipmentShop, BrewingPhases bonus display. 198/198 GUT tests passing (`make test`).
+- OpenSpec change `post-mvp-roadmap` has 6 stages. Next: Stage 2B.
 - Godot binary (Steam): `/Users/gregario/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot`
 - Manual tasks outstanding: 14.6 (60fps profiler check), 14.7 (pixel aliasing at 1080p), 6.1–6.5 (UI folder restructure via Godot editor).
 
