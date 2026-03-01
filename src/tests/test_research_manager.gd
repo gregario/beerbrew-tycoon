@@ -168,3 +168,33 @@ func test_water_chemistry_adds_noise_reduction():
 	ResearchManager.unlock("advanced_mashing")
 	ResearchManager.unlock("water_chemistry")
 	assert_almost_eq(ResearchManager.bonuses.get("noise_reduction", 0.0), 0.5, 0.001)
+
+# --- Task 11: Ingredient Unlock Tests ---
+
+func test_unlock_specialty_malts():
+	var crystal := load("res://data/ingredients/malts/crystal_60.tres")
+	assert_false(crystal.unlocked, "Crystal 60 should start locked")
+	ResearchManager.add_rp(10)
+	ResearchManager.unlock("specialty_malts")
+	assert_true(crystal.unlocked, "Crystal 60 should be unlocked after research")
+
+func test_unlock_american_hops():
+	var cascade := load("res://data/ingredients/hops/cascade.tres")
+	assert_false(cascade.unlocked, "Cascade should start locked")
+	ResearchManager.add_rp(15)
+	ResearchManager.unlock("american_hops")
+	assert_true(cascade.unlocked, "Cascade should be unlocked after research")
+
+func test_unlock_adjuncts():
+	var lactose := load("res://data/ingredients/adjuncts/lactose.tres")
+	assert_false(lactose.unlocked, "Lactose should start locked")
+	ResearchManager.add_rp(15)
+	ResearchManager.unlock("adjunct_brewing")
+	assert_true(lactose.unlocked, "Lactose should be unlocked after research")
+
+func test_cross_category_prereq():
+	# Dark Styles requires Specialty Malts (Ingredients category)
+	ResearchManager.add_rp(100)
+	assert_false(ResearchManager.can_unlock("dark_styles"), "Should not unlock without Specialty Malts")
+	ResearchManager.unlock("specialty_malts")
+	assert_true(ResearchManager.can_unlock("dark_styles"), "Should be unlockable after Specialty Malts")
