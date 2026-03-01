@@ -7,6 +7,7 @@ extends Node2D
 signal slot_clicked(slot_index: int)
 signal start_brewing_pressed()
 signal research_requested()
+signal staff_requested()
 
 @onready var kettle_node: ColorRect = $Stations/Kettle
 @onready var fermenter_node: ColorRect = $Stations/Fermenter
@@ -19,6 +20,7 @@ var _slot_buttons: Array[Button] = []
 var _balance_label: Label = null
 var _start_button: Button = null
 var _research_button: Button = null
+var _staff_button: Button = null
 var _equipment_ui: CanvasLayer = null
 
 const SLOT_NAMES: Array[String] = ["Kettle", "Fermenter", "Bottler"]
@@ -186,3 +188,28 @@ func _build_equipment_ui() -> void:
 
 	_research_button.pressed.connect(func(): research_requested.emit())
 	_equipment_ui.add_child(_research_button)
+
+	# "Staff" button next to Research
+	_staff_button = Button.new()
+	_staff_button.name = "StaffButton"
+	_staff_button.text = "Staff"
+	_staff_button.custom_minimum_size = Vector2(160, 48)
+	_staff_button.position = Vector2(960, 620)
+	_staff_button.add_theme_font_size_override("font_size", 24)
+	_staff_button.add_theme_color_override("font_color", Color("#0F1724"))
+
+	var staff_style := StyleBoxFlat.new()
+	staff_style.bg_color = Color("#5AA9FF")
+	staff_style.set_corner_radius_all(8)
+	staff_style.content_margin_left = 24
+	staff_style.content_margin_right = 24
+	staff_style.content_margin_top = 8
+	staff_style.content_margin_bottom = 8
+	_staff_button.add_theme_stylebox_override("normal", staff_style)
+
+	var staff_hover := staff_style.duplicate()
+	staff_hover.bg_color = Color("#7BBFFF")
+	_staff_button.add_theme_stylebox_override("hover", staff_hover)
+
+	_staff_button.pressed.connect(func(): staff_requested.emit())
+	_equipment_ui.add_child(_staff_button)
