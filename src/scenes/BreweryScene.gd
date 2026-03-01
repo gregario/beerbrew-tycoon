@@ -6,6 +6,7 @@ extends Node2D
 
 signal slot_clicked(slot_index: int)
 signal start_brewing_pressed()
+signal research_requested()
 
 @onready var kettle_node: ColorRect = $Stations/Kettle
 @onready var fermenter_node: ColorRect = $Stations/Fermenter
@@ -17,6 +18,7 @@ signal start_brewing_pressed()
 var _slot_buttons: Array[Button] = []
 var _balance_label: Label = null
 var _start_button: Button = null
+var _research_button: Button = null
 var _equipment_ui: CanvasLayer = null
 
 const SLOT_NAMES: Array[String] = ["Kettle", "Fermenter", "Bottler"]
@@ -159,3 +161,28 @@ func _build_equipment_ui() -> void:
 
 	_start_button.pressed.connect(func(): start_brewing_pressed.emit())
 	_equipment_ui.add_child(_start_button)
+
+	# "Research" button next to Start Brewing
+	_research_button = Button.new()
+	_research_button.name = "ResearchButton"
+	_research_button.text = "Research"
+	_research_button.custom_minimum_size = Vector2(160, 48)
+	_research_button.position = Vector2(780, 620)
+	_research_button.add_theme_font_size_override("font_size", 24)
+	_research_button.add_theme_color_override("font_color", Color("#0F1724"))
+
+	var research_style := StyleBoxFlat.new()
+	research_style.bg_color = Color("#5AA9FF")
+	research_style.set_corner_radius_all(8)
+	research_style.content_margin_left = 24
+	research_style.content_margin_right = 24
+	research_style.content_margin_top = 8
+	research_style.content_margin_bottom = 8
+	_research_button.add_theme_stylebox_override("normal", research_style)
+
+	var research_hover := research_style.duplicate()
+	research_hover.bg_color = Color("#7BBFFF")
+	_research_button.add_theme_stylebox_override("hover", research_hover)
+
+	_research_button.pressed.connect(func(): research_requested.emit())
+	_equipment_ui.add_child(_research_button)

@@ -21,6 +21,7 @@ const STYLE_IDS := ["lager", "pale_ale", "wheat_beer", "stout"]
 var _all_overlays: Array[Control] = []
 var equipment_popup: Control = null
 var equipment_shop: Control = null
+var research_tree: Control = null
 
 func _ready() -> void:
 	# Register styles with the market system before any demand init
@@ -39,9 +40,16 @@ func _ready() -> void:
 	equipment_shop.name = "EquipmentShop"
 	add_child(equipment_shop)
 
+	var research_script = preload("res://ui/ResearchTree.gd")
+	research_tree = Control.new()
+	research_tree.set_script(research_script)
+	research_tree.name = "ResearchTree"
+	add_child(research_tree)
+
 	# Collect all overlay references
 	_all_overlays = [style_picker, recipe_designer, brewing_phases,
-		results_overlay, game_over_screen, equipment_popup, equipment_shop]
+		results_overlay, game_over_screen, equipment_popup, equipment_shop,
+		research_tree]
 
 	# Connect GameState signals
 	GameState.state_changed.connect(_on_state_changed)
@@ -57,6 +65,8 @@ func _ready() -> void:
 	equipment_popup.upgrade_requested.connect(_on_equipment_upgrade)
 	equipment_popup.closed.connect(_on_popup_closed)
 	equipment_shop.closed.connect(_on_shop_closed)
+	brewery_scene.research_requested.connect(_on_research_requested)
+	research_tree.closed.connect(_on_research_tree_closed)
 
 	# Start a fresh run
 	GameState.reset()
@@ -167,3 +177,9 @@ func _on_popup_closed() -> void:
 func _on_shop_closed() -> void:
 	equipment_shop.visible = false
 	brewery_scene.refresh_slots()
+
+func _on_research_requested() -> void:
+	research_tree.show_tree()
+
+func _on_research_tree_closed() -> void:
+	pass  # Stay in equipment mode, research is just an overlay
