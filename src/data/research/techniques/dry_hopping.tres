@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "dry_hopping"
+node_name = "Dry Hopping"
+description = "Post-fermentation hop additions for intense aroma without added bitterness."
+category = 0
+rp_cost = 20
+prerequisites = ["hop_timing"]
+unlock_effect = {"type": "brewing_bonus", "bonuses": {"aroma_bonus": 0.15}}

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "lager_brewing"
+node_name = "Lager Brewing"
+description = "Cold fermentation techniques for clean, crisp lagers."
+category = 3
+rp_cost = 15
+prerequisites = ["ale_fundamentals"]
+unlock_effect = {"type": "unlock_style", "ids": ["lager"]}

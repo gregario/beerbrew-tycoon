@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "homebrew_upgrades"
+node_name = "Homebrew Upgrades"
+description = "Basic equipment knowledge. Tier 1-2 gear is available from the start."
+category = 2
+rp_cost = 0
+prerequisites = []
+unlock_effect = {}

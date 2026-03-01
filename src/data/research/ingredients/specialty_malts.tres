@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "specialty_malts"
+node_name = "Specialty Malts"
+description = "Unlock crystal, chocolate, and roasted malts for richer, more complex beers."
+category = 1
+rp_cost = 10
+prerequisites = []
+unlock_effect = {"type": "unlock_ingredients", "ids": ["crystal_60", "chocolate_malt", "roasted_barley"]}

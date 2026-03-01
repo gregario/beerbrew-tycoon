@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "specialist_yeast"
+node_name = "Specialist Yeast"
+description = "Exotic yeast strains for saisons, wheat beers, and farmhouse ales."
+category = 1
+rp_cost = 20
+prerequisites = []
+unlock_effect = {"type": "unlock_ingredients", "ids": ["belle_saison", "wb06_wheat", "kveik_voss"]}

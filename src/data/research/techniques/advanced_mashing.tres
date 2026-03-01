@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "advanced_mashing"
+node_name = "Advanced Mashing"
+description = "Deeper understanding of enzyme activity and mash chemistry."
+category = 0
+rp_cost = 15
+prerequisites = ["mash_basics"]
+unlock_effect = {"type": "brewing_bonus", "bonuses": {"mash_score_bonus": 0.05}}

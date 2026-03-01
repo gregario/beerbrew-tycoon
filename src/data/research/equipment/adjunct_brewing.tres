@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "adjunct_brewing"
+node_name = "Adjunct Brewing"
+description = "Unlock brewing sugars, oats, finings, and other adjuncts."
+category = 2
+rp_cost = 15
+prerequisites = ["homebrew_upgrades"]
+unlock_effect = {"type": "unlock_ingredients", "ids": ["brewing_sugar", "flaked_oats", "irish_moss", "lactose"]}

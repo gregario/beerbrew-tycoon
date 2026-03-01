@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "dark_styles"
+node_name = "Dark Styles"
+description = "Roasty, complex dark beers — stouts, porters, and schwarzbier."
+category = 3
+rp_cost = 20
+prerequisites = ["specialty_malts"]
+unlock_effect = {"type": "unlock_style", "ids": ["stout"]}

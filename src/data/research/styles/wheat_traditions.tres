@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "wheat_traditions"
+node_name = "Wheat Traditions"
+description = "German and Belgian wheat beer brewing methods."
+category = 3
+rp_cost = 15
+prerequisites = ["ale_fundamentals"]
+unlock_effect = {"type": "unlock_style", "ids": ["wheat_beer"]}

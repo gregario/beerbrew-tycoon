@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "semi_pro_equipment"
+node_name = "Semi-Pro Equipment"
+description = "Unlock Tier 3 semi-professional brewing equipment."
+category = 2
+rp_cost = 20
+prerequisites = ["homebrew_upgrades"]
+unlock_effect = {"type": "unlock_equipment_tier", "tier": 3}

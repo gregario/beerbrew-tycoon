@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "premium_hops"
+node_name = "Premium Hops"
+description = "Elite hop varieties with intense tropical and resinous character."
+category = 1
+rp_cost = 25
+prerequisites = ["american_hops"]
+unlock_effect = {"type": "unlock_ingredients", "ids": ["citra", "simcoe"]}
