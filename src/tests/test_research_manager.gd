@@ -198,3 +198,36 @@ func test_cross_category_prereq():
 	assert_false(ResearchManager.can_unlock("dark_styles"), "Should not unlock without Specialty Malts")
 	ResearchManager.unlock("specialty_malts")
 	assert_true(ResearchManager.can_unlock("dark_styles"), "Should be unlockable after Specialty Malts")
+
+# --- Task 12: Final Integration Test ---
+
+func test_full_research_flow():
+	# Start with no RP
+	assert_eq(ResearchManager.research_points, 0)
+	assert_eq(ResearchManager.unlocked_nodes.size(), 4)  # 4 root nodes
+
+	# Pre-load resources so cache is primed (same instance used by ResearchManager)
+	var crystal := load("res://data/ingredients/malts/crystal_60.tres")
+	var stout := load("res://data/styles/stout.tres") as BeerStyle
+
+	# Simulate a few brews worth of RP
+	ResearchManager.add_rp(50)
+
+	# Unlock a chain: Specialty Malts (10) → Dark Styles (20) = 30 RP spent
+	ResearchManager.unlock("specialty_malts")
+	assert_eq(ResearchManager.research_points, 40)
+	ResearchManager.unlock("dark_styles")
+	assert_eq(ResearchManager.research_points, 20)
+
+	# Verify effects applied
+	assert_true(crystal.unlocked)
+	assert_true(stout.unlocked)
+
+	# Save, reset, load
+	var saved := ResearchManager.save_state()
+	ResearchManager.reset()
+	assert_false(ResearchManager.is_unlocked("specialty_malts"))
+	ResearchManager.load_state(saved)
+	assert_true(ResearchManager.is_unlocked("specialty_malts"))
+	assert_true(ResearchManager.is_unlocked("dark_styles"))
+	assert_eq(ResearchManager.research_points, 20)
