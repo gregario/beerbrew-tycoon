@@ -31,6 +31,7 @@ BrewingScience="*res://autoloads/BrewingScience.gd"
 TasteSystem="*res://autoloads/TasteSystem.gd"
 FailureSystem="*res://autoloads/FailureSystem.gd"
 EquipmentManager="*res://autoloads/EquipmentManager.gd"
+ResearchManager="*res://autoloads/ResearchManager.gd"
 
 [display]
 
