@@ -132,3 +132,17 @@ func test_rp_formula_high_quality():
 func test_rp_formula_perfect_quality():
 	var rp := 2 + int(100.0 / 20.0)
 	assert_eq(rp, 7)
+
+func test_equipment_tier_default_is_2():
+	assert_eq(ResearchManager.unlocked_equipment_tier, 2)
+
+func test_unlock_semi_pro_sets_tier_3():
+	ResearchManager.add_rp(20)
+	ResearchManager.unlock("semi_pro_equipment")
+	assert_eq(ResearchManager.unlocked_equipment_tier, 3)
+
+func test_unlock_pro_sets_tier_4():
+	ResearchManager.add_rp(55)
+	ResearchManager.unlock("semi_pro_equipment")
+	ResearchManager.unlock("pro_equipment")
+	assert_eq(ResearchManager.unlocked_equipment_tier, 4)

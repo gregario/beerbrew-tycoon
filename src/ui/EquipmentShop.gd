@@ -201,8 +201,12 @@ func _build_item_rows(items: Array) -> void:
 	for equip in items:
 		if not equip is Equipment:
 			continue
-		var row := _create_shop_row(equip)
-		_item_list.add_child(row)
+		if equip.tier > ResearchManager.unlocked_equipment_tier:
+			var row := _create_locked_row(equip)
+			_item_list.add_child(row)
+		else:
+			var row := _create_shop_row(equip)
+			_item_list.add_child(row)
 
 func _create_shop_row(equip: Equipment) -> PanelContainer:
 	var row_panel := PanelContainer.new()
@@ -313,6 +317,55 @@ func _create_shop_row(equip: Equipment) -> PanelContainer:
 		var eid := equip.equipment_id
 		buy_btn.pressed.connect(func(): _on_buy_pressed(eid))
 		hbox.add_child(buy_btn)
+
+	row_panel.add_child(hbox)
+	return row_panel
+
+func _create_locked_row(equip: Equipment) -> PanelContainer:
+	var row_panel := PanelContainer.new()
+	var row_style := StyleBoxFlat.new()
+	row_style.bg_color = Color("#0F1724", 0.4)
+	row_style.border_color = Color("#8A9BB1", 0.1)
+	row_style.set_border_width_all(1)
+	row_style.set_corner_radius_all(8)
+	row_style.content_margin_left = 16
+	row_style.content_margin_right = 16
+	row_style.content_margin_top = 12
+	row_style.content_margin_bottom = 12
+	row_panel.add_theme_stylebox_override("panel", row_style)
+	row_panel.modulate.a = 0.5
+
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 16)
+
+	# Name + tier badge column
+	var info := VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var name_row := HBoxContainer.new()
+	name_row.add_theme_constant_override("separation", 8)
+
+	var name_label := Label.new()
+	name_label.text = equip.equipment_name
+	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.add_theme_color_override("font_color", Color("#8A9BB1"))
+	name_row.add_child(name_label)
+
+	var tier_label := Label.new()
+	tier_label.text = "T%d" % equip.tier
+	tier_label.add_theme_font_size_override("font_size", 14)
+	tier_label.add_theme_color_override("font_color", Color("#8A9BB1"))
+	name_row.add_child(tier_label)
+
+	info.add_child(name_row)
+	hbox.add_child(info)
+
+	# Research Required label
+	var locked_label := Label.new()
+	locked_label.text = "(Research Required)"
+	locked_label.add_theme_font_size_override("font_size", 16)
+	locked_label.add_theme_color_override("font_color", Color("#8A9BB1"))
+	hbox.add_child(locked_label)
 
 	row_panel.add_child(hbox)
 	return row_panel
