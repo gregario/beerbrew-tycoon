@@ -16,3 +16,4 @@ ideal_mash_temp_min = 64.0
 ideal_mash_temp_max = 67.0
 ideal_boil_min = 30.0
 ideal_boil_max = 60.0
+unlocked = false

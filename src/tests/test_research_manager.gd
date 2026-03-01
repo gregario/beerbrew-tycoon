@@ -105,6 +105,22 @@ func test_save_state_preserves_equipment_tier():
 	ResearchManager.load_state(saved)
 	assert_eq(ResearchManager.unlocked_equipment_tier, 3)
 
+func test_unlock_style_makes_style_available():
+	var lager := load("res://data/styles/lager.tres") as BeerStyle
+	assert_false(lager.unlocked, "Lager should start locked")
+	ResearchManager.add_rp(15)
+	ResearchManager.unlock("lager_brewing")
+	assert_true(lager.unlocked, "Lager should be unlocked after research")
+
+func test_reset_relocks_styles():
+	var lager := load("res://data/styles/lager.tres") as BeerStyle
+	assert_false(lager.unlocked, "Lager should start locked")
+	ResearchManager.add_rp(15)
+	ResearchManager.unlock("lager_brewing")
+	assert_true(lager.unlocked, "Lager should be unlocked after research")
+	ResearchManager.reset()
+	assert_false(lager.unlocked, "Lager should be re-locked after reset")
+
 func test_rp_formula_low_quality():
 	var rp := 2 + int(30.0 / 20.0)
 	assert_eq(rp, 3)

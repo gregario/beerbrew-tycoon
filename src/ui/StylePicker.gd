@@ -45,7 +45,12 @@ func _build_ui() -> void:
 		var demand := MarketSystem.get_demand_weight(style.style_id)
 		var demand_label := "High Demand" if demand > 1.0 else "Normal"
 		var btn := Button.new()
-		btn.text = "%s  [%s]" % [style.style_name, demand_label]
+		if style.unlocked:
+			btn.text = "%s  [%s]" % [style.style_name, demand_label]
+		else:
+			btn.text = "%s  (Research Required)" % style.style_name
+			btn.disabled = true
+			btn.modulate.a = 0.5
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.custom_minimum_size.y = 60
 		btn.pressed.connect(_on_style_button_pressed.bind(style, btn))
@@ -53,6 +58,8 @@ func _build_ui() -> void:
 		_style_buttons.append(btn)
 
 func _on_style_button_pressed(style: BeerStyle, btn: Button) -> void:
+	if not style.unlocked:
+		return
 	_selected_style = style
 	GameState.set_style(style)
 	# Highlight selected

@@ -18,6 +18,9 @@ extends Resource
 ## Starting demand weight (1.0 = normal, used to weight random demand assignment).
 @export var base_demand_weight: float = 1.0
 
+## Whether this style is available to the player (false = locked behind research).
+@export var unlocked: bool = true
+
 ## Ingredient compatibility. Key = ingredient_id, Value = 0.0–1.0.
 ## Missing ingredient defaults to 0.5 (neutral).
 @export var preferred_ingredients: Dictionary = {}
