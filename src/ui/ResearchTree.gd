@@ -47,6 +47,7 @@ func _ready() -> void:
 ## Open the research tree and refresh the display.
 func show_tree() -> void:
 	_selected_category = 0
+	modulate.a = 1.0
 	visible = true
 	_refresh()
 

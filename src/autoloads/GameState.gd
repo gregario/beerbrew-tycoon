@@ -346,4 +346,4 @@ func reset() -> void:
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.initialize_starting_equipment()
 	MarketSystem.initialize_demand()
-	_set_state(State.MARKET_CHECK)
+	_set_state(State.EQUIPMENT_MANAGE)
