@@ -22,6 +22,7 @@ var _all_overlays: Array[Control] = []
 var equipment_popup: Control = null
 var equipment_shop: Control = null
 var research_tree: Control = null
+var staff_screen: Control = null
 
 func _ready() -> void:
 	# Register styles with the market system before any demand init
@@ -46,10 +47,16 @@ func _ready() -> void:
 	research_tree.name = "ResearchTree"
 	add_child(research_tree)
 
+	var staff_script = preload("res://ui/StaffScreen.gd")
+	staff_screen = Control.new()
+	staff_screen.set_script(staff_script)
+	staff_screen.name = "StaffScreen"
+	add_child(staff_screen)
+
 	# Collect all overlay references
 	_all_overlays = [style_picker, recipe_designer, brewing_phases,
 		results_overlay, game_over_screen, equipment_popup, equipment_shop,
-		research_tree]
+		research_tree, staff_screen]
 
 	# Connect GameState signals
 	GameState.state_changed.connect(_on_state_changed)
@@ -67,6 +74,8 @@ func _ready() -> void:
 	equipment_shop.closed.connect(_on_shop_closed)
 	brewery_scene.research_requested.connect(_on_research_requested)
 	research_tree.closed.connect(_on_research_tree_closed)
+	brewery_scene.staff_requested.connect(_on_staff_requested)
+	staff_screen.closed.connect(_on_staff_screen_closed)
 
 	# Start a fresh run
 	GameState.reset()
@@ -183,3 +192,9 @@ func _on_research_requested() -> void:
 
 func _on_research_tree_closed() -> void:
 	pass  # Stay in equipment mode, research is just an overlay
+
+func _on_staff_requested() -> void:
+	staff_screen.show_screen()
+
+func _on_staff_screen_closed() -> void:
+	pass  # Stay in equipment mode, staff screen is just an overlay
