@@ -88,6 +88,13 @@ func _on_results_continue() -> void:
 	rent_due_this_turn = check_rent_due()
 	if rent_due_this_turn:
 		deduct_rent()
+	# Staff salary deduction and training tick
+	if is_instance_valid(StaffManager):
+		StaffManager.tick_training()
+		var total_salary: float = StaffManager.deduct_salaries()
+		if total_salary > 0.0 and is_instance_valid(ToastManager):
+			ToastManager.show_toast("Salaries paid: -$%d (%d staff)" % [int(total_salary), StaffManager.staff_roster.size()])
+		StaffManager.refresh_candidates()
 	if check_win_condition():
 		run_won = true
 		_set_state(State.GAME_OVER)
@@ -279,6 +286,16 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 	ResearchManager.add_rp(rp_earned)
 	result["rp_earned"] = rp_earned
 	ToastManager.show_toast("Earned %d Research Points" % rp_earned)
+
+	# Award XP to assigned staff
+	if is_instance_valid(StaffManager):
+		var xp_per_brew: int = 25 + int(result["final_score"] / 4.0)
+		for phase_name in ["mashing", "boiling", "fermenting"]:
+			var leveled: bool = StaffManager.award_xp(phase_name, xp_per_brew)
+			if leveled:
+				var staff_dict: Dictionary = StaffManager.get_staff_assigned_to(phase_name)
+				if not staff_dict.is_empty() and is_instance_valid(ToastManager):
+					ToastManager.show_toast("%s leveled up! (Lv.%d)" % [staff_dict.get("staff_name", "Staff"), staff_dict.get("level", 1)])
 
 	if current_style:
 		increment_taste(current_style.style_name)
