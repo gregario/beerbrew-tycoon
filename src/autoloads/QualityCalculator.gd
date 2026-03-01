@@ -128,6 +128,8 @@ func _compute_points(sliders: Dictionary) -> Dictionary:
 	# Apply equipment efficiency bonus
 	if is_instance_valid(EquipmentManager):
 		var eff_bonus: float = EquipmentManager.active_bonuses.get("efficiency", 0.0)
+		if is_instance_valid(ResearchManager):
+			eff_bonus += ResearchManager.bonuses.get("efficiency_bonus", 0.0)
 		technique *= (1.0 + eff_bonus)
 	return {"flavor": flavor, "technique": technique}
 
@@ -254,6 +256,9 @@ func _compute_science_score(style: BeerStyle, recipe: Dictionary, sliders: Dicti
 	var boil_duration: float = sliders.get("boiling", 60.0)
 	var ferment_temp: float = sliders.get("fermenting", 20.0)
 	var mash_score: float = BrewingScience.calc_mash_score(mash_temp, style)
+	# Apply research mash bonus
+	if is_instance_valid(ResearchManager):
+		mash_score = minf(mash_score + ResearchManager.bonuses.get("mash_score_bonus", 0.0), 1.0)
 	var boil_score: float = BrewingScience.calc_boil_score(boil_duration, style)
 	var yeast: Yeast = recipe.get("yeast", null) as Yeast
 	var yeast_score: float = 0.5

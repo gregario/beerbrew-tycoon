@@ -12,10 +12,13 @@ static func calc_fermentability(mash_temp_c: float) -> float:
 
 
 ## Calculates hop bittering and aroma from boil duration and alpha acid.
-static func calc_hop_utilization(boil_min: float, alpha_acid_pct: float) -> Dictionary:
+func calc_hop_utilization(boil_min: float, alpha_acid_pct: float) -> Dictionary:
 	var utilization: float = boil_min / 90.0
 	var bittering: float = alpha_acid_pct * utilization
 	var aroma: float = alpha_acid_pct * (1.0 - utilization)
+	# Apply research aroma bonus
+	var aroma_bonus: float = ResearchManager.bonuses.get("aroma_bonus", 0.0)
+	aroma *= (1.0 + aroma_bonus)
 	return {"bittering": bittering, "aroma": aroma}
 
 
@@ -57,10 +60,14 @@ static func calc_temp_drift(temp_control_quality: int) -> float:
 
 
 ## Applies +/-5% multiplicative noise. Seeded for reproducibility.
-static func apply_noise(value: float, brew_seed: int) -> float:
+func apply_noise(value: float, brew_seed: int) -> float:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = brew_seed
-	return value * rng.randf_range(0.95, 1.05)
+	var noise_range := 0.05
+	if is_instance_valid(ResearchManager):
+		var reduction: float = ResearchManager.bonuses.get("noise_reduction", 0.0)
+		noise_range *= (1.0 - reduction)
+	return value * rng.randf_range(1.0 - noise_range, 1.0 + noise_range)
 
 
 ## Scores mash temp against style's ideal range. Returns 0.0-1.0.

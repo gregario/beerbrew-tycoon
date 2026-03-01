@@ -146,3 +146,25 @@ func test_unlock_pro_sets_tier_4():
 	ResearchManager.unlock("semi_pro_equipment")
 	ResearchManager.unlock("pro_equipment")
 	assert_eq(ResearchManager.unlocked_equipment_tier, 4)
+
+func test_advanced_mashing_adds_mash_score_bonus():
+	ResearchManager.add_rp(15)
+	ResearchManager.unlock("advanced_mashing")
+	assert_almost_eq(ResearchManager.bonuses.get("mash_score_bonus", 0.0), 0.05, 0.001)
+
+func test_decoction_adds_efficiency_bonus():
+	ResearchManager.add_rp(45)
+	ResearchManager.unlock("advanced_mashing")
+	ResearchManager.unlock("decoction_technique")
+	assert_almost_eq(ResearchManager.bonuses.get("efficiency_bonus", 0.0), 0.10, 0.001)
+
+func test_dry_hopping_adds_aroma_bonus():
+	ResearchManager.add_rp(20)
+	ResearchManager.unlock("dry_hopping")
+	assert_almost_eq(ResearchManager.bonuses.get("aroma_bonus", 0.0), 0.15, 0.001)
+
+func test_water_chemistry_adds_noise_reduction():
+	ResearchManager.add_rp(40)
+	ResearchManager.unlock("advanced_mashing")
+	ResearchManager.unlock("water_chemistry")
+	assert_almost_eq(ResearchManager.bonuses.get("noise_reduction", 0.0), 0.5, 0.001)
