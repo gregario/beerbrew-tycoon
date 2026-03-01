@@ -278,6 +278,7 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 	var rp_earned: int = 2 + int(result["final_score"] / 20.0)
 	ResearchManager.add_rp(rp_earned)
 	result["rp_earned"] = rp_earned
+	ToastManager.show_toast("Earned %d Research Points" % rp_earned)
 
 	if current_style:
 		increment_taste(current_style.style_name)

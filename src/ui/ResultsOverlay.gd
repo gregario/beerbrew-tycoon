@@ -19,6 +19,7 @@ const STAR_EMPTY := preload("res://assets/ui/kenney/Green/Default/star_outline_d
 @onready var palate_label: Label = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox/PalateLabel
 @onready var revenue_label: Label = $CardPanel/MarginContainer/OuterVBox/MoneyRow/RevenueLabel
 @onready var balance_label: Label = $CardPanel/MarginContainer/OuterVBox/MoneyRow/BalanceLabel
+@onready var rp_label: Label = $CardPanel/MarginContainer/OuterVBox/RPLabel
 @onready var rent_label: Label = $CardPanel/MarginContainer/OuterVBox/RentLabel
 @onready var continue_button: Button = $CardPanel/MarginContainer/OuterVBox/FooterRow/ContinueButton
 
@@ -78,6 +79,10 @@ func populate() -> void:
 	var revenue: float = result.get("revenue", 0.0)
 	revenue_label.text = "Revenue: +$%.0f" % revenue
 	balance_label.text = "Balance: $%.0f" % GameState.balance
+
+	# Research points earned
+	var rp_earned: int = result.get("rp_earned", 0)
+	rp_label.text = "+%d Research Points" % rp_earned
 
 	# Rent warning: will rent be deducted when the player clicks Continue?
 	var next_turn := GameState.turn_counter + 1
