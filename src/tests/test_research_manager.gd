@@ -75,3 +75,44 @@ func test_reset_clears_state():
 	assert_eq(ResearchManager.research_points, 0)
 	assert_false(ResearchManager.is_unlocked("advanced_mashing"))
 	assert_true(ResearchManager.is_unlocked("mash_basics"))
+
+func test_save_state_roundtrip():
+	ResearchManager.add_rp(50)
+	ResearchManager.unlock("advanced_mashing")
+	ResearchManager.unlock("specialty_malts")
+	var saved := ResearchManager.save_state()
+	ResearchManager.reset()
+	assert_false(ResearchManager.is_unlocked("advanced_mashing"))
+	ResearchManager.load_state(saved)
+	assert_true(ResearchManager.is_unlocked("advanced_mashing"))
+	assert_true(ResearchManager.is_unlocked("specialty_malts"))
+	assert_eq(ResearchManager.research_points, 25)  # 50 - 15 - 10
+
+func test_save_state_preserves_bonuses():
+	ResearchManager.add_rp(15)
+	ResearchManager.unlock("advanced_mashing")
+	var saved := ResearchManager.save_state()
+	ResearchManager.reset()
+	ResearchManager.load_state(saved)
+	assert_almost_eq(ResearchManager.bonuses.get("mash_score_bonus", 0.0), 0.05, 0.001)
+
+func test_save_state_preserves_equipment_tier():
+	ResearchManager.add_rp(20)
+	ResearchManager.unlock("semi_pro_equipment")
+	var saved := ResearchManager.save_state()
+	ResearchManager.reset()
+	assert_eq(ResearchManager.unlocked_equipment_tier, 2)
+	ResearchManager.load_state(saved)
+	assert_eq(ResearchManager.unlocked_equipment_tier, 3)
+
+func test_rp_formula_low_quality():
+	var rp := 2 + int(30.0 / 20.0)
+	assert_eq(rp, 3)
+
+func test_rp_formula_high_quality():
+	var rp := 2 + int(90.0 / 20.0)
+	assert_eq(rp, 6)
+
+func test_rp_formula_perfect_quality():
+	var rp := 2 + int(100.0 / 20.0)
+	assert_eq(rp, 7)

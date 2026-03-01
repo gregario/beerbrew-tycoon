@@ -22,6 +22,7 @@ enum State {
 	BREWING_PHASES,  # Player adjusts phase sliders and confirms brew
 	RESULTS,         # Show quality score, revenue, balance
 	EQUIPMENT_MANAGE, # Player manages equipment between brews
+	RESEARCH_MANAGE, # Player manages research tree between brews
 	GAME_OVER        # Win or loss end screen
 }
 
@@ -273,6 +274,11 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 
 	record_brew(result["final_score"])
 
+	# Award research points
+	var rp_earned: int = 2 + int(result["final_score"] / 20.0)
+	ResearchManager.add_rp(rp_earned)
+	result["rp_earned"] = rp_earned
+
 	if current_style:
 		increment_taste(current_style.style_name)
 
@@ -335,6 +341,8 @@ func reset() -> void:
 	sanitation_quality = 50
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.reset()
+	ResearchManager.reset()
+	if is_instance_valid(EquipmentManager):
 		EquipmentManager.initialize_starting_equipment()
 	MarketSystem.initialize_demand()
 	_set_state(State.MARKET_CHECK)
