@@ -131,6 +131,12 @@ func _compute_points(sliders: Dictionary) -> Dictionary:
 		if is_instance_valid(ResearchManager):
 			eff_bonus += ResearchManager.bonuses.get("efficiency_bonus", 0.0)
 		technique *= (1.0 + eff_bonus)
+	# Staff bonuses — flat flavor/technique addition per phase
+	if is_instance_valid(StaffManager):
+		for phase_name in ["mashing", "boiling", "fermenting"]:
+			var staff_bonus: Dictionary = StaffManager.get_phase_bonus(phase_name)
+			flavor += staff_bonus.get("flavor", 0.0)
+			technique += staff_bonus.get("technique", 0.0)
 	return {"flavor": flavor, "technique": technique}
 
 ## Compare player's flavor ratio to style's ideal.
