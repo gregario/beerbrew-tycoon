@@ -18,6 +18,7 @@ signal brew_confirmed(sliders: Dictionary)
 @onready var fermenting_value: Label = $CardPanel/MarginContainer/VBox/FermentingRow/FermentingValue
 
 var _bonus_label: Label = null
+var _staff_labels: Dictionary = {}  # phase_name -> Label
 
 func _ready() -> void:
 	_reset_sliders()
@@ -25,6 +26,7 @@ func _ready() -> void:
 	boiling_slider.value_changed.connect(_on_slider_changed.unbind(1))
 	fermenting_slider.value_changed.connect(_on_slider_changed.unbind(1))
 	brew_button.pressed.connect(_on_brew_pressed)
+	_create_staff_labels()
 	_update_preview()
 
 func _reset_sliders() -> void:
@@ -61,6 +63,7 @@ func refresh() -> void:
 	fermenting_value.text = "20°C"
 	_update_preview()
 	_update_bonus_label()
+	_update_staff_labels()
 
 func _update_bonus_label() -> void:
 	if not is_instance_valid(EquipmentManager):
@@ -91,3 +94,39 @@ func _update_bonus_label() -> void:
 		_bonus_label.visible = true
 	else:
 		_bonus_label.visible = false
+
+
+func _create_staff_labels() -> void:
+	var rows: Dictionary = {
+		"mashing": $CardPanel/MarginContainer/VBox/MashingRow,
+		"boiling": $CardPanel/MarginContainer/VBox/BoilingRow,
+		"fermenting": $CardPanel/MarginContainer/VBox/FermentingRow,
+	}
+	for phase_name in rows:
+		var row: VBoxContainer = rows[phase_name]
+		var staff_label := Label.new()
+		staff_label.add_theme_font_size_override("font_size", 16)
+		staff_label.add_theme_color_override("font_color", Color("#8A9BB1"))
+		staff_label.text = "(no staff assigned)"
+		row.add_child(staff_label)
+		_staff_labels[phase_name] = staff_label
+
+
+func _update_staff_labels() -> void:
+	if not is_instance_valid(StaffManager):
+		return
+	for phase in ["mashing", "boiling", "fermenting"]:
+		var label: Label = _staff_labels.get(phase, null)
+		if label == null:
+			continue
+		var staff: Dictionary = StaffManager.get_staff_assigned_to(phase)
+		if staff.is_empty():
+			label.text = "(no staff assigned)"
+			label.add_theme_color_override("font_color", Color("#8A9BB1"))
+		else:
+			var bonus: Dictionary = StaffManager.get_phase_bonus(phase)
+			var flavor: int = int(bonus.get("flavor", 0.0))
+			var technique: int = int(bonus.get("technique", 0.0))
+			var staff_name: String = staff.get("staff_name", "Staff")
+			label.text = "%s: +%d flavor, +%d technique" % [staff_name, flavor, technique]
+			label.add_theme_color_override("font_color", Color("#5EE8A4"))
