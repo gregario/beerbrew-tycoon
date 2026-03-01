@@ -32,6 +32,7 @@ TasteSystem="*res://autoloads/TasteSystem.gd"
 FailureSystem="*res://autoloads/FailureSystem.gd"
 EquipmentManager="*res://autoloads/EquipmentManager.gd"
 ResearchManager="*res://autoloads/ResearchManager.gd"
+StaffManager="*res://autoloads/StaffManager.gd"
 
 [display]
 

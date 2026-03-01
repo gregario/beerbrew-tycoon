@@ -343,6 +343,8 @@ func reset() -> void:
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.reset()
 	ResearchManager.reset()
+	if is_instance_valid(StaffManager):
+		StaffManager.reset()
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.initialize_starting_equipment()
 	MarketSystem.initialize_demand()
