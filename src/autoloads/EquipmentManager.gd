@@ -106,7 +106,8 @@ func upgrade(equipment_id: String) -> bool:
 
 # --- Slot management ---
 func assign_to_slot(slot_index: int, equipment_id: String) -> bool:
-	if slot_index < 0 or slot_index >= MAX_SLOTS_GARAGE:
+	var max_slots: int = BreweryExpansion.get_max_slots() if is_instance_valid(BreweryExpansion) else MAX_SLOTS_GARAGE
+	if slot_index < 0 or slot_index >= max_slots:
 		return false
 	if equipment_id not in owned_equipment:
 		return false
@@ -119,7 +120,8 @@ func assign_to_slot(slot_index: int, equipment_id: String) -> bool:
 	return true
 
 func unassign_slot(slot_index: int) -> void:
-	if slot_index < 0 or slot_index >= MAX_SLOTS_GARAGE:
+	var max_slots: int = BreweryExpansion.get_max_slots() if is_instance_valid(BreweryExpansion) else MAX_SLOTS_GARAGE
+	if slot_index < 0 or slot_index >= max_slots:
 		return
 	station_slots[slot_index] = ""
 	recalculate_bonuses()
@@ -137,6 +139,11 @@ func get_unslotted_owned() -> Array:
 		if id not in station_slots:
 			result.append(id)
 	return result
+
+func resize_slots() -> void:
+	var target: int = BreweryExpansion.get_max_slots() if is_instance_valid(BreweryExpansion) else MAX_SLOTS_GARAGE
+	while station_slots.size() < target:
+		station_slots.append("")
 
 # --- Bonus aggregation ---
 func recalculate_bonuses() -> void:
@@ -180,12 +187,18 @@ func save_state() -> Dictionary:
 func load_state(data: Dictionary) -> void:
 	owned_equipment = data.get("owned_equipment", [])
 	station_slots = data.get("station_slots", ["", "", ""])
+	var target: int = BreweryExpansion.get_max_slots() if is_instance_valid(BreweryExpansion) else MAX_SLOTS_GARAGE
+	while station_slots.size() < target:
+		station_slots.append("")
 	recalculate_bonuses()
 
 # --- Reset ---
 func reset() -> void:
 	owned_equipment = []
-	station_slots = ["", "", ""]
+	var slot_count: int = BreweryExpansion.get_max_slots() if is_instance_valid(BreweryExpansion) else MAX_SLOTS_GARAGE
+	station_slots = []
+	for i in range(slot_count):
+		station_slots.append("")
 	active_bonuses = {
 		"sanitation": 0,
 		"temp_control": 0,

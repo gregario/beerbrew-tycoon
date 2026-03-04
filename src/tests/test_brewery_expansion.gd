@@ -134,3 +134,39 @@ func test_reset_resets_brewery_expansion() -> void:
 	GameState.reset()
 	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.GARAGE)
 	assert_eq(BreweryExpansion.beers_brewed, 0)
+
+# --- Equipment slot scaling ---
+func test_garage_rejects_slot_4() -> void:
+	EquipmentManager.reset()
+	EquipmentManager.initialize_starting_equipment()
+	var result: bool = EquipmentManager.assign_to_slot(3, "extract_kit")
+	assert_false(result)
+
+func test_microbrewery_allows_slot_4() -> void:
+	EquipmentManager.reset()
+	EquipmentManager.initialize_starting_equipment()
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	EquipmentManager.resize_slots()
+	var result: bool = EquipmentManager.assign_to_slot(3, "extract_kit")
+	assert_true(result)
+	assert_eq(EquipmentManager.station_slots[3], "extract_kit")
+
+func test_resize_preserves_existing_slots() -> void:
+	EquipmentManager.reset()
+	EquipmentManager.initialize_starting_equipment()
+	EquipmentManager.assign_to_slot(0, "extract_kit")
+	EquipmentManager.assign_to_slot(1, "bucket_fermenter")
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	EquipmentManager.resize_slots()
+	assert_eq(EquipmentManager.station_slots.size(), 5)
+	assert_eq(EquipmentManager.station_slots[0], "extract_kit")
+	assert_eq(EquipmentManager.station_slots[1], "bucket_fermenter")
+	assert_eq(EquipmentManager.station_slots[3], "")
+	assert_eq(EquipmentManager.station_slots[4], "")
+
+func test_station_slots_size_matches_stage() -> void:
+	EquipmentManager.reset()
+	assert_eq(EquipmentManager.station_slots.size(), 3)
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	EquipmentManager.resize_slots()
+	assert_eq(EquipmentManager.station_slots.size(), 5)
