@@ -30,6 +30,13 @@ const SLOT_POSITIONS: Array[Vector2] = [
 	Vector2(840, 328),  # Above Bottler
 ]
 
+const SLOT_NAMES_MICRO: Array[String] = ["Kettle", "Fermenter", "Bottler", "Station 4", "Station 5"]
+const SLOT_POSITIONS_MICRO: Array[Vector2] = [
+	Vector2(140, 312), Vector2(340, 296), Vector2(540, 312), Vector2(740, 296), Vector2(940, 312)
+]
+
+var _expansion_overlay: CanvasLayer = null
+
 func _ready() -> void:
 	set_brewing(false)
 	_build_equipment_ui()
@@ -57,16 +64,19 @@ func set_equipment_mode(active: bool) -> void:
 func refresh_slots() -> void:
 	if not is_instance_valid(EquipmentManager):
 		return
+	var slot_names: Array[String] = SLOT_NAMES
+	if is_instance_valid(BreweryExpansion) and BreweryExpansion.get_max_slots() > 3:
+		slot_names = SLOT_NAMES_MICRO
 	for i in range(_slot_buttons.size()):
 		var btn := _slot_buttons[i]
 		var slot_id: String = EquipmentManager.station_slots[i]
 		if slot_id == "":
-			btn.text = "%s\n[Empty Slot]" % SLOT_NAMES[i]
+			btn.text = "%s\n[Empty Slot]" % slot_names[i]
 			btn.add_theme_color_override("font_color", Color("#8A9BB1"))
 		else:
 			var equip: Equipment = EquipmentManager.get_equipment(slot_id)
 			var name_text: String = equip.equipment_name if equip else slot_id
-			btn.text = "%s\n%s" % [SLOT_NAMES[i], name_text]
+			btn.text = "%s\n%s" % [slot_names[i], name_text]
 			btn.add_theme_color_override("font_color", Color("#5EE8A4"))
 	# Update balance
 	if _balance_label:
@@ -77,6 +87,10 @@ func refresh_slots() -> void:
 # ---------------------------------------------------------------------------
 
 func _build_equipment_ui() -> void:
+	# Clean up previous UI if rebuilding (e.g., after expansion)
+	if _equipment_ui != null:
+		_equipment_ui.queue_free()
+		_slot_buttons.clear()
 	_equipment_ui = CanvasLayer.new()
 	_equipment_ui.name = "EquipmentUI"
 	_equipment_ui.layer = 5
@@ -97,21 +111,65 @@ func _build_equipment_ui() -> void:
 	_balance_label.position = Vector2(32, 16)
 	_equipment_ui.add_child(_balance_label)
 
-	# Title label
+	# Title label (dynamic stage name)
+	var stage_name: String = BreweryExpansion.get_stage_name() if is_instance_valid(BreweryExpansion) else "EQUIPMENT MANAGEMENT"
 	var title := Label.new()
-	title.text = "EQUIPMENT MANAGEMENT"
+	title.text = stage_name
 	title.add_theme_font_size_override("font_size", 20)
 	title.add_theme_color_override("font_color", Color("#8A9BB1"))
 	title.position = Vector2(32, 50)
 	_equipment_ui.add_child(title)
 
-	# Station slot buttons
-	for i in range(3):
+	# Expansion banner (when threshold is met)
+	if is_instance_valid(BreweryExpansion) and BreweryExpansion.can_expand():
+		var banner := PanelContainer.new()
+		var banner_style := StyleBoxFlat.new()
+		banner_style.bg_color = Color("#0B1220", 0.95)
+		banner_style.border_color = Color("#FFC857")
+		banner_style.set_border_width_all(2)
+		banner_style.set_corner_radius_all(4)
+		banner_style.set_content_margin_all(12)
+		banner.add_theme_stylebox_override("panel", banner_style)
+		banner.position = Vector2(200, 50)
+		banner.size = Vector2(880, 48)
+		_equipment_ui.add_child(banner)
+		var banner_hbox := HBoxContainer.new()
+		banner_hbox.add_theme_constant_override("separation", 16)
+		banner.add_child(banner_hbox)
+		var banner_text := Label.new()
+		banner_text.text = "Ready to expand! Upgrade to Microbrewery — $%d" % int(BreweryExpansion.EXPAND_COST)
+		banner_text.add_theme_font_size_override("font_size", 20)
+		banner_text.add_theme_color_override("font_color", Color("#FFC857"))
+		banner_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		banner_hbox.add_child(banner_text)
+		var details_btn := Button.new()
+		details_btn.text = "View Details >"
+		details_btn.custom_minimum_size = Vector2(160, 36)
+		details_btn.pressed.connect(_on_expansion_details)
+		var btn_style := StyleBoxFlat.new()
+		btn_style.bg_color = Color("#FFC857")
+		btn_style.set_corner_radius_all(4)
+		btn_style.set_content_margin_all(4)
+		details_btn.add_theme_stylebox_override("normal", btn_style)
+		details_btn.add_theme_color_override("font_color", Color("#0F1724"))
+		banner_hbox.add_child(details_btn)
+
+	# Station slot buttons (dynamic count based on stage)
+	var slot_names: Array[String] = SLOT_NAMES
+	var slot_positions: Array[Vector2] = SLOT_POSITIONS
+	var max_slots: int = 3
+	if is_instance_valid(BreweryExpansion):
+		max_slots = BreweryExpansion.get_max_slots()
+		if max_slots > 3:
+			slot_names = SLOT_NAMES_MICRO
+			slot_positions = SLOT_POSITIONS_MICRO
+
+	for i in range(max_slots):
 		var btn := Button.new()
 		btn.name = "SlotButton_%d" % i
 		btn.custom_minimum_size = Vector2(160, 60)
-		btn.position = SLOT_POSITIONS[i]
-		btn.text = "%s\n[Empty Slot]" % SLOT_NAMES[i]
+		btn.position = slot_positions[i]
+		btn.text = "%s\n[Empty Slot]" % slot_names[i]
 		btn.add_theme_font_size_override("font_size", 16)
 
 		var style_normal := StyleBoxFlat.new()
@@ -213,3 +271,19 @@ func _build_equipment_ui() -> void:
 
 	_staff_button.pressed.connect(func(): staff_requested.emit())
 	_equipment_ui.add_child(_staff_button)
+
+	# Disable staff button in garage stage
+	if is_instance_valid(BreweryExpansion) and BreweryExpansion.current_stage == BreweryExpansion.Stage.GARAGE:
+		_staff_button.disabled = true
+		_staff_button.tooltip_text = "Upgrade to Microbrewery to hire staff"
+
+func _on_expansion_details() -> void:
+	if _expansion_overlay == null:
+		_expansion_overlay = preload("res://ui/ExpansionOverlay.gd").new()
+		add_child(_expansion_overlay)
+		_expansion_overlay.expansion_confirmed.connect(_on_expansion_confirmed)
+	_expansion_overlay.show_overlay()
+
+func _on_expansion_confirmed() -> void:
+	_build_equipment_ui()
+	refresh_slots()
