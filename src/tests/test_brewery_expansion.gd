@@ -170,3 +170,20 @@ func test_station_slots_size_matches_stage() -> void:
 	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
 	EquipmentManager.resize_slots()
 	assert_eq(EquipmentManager.station_slots.size(), 5)
+
+# --- Staff gating ---
+func test_garage_blocks_hiring() -> void:
+	StaffManager.reset()
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.GARAGE
+	assert_eq(StaffManager.get_max_staff(), 0)
+	if StaffManager.candidates.size() > 0:
+		var result: bool = StaffManager.hire(StaffManager.candidates[0]["staff_id"])
+		assert_false(result)
+
+func test_microbrewery_allows_hiring() -> void:
+	StaffManager.reset()
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	assert_eq(StaffManager.get_max_staff(), 2)
+	if StaffManager.candidates.size() > 0:
+		var result: bool = StaffManager.hire(StaffManager.candidates[0]["staff_id"])
+		assert_true(result)

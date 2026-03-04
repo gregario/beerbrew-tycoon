@@ -17,6 +17,7 @@ func test_staff_resource_has_all_properties() -> void:
 func before_each() -> void:
 	GameState.reset()
 	StaffManager.reset()
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
 
 # --- Candidate generation ---
 func test_generate_candidates_creates_correct_count() -> void:

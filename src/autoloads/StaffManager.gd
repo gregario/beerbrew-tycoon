@@ -93,6 +93,8 @@ func generate_candidates(count: int) -> void:
 # Max staff (Stage 3B will gate by brewery stage)
 # ---------------------------------------------------------------------------
 func get_max_staff() -> int:
+	if is_instance_valid(BreweryExpansion):
+		return BreweryExpansion.get_max_staff()
 	return MAX_STAFF_MICRO
 
 # ---------------------------------------------------------------------------
