@@ -8,6 +8,7 @@ signal slot_clicked(slot_index: int)
 signal start_brewing_pressed()
 signal research_requested()
 signal staff_requested()
+signal contracts_requested()
 
 @onready var kettle_node: ColorRect = $Stations/Kettle
 @onready var fermenter_node: ColorRect = $Stations/Fermenter
@@ -21,6 +22,7 @@ var _balance_label: Label = null
 var _start_button: Button = null
 var _research_button: Button = null
 var _staff_button: Button = null
+var _contracts_button: Button = null
 var _equipment_ui: CanvasLayer = null
 
 const SLOT_NAMES: Array[String] = ["Kettle", "Fermenter", "Bottler"]
@@ -35,6 +37,7 @@ const SLOT_POSITIONS_MICRO: Array[Vector2] = [
 	Vector2(140, 312), Vector2(340, 296), Vector2(540, 312), Vector2(740, 296), Vector2(940, 312)
 ]
 
+var _contract_board: CanvasLayer = null
 var _expansion_overlay: CanvasLayer = null
 
 func _ready() -> void:
@@ -276,6 +279,49 @@ func _build_equipment_ui() -> void:
 	if is_instance_valid(BreweryExpansion) and BreweryExpansion.current_stage == BreweryExpansion.Stage.GARAGE:
 		_staff_button.disabled = true
 		_staff_button.tooltip_text = "Upgrade to Microbrewery to hire staff"
+
+	# "Contracts" button next to Staff
+	_contracts_button = Button.new()
+	_contracts_button.name = "ContractsButton"
+	_contracts_button.text = "Contracts"
+	# Add active count badge if contracts exist
+	if is_instance_valid(ContractManager) and ContractManager.active_contracts.size() > 0:
+		_contracts_button.text = "Contracts (%d)" % ContractManager.active_contracts.size()
+	_contracts_button.custom_minimum_size = Vector2(160, 48)
+	_contracts_button.position = Vector2(1140, 620)
+	_contracts_button.add_theme_font_size_override("font_size", 24)
+	_contracts_button.add_theme_color_override("font_color", Color("#0F1724"))
+
+	var contracts_style := StyleBoxFlat.new()
+	contracts_style.bg_color = Color("#5AA9FF")
+	contracts_style.set_corner_radius_all(8)
+	contracts_style.content_margin_left = 24
+	contracts_style.content_margin_right = 24
+	contracts_style.content_margin_top = 8
+	contracts_style.content_margin_bottom = 8
+	_contracts_button.add_theme_stylebox_override("normal", contracts_style)
+
+	var contracts_hover := contracts_style.duplicate()
+	contracts_hover.bg_color = Color("#7BBFFF")
+	_contracts_button.add_theme_stylebox_override("hover", contracts_hover)
+
+	_contracts_button.pressed.connect(func(): _on_contracts_pressed())
+	_equipment_ui.add_child(_contracts_button)
+
+func _on_contracts_pressed() -> void:
+	if _contract_board == null:
+		_contract_board = preload("res://ui/ContractBoard.gd").new()
+		add_child(_contract_board)
+		_contract_board.closed.connect(_on_contract_board_closed)
+	_contract_board.show_board()
+
+func _on_contract_board_closed() -> void:
+	# Refresh the contracts button badge count
+	if _contracts_button and is_instance_valid(ContractManager):
+		if ContractManager.active_contracts.size() > 0:
+			_contracts_button.text = "Contracts (%d)" % ContractManager.active_contracts.size()
+		else:
+			_contracts_button.text = "Contracts"
 
 func _on_expansion_details() -> void:
 	if _expansion_overlay == null:

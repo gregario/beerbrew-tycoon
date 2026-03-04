@@ -99,6 +99,11 @@ func populate() -> void:
 	# Palate level
 	palate_label.text = "Your palate: %s (Lv %d)" % [GameState.get_palate_name(), GameState.general_taste]
 
+	# Contract fulfillment display (Stage 4A)
+	var fulfillment: Dictionary = result.get("contract_fulfillment", {})
+	if fulfillment.get("fulfilled", false):
+		_add_contract_fulfillment_panel(fulfillment)
+
 func _update_stars(score: float) -> void:
 	for child in stars_row.get_children():
 		child.queue_free()
@@ -167,6 +172,66 @@ func _add_failure_panel(title_text: String, description: String, tip: String) ->
 
 	panel.add_child(vbox)
 	failure_container.add_child(panel)
+
+
+func _add_contract_fulfillment_panel(fulfillment: Dictionary) -> void:
+	var contract: Dictionary = fulfillment.get("contract", {})
+	var reward: int = fulfillment.get("reward", 0)
+	var bonus: int = fulfillment.get("bonus", 0)
+	var total: int = fulfillment.get("total", 0)
+
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("#5EE8A4", 0.1)
+	style.border_color = Color("#5EE8A4", 0.4)
+	style.border_width_left = 4
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(16)
+	panel.add_theme_stylebox_override("panel", style)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+
+	var title := Label.new()
+	title.text = "CONTRACT FULFILLED!"
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color("#5EE8A4"))
+	vbox.add_child(title)
+
+	var client := Label.new()
+	client.text = "%s — %s (Quality %d+)" % [
+		contract.get("client_name", "Unknown"),
+		contract.get("required_style", "").capitalize(),
+		int(contract.get("minimum_quality", 0))
+	]
+	client.add_theme_font_size_override("font_size", 16)
+	client.add_theme_color_override("font_color", Color.WHITE)
+	client.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(client)
+
+	var quality_label := Label.new()
+	var result_data := GameState.last_brew_result
+	quality_label.text = "Your quality: %.0f" % result_data.get("final_score", 0.0)
+	if bonus > 0:
+		quality_label.text += " — Bonus earned!"
+	quality_label.add_theme_font_size_override("font_size", 16)
+	quality_label.add_theme_color_override("font_color", Color("#8A9BB1"))
+	vbox.add_child(quality_label)
+
+	var reward_label := Label.new()
+	if bonus > 0:
+		reward_label.text = "Reward: $%d + $%d bonus = $%d" % [reward, bonus, total]
+	else:
+		reward_label.text = "Reward: $%d" % reward
+	reward_label.add_theme_font_size_override("font_size", 16)
+	reward_label.add_theme_color_override("font_color", Color("#5EE8A4"))
+	vbox.add_child(reward_label)
+
+	panel.add_child(vbox)
+
+	# Add to scroll vbox, after score panel
+	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox
+	scroll_vbox.add_child(panel)
 
 
 func _on_continue_pressed() -> void:
