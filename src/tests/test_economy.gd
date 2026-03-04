@@ -141,7 +141,7 @@ func test_check_rent_not_due_at_turn_zero():
 func test_deduct_rent():
 	var initial := GameState.balance
 	GameState.deduct_rent()
-	assert_eq(GameState.balance, initial - GameState.RENT_AMOUNT)
+	assert_eq(GameState.balance, initial - 150.0)
 
 # ---------------------------------------------------------------------------
 # Tests: win / loss conditions

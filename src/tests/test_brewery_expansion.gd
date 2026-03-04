@@ -114,3 +114,23 @@ func test_threshold_reached_signal() -> void:
 	BreweryExpansion.beers_brewed = 9
 	BreweryExpansion.record_brew()  # 10th brew crosses threshold
 	assert_signal_emitted(BreweryExpansion, "threshold_reached")
+
+# --- GameState integration ---
+func test_rent_uses_brewery_stage() -> void:
+	GameState.balance = 1000.0
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.GARAGE
+	GameState.deduct_rent()
+	assert_eq(GameState.balance, 850.0)
+
+func test_rent_scales_at_microbrewery() -> void:
+	GameState.balance = 1000.0
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	GameState.deduct_rent()
+	assert_eq(GameState.balance, 600.0)
+
+func test_reset_resets_brewery_expansion() -> void:
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	BreweryExpansion.beers_brewed = 20
+	GameState.reset()
+	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.GARAGE)
+	assert_eq(BreweryExpansion.beers_brewed, 0)

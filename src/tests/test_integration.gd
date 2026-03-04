@@ -133,7 +133,7 @@ func test_rent_deducted_at_rent_interval():
 	var revenue := GameState.calculate_revenue(50.0)
 	_brew_and_advance(50.0)
 	var rent_recipe_cost := GameState.get_recipe_cost(GameState.current_recipe)
-	var expected := balance_before - rent_recipe_cost + revenue - GameState.RENT_AMOUNT
+	var expected := balance_before - rent_recipe_cost + revenue - BreweryExpansion.get_rent_amount()
 	assert_almost_eq(GameState.balance, expected, 0.01,
 		"Balance on rent turn must include RENT_AMOUNT deduction")
 

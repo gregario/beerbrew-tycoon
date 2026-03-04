@@ -8,7 +8,6 @@ extends Node
 # ---------------------------------------------------------------------------
 const STARTING_BALANCE: float = 500.0
 const WIN_TARGET: float = 10000.0
-const RENT_AMOUNT: float = 150.0
 const RENT_INTERVAL: int = 4       # Rent charged every N turns
 const MINIMUM_RECIPE_COST: int = 50  # Cheapest base malt (15) + cheapest hop (20) + cheapest yeast (15)
 
@@ -176,9 +175,10 @@ func check_rent_due() -> bool:
 	return turn_counter > 0 and turn_counter % RENT_INTERVAL == 0
 
 func deduct_rent() -> void:
-	balance -= RENT_AMOUNT
+	var amount: float = BreweryExpansion.get_rent_amount() if is_instance_valid(BreweryExpansion) else 150.0
+	balance -= amount
 	balance_changed.emit(balance)
-	rent_charged.emit(RENT_AMOUNT, balance)
+	rent_charged.emit(amount, balance)
 
 # ---------------------------------------------------------------------------
 # Brew recording
@@ -281,6 +281,9 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 
 	record_brew(result["final_score"])
 
+	if is_instance_valid(BreweryExpansion):
+		BreweryExpansion.record_brew()
+
 	# Award research points
 	var rp_earned: int = 2 + int(result["final_score"] / 20.0)
 	ResearchManager.add_rp(rp_earned)
@@ -362,6 +365,8 @@ func reset() -> void:
 	ResearchManager.reset()
 	if is_instance_valid(StaffManager):
 		StaffManager.reset()
+	if is_instance_valid(BreweryExpansion):
+		BreweryExpansion.reset()
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.initialize_starting_equipment()
 	MarketSystem.initialize_demand()
