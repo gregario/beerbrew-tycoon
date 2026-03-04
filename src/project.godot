@@ -34,6 +34,7 @@ EquipmentManager="*res://autoloads/EquipmentManager.gd"
 ResearchManager="*res://autoloads/ResearchManager.gd"
 StaffManager="*res://autoloads/StaffManager.gd"
 BreweryExpansion="*res://autoloads/BreweryExpansion.gd"
+ContractManager="*res://autoloads/ContractManager.gd"
 
 [display]
 
