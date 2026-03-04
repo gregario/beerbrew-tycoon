@@ -283,6 +283,8 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 
 	if is_instance_valid(BreweryExpansion):
 		BreweryExpansion.record_brew()
+		if BreweryExpansion.can_expand() and is_instance_valid(ToastManager):
+			ToastManager.show_toast("Your brewery is ready to expand!")
 
 	# Award research points
 	var rp_earned: int = 2 + int(result["final_score"] / 20.0)

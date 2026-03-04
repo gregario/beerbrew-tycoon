@@ -187,3 +187,73 @@ func test_microbrewery_allows_hiring() -> void:
 	if StaffManager.candidates.size() > 0:
 		var result: bool = StaffManager.hire(StaffManager.candidates[0]["staff_id"])
 		assert_true(result)
+
+# --- Full integration ---
+func test_full_expansion_flow() -> void:
+	GameState.reset()
+	BreweryExpansion.reset()
+	EquipmentManager.reset()
+	EquipmentManager.initialize_starting_equipment()
+	StaffManager.reset()
+
+	# Verify initial state
+	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.GARAGE)
+	assert_eq(EquipmentManager.station_slots.size(), 3)
+	assert_eq(StaffManager.get_max_staff(), 0)
+
+	# Simulate meeting thresholds
+	GameState.balance = 7000.0
+	for i in range(12):
+		BreweryExpansion.record_brew()
+	assert_true(BreweryExpansion.can_expand())
+
+	# Expand
+	var result: bool = BreweryExpansion.expand()
+	assert_true(result)
+	EquipmentManager.resize_slots()
+
+	# Verify post-expansion state
+	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.MICROBREWERY)
+	assert_eq(GameState.balance, 4000.0)
+	assert_eq(EquipmentManager.station_slots.size(), 5)
+	assert_eq(StaffManager.get_max_staff(), 2)
+	assert_eq(BreweryExpansion.get_rent_amount(), 400.0)
+	assert_eq(BreweryExpansion.get_equipment_tier_cap(), 4)
+
+func test_save_load_preserves_expansion() -> void:
+	GameState.reset()
+	BreweryExpansion.reset()
+	EquipmentManager.reset()
+	EquipmentManager.initialize_starting_equipment()
+
+	# Expand first
+	GameState.balance = 7000.0
+	BreweryExpansion.beers_brewed = 12
+	BreweryExpansion.expand()
+	EquipmentManager.resize_slots()
+	EquipmentManager.assign_to_slot(3, "extract_kit")
+
+	# Save all state
+	var expansion_data: Dictionary = BreweryExpansion.save_state()
+	var equipment_data: Dictionary = EquipmentManager.save_state()
+
+	# Reset everything
+	BreweryExpansion.reset()
+	EquipmentManager.reset()
+
+	# Load state
+	BreweryExpansion.load_state(expansion_data)
+	EquipmentManager.load_state(equipment_data)
+
+	# Verify restored
+	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.MICROBREWERY)
+	assert_eq(EquipmentManager.station_slots.size(), 5)
+	assert_eq(EquipmentManager.station_slots[3], "extract_kit")
+
+func test_cannot_double_expand() -> void:
+	GameState.balance = 10000.0
+	BreweryExpansion.beers_brewed = 12
+	BreweryExpansion.expand()
+	var result: bool = BreweryExpansion.expand()
+	assert_false(result)
+	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.MICROBREWERY)
