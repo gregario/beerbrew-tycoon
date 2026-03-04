@@ -197,3 +197,10 @@ func test_refresh_emits_signal() -> void:
 	ContractManager.refresh_counter = 1
 	ContractManager.tick_deadlines()
 	assert_signal_emitted(ContractManager, "contracts_refreshed")
+
+# --- GameState integration ---
+func test_reset_resets_contract_manager() -> void:
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	GameState.reset()
+	assert_eq(ContractManager.active_contracts.size(), 0)
+	assert_gte(ContractManager.available_contracts.size(), 2)

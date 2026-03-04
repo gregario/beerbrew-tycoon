@@ -94,6 +94,14 @@ func _on_results_continue() -> void:
 		if total_salary > 0.0 and is_instance_valid(ToastManager):
 			ToastManager.show_toast("Salaries paid: -$%d (%d staff)" % [int(total_salary), StaffManager.staff_roster.size()])
 		StaffManager.refresh_candidates()
+	# Contract deadline tick (Stage 4A)
+	if is_instance_valid(ContractManager):
+		var expired: Array = ContractManager.tick_deadlines()
+		for contract in expired:
+			if is_instance_valid(ToastManager):
+				ToastManager.show_toast("Contract expired! %s: -$%d penalty" % [
+					contract["client_name"], contract["reputation_penalty"]
+				])
 	if check_win_condition():
 		run_won = true
 		_set_state(State.GAME_OVER)
@@ -286,6 +294,21 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 		if BreweryExpansion.can_expand() and is_instance_valid(ToastManager):
 			ToastManager.show_toast("Your brewery is ready to expand!")
 
+	# Contract fulfillment check (Stage 4A)
+	if is_instance_valid(ContractManager) and current_style != null:
+		var fulfillment: Dictionary = ContractManager.check_fulfillment(
+			current_style.style_id, result["final_score"]
+		)
+		result["contract_fulfillment"] = fulfillment
+		if fulfillment.get("fulfilled", false) and is_instance_valid(ToastManager):
+			var contract: Dictionary = fulfillment["contract"]
+			var bonus_text: String = ""
+			if fulfillment["bonus"] > 0:
+				bonus_text = " (+$%d bonus)" % fulfillment["bonus"]
+			ToastManager.show_toast("Contract fulfilled! %s: +$%d%s" % [
+				contract["client_name"], fulfillment["total"], bonus_text
+			])
+
 	# Award research points
 	var rp_earned: int = 2 + int(result["final_score"] / 20.0)
 	ResearchManager.add_rp(rp_earned)
@@ -369,6 +392,8 @@ func reset() -> void:
 		StaffManager.reset()
 	if is_instance_valid(BreweryExpansion):
 		BreweryExpansion.reset()
+	if is_instance_valid(ContractManager):
+		ContractManager.reset()
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.initialize_starting_equipment()
 	MarketSystem.initialize_demand()
