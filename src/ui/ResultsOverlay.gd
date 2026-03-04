@@ -89,7 +89,8 @@ func populate() -> void:
 	var rent_upcoming := next_turn > 0 and next_turn % GameState.RENT_INTERVAL == 0
 	rent_label.visible = rent_upcoming
 	if rent_upcoming:
-		rent_label.text = "Rent due: -$%.0f (charged when you continue)" % GameState.RENT_AMOUNT
+		var rent_amount: float = BreweryExpansion.get_rent_amount() if is_instance_valid(BreweryExpansion) else 150.0
+		rent_label.text = "Rent due: -$%.0f (charged when you continue)" % rent_amount
 
 	# Tasting notes
 	var notes: String = result.get("tasting_notes", "")
