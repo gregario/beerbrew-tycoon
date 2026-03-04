@@ -101,3 +101,99 @@ func test_contract_accepted_signal() -> void:
 	watch_signals(ContractManager)
 	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
 	assert_signal_emitted(ContractManager, "contract_accepted")
+
+# --- Fulfillment ---
+func test_fulfillment_matches_style_and_quality() -> void:
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	var contract: Dictionary = ContractManager.active_contracts[0]
+	var style: String = contract["required_style"]
+	var min_q: float = contract["minimum_quality"]
+	var initial_balance: float = GameState.balance
+	var result: Dictionary = ContractManager.check_fulfillment(style, min_q + 5.0)
+	assert_true(result["fulfilled"])
+	assert_eq(result["reward"], contract["reward"])
+	assert_eq(result["bonus"], 0)
+	assert_gt(GameState.balance, initial_balance)
+
+func test_fulfillment_with_bonus() -> void:
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	var contract: Dictionary = ContractManager.active_contracts[0]
+	var style: String = contract["required_style"]
+	var min_q: float = contract["minimum_quality"]
+	var result: Dictionary = ContractManager.check_fulfillment(style, min_q + 25.0)
+	assert_true(result["fulfilled"])
+	assert_eq(result["bonus"], contract["bonus_reward"])
+	assert_eq(result["total"], contract["reward"] + contract["bonus_reward"])
+
+func test_fulfillment_wrong_style_fails() -> void:
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	var result: Dictionary = ContractManager.check_fulfillment("nonexistent_style", 100.0)
+	assert_false(result["fulfilled"])
+	assert_eq(ContractManager.active_contracts.size(), 1)
+
+func test_fulfillment_below_quality_fails() -> void:
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	var contract: Dictionary = ContractManager.active_contracts[0]
+	var style: String = contract["required_style"]
+	var min_q: float = contract["minimum_quality"]
+	var result: Dictionary = ContractManager.check_fulfillment(style, min_q - 5.0)
+	assert_false(result["fulfilled"])
+	assert_eq(ContractManager.active_contracts.size(), 1)
+
+func test_fulfillment_removes_from_active() -> void:
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	var contract: Dictionary = ContractManager.active_contracts[0]
+	ContractManager.check_fulfillment(contract["required_style"], contract["minimum_quality"] + 5.0)
+	assert_eq(ContractManager.active_contracts.size(), 0)
+
+func test_fulfillment_emits_signal() -> void:
+	watch_signals(ContractManager)
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	var contract: Dictionary = ContractManager.active_contracts[0]
+	ContractManager.check_fulfillment(contract["required_style"], contract["minimum_quality"] + 5.0)
+	assert_signal_emitted(ContractManager, "contract_fulfilled")
+
+func test_no_active_contracts_returns_not_fulfilled() -> void:
+	var result: Dictionary = ContractManager.check_fulfillment("lager", 80.0)
+	assert_false(result["fulfilled"])
+
+# --- Deadline and penalties ---
+func test_tick_decrements_remaining_turns() -> void:
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	var initial: int = ContractManager.active_contracts[0]["remaining_turns"]
+	ContractManager.tick_deadlines()
+	assert_eq(ContractManager.active_contracts[0]["remaining_turns"], initial - 1)
+
+func test_expired_contract_applies_penalty() -> void:
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	var contract: Dictionary = ContractManager.active_contracts[0]
+	var penalty: int = contract["reputation_penalty"]
+	contract["remaining_turns"] = 1
+	var initial_balance: float = GameState.balance
+	ContractManager.tick_deadlines()
+	assert_eq(ContractManager.active_contracts.size(), 0)
+	assert_almost_eq(GameState.balance, initial_balance - penalty, 0.01)
+
+func test_expired_contract_emits_signal() -> void:
+	watch_signals(ContractManager)
+	ContractManager.accept(ContractManager.available_contracts[0]["contract_id"])
+	ContractManager.active_contracts[0]["remaining_turns"] = 1
+	ContractManager.tick_deadlines()
+	assert_signal_emitted(ContractManager, "contract_failed")
+
+func test_refresh_counter_decrements() -> void:
+	ContractManager.refresh_counter = 2
+	ContractManager.tick_deadlines()
+	assert_eq(ContractManager.refresh_counter, 1)
+
+func test_refresh_generates_new_contracts_at_zero() -> void:
+	ContractManager.refresh_counter = 1
+	ContractManager.tick_deadlines()
+	assert_eq(ContractManager.refresh_counter, ContractManager.REFRESH_INTERVAL)
+	assert_gte(ContractManager.available_contracts.size(), 2)
+
+func test_refresh_emits_signal() -> void:
+	watch_signals(ContractManager)
+	ContractManager.refresh_counter = 1
+	ContractManager.tick_deadlines()
+	assert_signal_emitted(ContractManager, "contracts_refreshed")
