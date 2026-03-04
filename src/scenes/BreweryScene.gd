@@ -8,7 +8,7 @@ signal slot_clicked(slot_index: int)
 signal start_brewing_pressed()
 signal research_requested()
 signal staff_requested()
-signal contracts_requested()
+
 
 @onready var kettle_node: ColorRect = $Stations/Kettle
 @onready var fermenter_node: ColorRect = $Stations/Fermenter

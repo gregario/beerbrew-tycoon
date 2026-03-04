@@ -21,6 +21,9 @@ func _build_ui() -> void:
 	for child in get_children():
 		child.queue_free()
 
+	if not is_instance_valid(ContractManager):
+		return
+
 	# Dim background
 	var dim := ColorRect.new()
 	dim.color = Color(0, 0, 0, 0.6)
@@ -136,22 +139,27 @@ func _add_active_card(parent: VBoxContainer, contract: Dictionary) -> void:
 	var row1 := HBoxContainer.new()
 	vb.add_child(row1)
 	var client := Label.new()
-	client.text = "%s — Wants: %s" % [contract["client_name"], contract["required_style"].capitalize()]
-	client.add_theme_font_size_override("font_size", 20)
+	client.text = "%s" % contract["client_name"]
+	client.add_theme_font_size_override("font_size", 24)
 	client.add_theme_color_override("font_color", Color.WHITE)
 	row1.add_child(client)
+	var wants := Label.new()
+	wants.text = " — Wants: %s" % contract["required_style"].capitalize()
+	wants.add_theme_font_size_override("font_size", 24)
+	wants.add_theme_color_override("font_color", Color("#FFC857"))
+	row1.add_child(wants)
 
 	var row2 := HBoxContainer.new()
 	row2.add_theme_constant_override("separation", 24)
 	vb.add_child(row2)
 	var quality := Label.new()
 	quality.text = "Min Quality: %d" % int(contract["minimum_quality"])
-	quality.add_theme_font_size_override("font_size", 16)
+	quality.add_theme_font_size_override("font_size", 20)
 	quality.add_theme_color_override("font_color", Color("#8A9BB1"))
 	row2.add_child(quality)
 	var reward := Label.new()
 	reward.text = "Reward: $%d (+$%d bonus)" % [contract["reward"], contract["bonus_reward"]]
-	reward.add_theme_font_size_override("font_size", 16)
+	reward.add_theme_font_size_override("font_size", 20)
 	reward.add_theme_color_override("font_color", Color("#5EE8A4"))
 	row2.add_child(reward)
 
@@ -161,13 +169,13 @@ func _add_active_card(parent: VBoxContainer, contract: Dictionary) -> void:
 	var remaining: int = contract.get("remaining_turns", 0)
 	var deadline := Label.new()
 	deadline.text = "Deadline: %d turns remaining" % remaining
-	deadline.add_theme_font_size_override("font_size", 16)
+	deadline.add_theme_font_size_override("font_size", 20)
 	var deadline_color: Color = Color("#FF7B7B") if remaining <= 1 else Color("#FFB347")
 	deadline.add_theme_color_override("font_color", deadline_color)
 	row3.add_child(deadline)
 	var penalty := Label.new()
 	penalty.text = "Penalty: -$%d" % contract["reputation_penalty"]
-	penalty.add_theme_font_size_override("font_size", 16)
+	penalty.add_theme_font_size_override("font_size", 20)
 	penalty.add_theme_color_override("font_color", Color("#FF7B7B"))
 	row3.add_child(penalty)
 
