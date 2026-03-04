@@ -198,12 +198,18 @@ func _refresh_items() -> void:
 	_build_item_rows(items)
 
 func _build_item_rows(items: Array) -> void:
+	var stage_cap: int = BreweryExpansion.get_equipment_tier_cap() if is_instance_valid(BreweryExpansion) else 4
+	var max_tier: int = mini(ResearchManager.unlocked_equipment_tier, stage_cap)
 	for equip in items:
 		if not equip is Equipment:
 			continue
-		if equip.tier > ResearchManager.unlocked_equipment_tier:
-			var row := _create_locked_row(equip)
-			_item_list.add_child(row)
+		if equip.tier > max_tier:
+			if equip.tier > stage_cap:
+				var row := _create_locked_row(equip, "Requires Microbrewery")
+				_item_list.add_child(row)
+			else:
+				var row := _create_locked_row(equip)
+				_item_list.add_child(row)
 		else:
 			var row := _create_shop_row(equip)
 			_item_list.add_child(row)
@@ -321,7 +327,7 @@ func _create_shop_row(equip: Equipment) -> PanelContainer:
 	row_panel.add_child(hbox)
 	return row_panel
 
-func _create_locked_row(equip: Equipment) -> PanelContainer:
+func _create_locked_row(equip: Equipment, message: String = "Research Required") -> PanelContainer:
 	var row_panel := PanelContainer.new()
 	var row_style := StyleBoxFlat.new()
 	row_style.bg_color = Color("#0F1724", 0.4)
@@ -362,7 +368,7 @@ func _create_locked_row(equip: Equipment) -> PanelContainer:
 
 	# Research Required label
 	var locked_label := Label.new()
-	locked_label.text = "(Research Required)"
+	locked_label.text = "(%s)" % message
 	locked_label.add_theme_font_size_override("font_size", 16)
 	locked_label.add_theme_color_override("font_color", Color("#8A9BB1"))
 	hbox.add_child(locked_label)
