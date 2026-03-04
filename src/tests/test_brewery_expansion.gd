@@ -100,10 +100,17 @@ func test_save_and_load() -> void:
 	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.MICROBREWERY)
 	assert_eq(BreweryExpansion.beers_brewed, 15)
 
-# --- Expand signal ---
+# --- Signals ---
 func test_expand_emits_signal() -> void:
 	watch_signals(BreweryExpansion)
 	GameState.balance = 6000.0
 	BreweryExpansion.beers_brewed = 12
 	BreweryExpansion.expand()
 	assert_signal_emitted(BreweryExpansion, "brewery_expanded")
+
+func test_threshold_reached_signal() -> void:
+	watch_signals(BreweryExpansion)
+	GameState.balance = 6000.0
+	BreweryExpansion.beers_brewed = 9
+	BreweryExpansion.record_brew()  # 10th brew crosses threshold
+	assert_signal_emitted(BreweryExpansion, "threshold_reached")
