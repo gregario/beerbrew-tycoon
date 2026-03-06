@@ -23,6 +23,7 @@ var equipment_popup: Control = null
 var equipment_shop: Control = null
 var research_tree: Control = null
 var staff_screen: Control = null
+var _sell_overlay: CanvasLayer = null
 
 func _ready() -> void:
 	# Register styles with the market manager before any demand init
@@ -120,16 +121,7 @@ func _on_state_changed(new_state: GameState.State) -> void:
 			_play_sfx(sfx_results)
 
 		GameState.State.SELL:
-			# SellOverlay not yet implemented (Task 8). Auto-advance for now.
-			# Apply legacy revenue so existing flow works until SellOverlay is built.
-			var legacy_revenue: float = GameState.calculate_revenue(
-				GameState.last_brew_result.get("final_score", 0.0))
-			GameState.add_revenue(legacy_revenue)
-			GameState.last_brew_result["revenue"] = legacy_revenue
-			if is_instance_valid(MarketManager) and GameState.current_style:
-				MarketManager.record_brew(GameState.current_style.style_id)
-			GameState.advance_state()
-			return
+			_show_sell_overlay()
 
 		GameState.State.EQUIPMENT_MANAGE:
 			brewery_scene.set_brewing(false)
@@ -210,3 +202,34 @@ func _on_staff_requested() -> void:
 
 func _on_staff_screen_closed() -> void:
 	pass  # Stay in equipment mode, staff screen is just an overlay
+
+# ---------------------------------------------------------------------------
+# Sell overlay handlers
+# ---------------------------------------------------------------------------
+
+func _show_sell_overlay() -> void:
+	if _sell_overlay == null:
+		_sell_overlay = preload("res://ui/SellOverlay.gd").new()
+		add_child(_sell_overlay)
+		_sell_overlay.sale_confirmed.connect(_on_sale_confirmed)
+		_sell_overlay.closed.connect(_on_sell_closed)
+	var style_name: String = GameState.current_style.style_name if GameState.current_style else "Unknown"
+	var base_price: float = GameState.current_style.base_price if GameState.current_style else 10.0
+	var quality: float = GameState.last_brew_result.get("final_score", 50.0)
+	var batch_mult: float = 1.0
+	if is_instance_valid(EquipmentManager):
+		batch_mult = EquipmentManager.active_bonuses.get("batch_size", 1.0)
+	var batch_size: int = int(10 * batch_mult)
+	var demand: float = 1.0
+	if is_instance_valid(MarketManager) and GameState.current_style:
+		demand = MarketManager.get_demand_multiplier(GameState.current_style.style_id)
+	_sell_overlay.show_overlay(style_name, base_price, quality, batch_size, demand)
+
+func _on_sale_confirmed(allocations: Array, price_offset: float) -> void:
+	GameState.execute_sell(allocations, price_offset)
+	GameState.advance_state()
+
+func _on_sell_closed() -> void:
+	# Close button acts the same as confirm with current allocations
+	# (player can't skip selling — just confirm with defaults)
+	_on_sale_confirmed([], 0.0)
