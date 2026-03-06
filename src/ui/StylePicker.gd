@@ -42,7 +42,7 @@ func _build_ui() -> void:
 	_style_buttons.clear()
 
 	for style in _styles:
-		var demand := MarketSystem.get_demand_weight(style.style_id)
+		var demand := MarketManager.get_demand_weight(style.style_id)
 		var demand_label := "High Demand" if demand > 1.0 else "Normal"
 		var btn := Button.new()
 		if style.unlocked:

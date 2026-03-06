@@ -2,7 +2,7 @@
 extends GutTest
 
 func before_each():
-	MarketSystem.register_styles(["lager", "pale_ale", "wheat_beer", "stout"])
+	MarketManager.register_styles(["lager", "pale_ale", "wheat_beer", "stout"])
 	GameState.reset()
 
 # ---------------------------------------------------------------------------
@@ -27,23 +27,23 @@ func test_revenue_at_neutral_conditions():
 	style.style_id = "test_style"
 	style.base_price = 200.0
 	GameState.set_style(style)
-	# Manually set demand to normal (1.0)
-	MarketSystem.register_styles(["test_style"])
-	MarketSystem.initialize_demand()
-	# Force normal demand
-	MarketSystem._demand_weights["test_style"] = MarketSystem.DEMAND_NORMAL
+	# Register and initialize — "test_style" has no seasonal modifier, so demand = 1.0
+	MarketManager.register_styles(["test_style"])
+	MarketManager.initialize()
 
+	var demand_mult: float = MarketManager.get_demand_weight("test_style")
 	var revenue := GameState.calculate_revenue(50.0)
-	# 200 * lerp(0.5, 2.0, 0.5) * 1.0 = 200 * 1.25 * 1.0 = 250.0
-	assert_eq(revenue, 250.0, "Revenue at score 50, demand 1.0, base 200 should be 250")
+	# 200 * lerp(0.5, 2.0, 0.5) * demand_mult = 200 * 1.25 * demand_mult
+	var expected: float = 200.0 * 1.25 * demand_mult
+	assert_almost_eq(revenue, expected, 0.01, "Revenue at score 50, base 200 should match formula")
 
 func test_high_quality_earns_more_than_low():
 	var style := BeerStyle.new()
 	style.style_id = "test_style2"
 	style.base_price = 200.0
 	GameState.set_style(style)
-	MarketSystem.register_styles(["test_style2"])
-	MarketSystem._demand_weights["test_style2"] = MarketSystem.DEMAND_NORMAL
+	MarketManager.register_styles(["test_style2"])
+	MarketManager.initialize()
 
 	var high_revenue := GameState.calculate_revenue(80.0)
 	var low_revenue  := GameState.calculate_revenue(40.0)

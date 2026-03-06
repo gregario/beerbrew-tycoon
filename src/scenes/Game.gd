@@ -25,8 +25,8 @@ var research_tree: Control = null
 var staff_screen: Control = null
 
 func _ready() -> void:
-	# Register styles with the market system before any demand init
-	MarketSystem.register_styles(STYLE_IDS)
+	# Register styles with the market manager before any demand init
+	MarketManager.register_styles(STYLE_IDS)
 
 	# Create equipment popup and shop (programmatic UI, no .tscn)
 	var popup_script = preload("res://ui/EquipmentPopup.gd")
@@ -118,6 +118,18 @@ func _on_state_changed(new_state: GameState.State) -> void:
 			results_overlay.populate()
 			_show_overlay(results_overlay)
 			_play_sfx(sfx_results)
+
+		GameState.State.SELL:
+			# SellOverlay not yet implemented (Task 8). Auto-advance for now.
+			# Apply legacy revenue so existing flow works until SellOverlay is built.
+			var legacy_revenue: float = GameState.calculate_revenue(
+				GameState.last_brew_result.get("final_score", 0.0))
+			GameState.add_revenue(legacy_revenue)
+			GameState.last_brew_result["revenue"] = legacy_revenue
+			if is_instance_valid(MarketManager) and GameState.current_style:
+				MarketManager.record_brew(GameState.current_style.style_id)
+			GameState.advance_state()
+			return
 
 		GameState.State.EQUIPMENT_MANAGE:
 			brewery_scene.set_brewing(false)
