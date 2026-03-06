@@ -97,6 +97,7 @@ func tick() -> void:
 		season_turn = 0
 		current_season = (current_season + 1) % 4
 		season_changed.emit(get_season_name())
+	demand_changed.emit()
 
 func get_season_name() -> String:
 	return SEASON_NAMES[current_season]
@@ -125,6 +126,7 @@ func _start_new_trend() -> void:
 func record_brew(style_id: String) -> void:
 	var current: float = _saturation.get(style_id, 0.0)
 	_saturation[style_id] = minf(current + SATURATION_PER_BREW, SATURATION_MAX_PENALTY)
+	demand_changed.emit()
 
 func get_saturation_penalty(style_id: String) -> float:
 	return _saturation.get(style_id, 0.0)

@@ -78,6 +78,11 @@ func _ready() -> void:
 	brewery_scene.staff_requested.connect(_on_staff_requested)
 	staff_screen.closed.connect(_on_staff_screen_closed)
 
+	# Connect market toast signals
+	MarketManager.trend_started.connect(_on_trend_started)
+	MarketManager.trend_ended.connect(_on_trend_ended)
+	MarketManager.season_changed.connect(_on_season_changed)
+
 	# Start a fresh run
 	GameState.reset()
 
@@ -233,3 +238,25 @@ func _on_sell_closed() -> void:
 	# Close button acts the same as confirm with current allocations
 	# (player can't skip selling — just confirm with defaults)
 	_on_sale_confirmed([], 0.0)
+
+# ---------------------------------------------------------------------------
+# Market toast handlers
+# ---------------------------------------------------------------------------
+
+func _on_trend_started(style_id: String) -> void:
+	var display_name: String = _get_style_display_name(style_id)
+	if is_instance_valid(ToastManager):
+		ToastManager.show_toast("%s is trending! (+50%% demand)" % display_name, 1)
+
+func _on_trend_ended(style_id: String) -> void:
+	var display_name: String = _get_style_display_name(style_id)
+	if is_instance_valid(ToastManager):
+		ToastManager.show_toast("%s trend ended" % display_name, 0)
+
+func _on_season_changed(season_name: String) -> void:
+	if is_instance_valid(ToastManager):
+		ToastManager.show_toast("Season changed to %s" % season_name, 0)
+
+func _get_style_display_name(style_id: String) -> String:
+	# Fallback: convert style_id to display name
+	return style_id.replace("_", " ").capitalize()
