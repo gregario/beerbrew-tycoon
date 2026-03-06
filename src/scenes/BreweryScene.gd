@@ -23,6 +23,7 @@ var _start_button: Button = null
 var _research_button: Button = null
 var _staff_button: Button = null
 var _contracts_button: Button = null
+var _compete_button: Button = null
 var _equipment_ui: CanvasLayer = null
 
 const SLOT_NAMES: Array[String] = ["Kettle", "Fermenter", "Bottler"]
@@ -38,6 +39,7 @@ const SLOT_POSITIONS_MICRO: Array[Vector2] = [
 ]
 
 var _contract_board: CanvasLayer = null
+var _competition_screen: CanvasLayer = null
 var _expansion_overlay: CanvasLayer = null
 
 func _ready() -> void:
@@ -308,6 +310,35 @@ func _build_equipment_ui() -> void:
 	_contracts_button.pressed.connect(func(): _on_contracts_pressed())
 	_equipment_ui.add_child(_contracts_button)
 
+	# "Compete" button next to Contracts
+	_compete_button = Button.new()
+	_compete_button.name = "CompeteButton"
+	var has_active_comp: bool = is_instance_valid(CompetitionManager) and CompetitionManager.current_competition != null
+	if has_active_comp and CompetitionManager.player_entry == null:
+		_compete_button.text = "Compete (!)"
+	else:
+		_compete_button.text = "Compete"
+	_compete_button.custom_minimum_size = Vector2(160, 48)
+	_compete_button.position = Vector2(1320, 620)
+	_compete_button.add_theme_font_size_override("font_size", 24)
+	_compete_button.add_theme_color_override("font_color", Color("#0F1724"))
+
+	var compete_style := StyleBoxFlat.new()
+	compete_style.bg_color = Color("#FFC857") if has_active_comp else Color("#5AA9FF")
+	compete_style.set_corner_radius_all(8)
+	compete_style.content_margin_left = 24
+	compete_style.content_margin_right = 24
+	compete_style.content_margin_top = 8
+	compete_style.content_margin_bottom = 8
+	_compete_button.add_theme_stylebox_override("normal", compete_style)
+
+	var compete_hover := compete_style.duplicate()
+	compete_hover.bg_color = Color("#FFD680") if has_active_comp else Color("#7BBFFF")
+	_compete_button.add_theme_stylebox_override("hover", compete_hover)
+
+	_compete_button.pressed.connect(func(): _on_compete_pressed())
+	_equipment_ui.add_child(_compete_button)
+
 func _on_contracts_pressed() -> void:
 	if _contract_board == null:
 		_contract_board = preload("res://ui/ContractBoard.gd").new()
@@ -333,3 +364,18 @@ func _on_expansion_details() -> void:
 func _on_expansion_confirmed() -> void:
 	_build_equipment_ui()
 	refresh_slots()
+
+func _on_compete_pressed() -> void:
+	if _competition_screen == null:
+		_competition_screen = preload("res://ui/CompetitionScreen.gd").new()
+		add_child(_competition_screen)
+		_competition_screen.closed.connect(_on_competition_screen_closed)
+	_competition_screen.show_screen()
+
+func _on_competition_screen_closed() -> void:
+	if _compete_button and is_instance_valid(CompetitionManager):
+		var has_active: bool = CompetitionManager.current_competition != null
+		if has_active and CompetitionManager.player_entry == null:
+			_compete_button.text = "Compete (!)"
+		else:
+			_compete_button.text = "Compete"
