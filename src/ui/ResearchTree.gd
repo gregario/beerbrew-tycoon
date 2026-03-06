@@ -1,4 +1,4 @@
-extends Control
+extends CanvasLayer
 
 ## ResearchTree — node graph overlay for browsing and unlocking research.
 ## Built entirely in code (no .tscn needed).
@@ -40,6 +40,7 @@ var _current_nodes: Array = []
 
 
 func _ready() -> void:
+	layer = 10
 	_build_ui()
 	visible = false
 
@@ -47,7 +48,6 @@ func _ready() -> void:
 ## Open the research tree and refresh the display.
 func show_tree() -> void:
 	_selected_category = 0
-	modulate.a = 1.0
 	visible = true
 	_refresh()
 
@@ -63,12 +63,9 @@ func _refresh() -> void:
 # ---------------------------------------------------------------------------
 
 func _build_ui() -> void:
-	set_anchors_preset(PRESET_FULL_RECT)
-	mouse_filter = Control.MOUSE_FILTER_STOP
-
 	# Dim overlay
 	_dim_bg = ColorRect.new()
-	_dim_bg.set_anchors_preset(PRESET_FULL_RECT)
+	_dim_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_dim_bg.color = Color(0, 0, 0, 0.6)
 	_dim_bg.mouse_filter = Control.MOUSE_FILTER_STOP
 	_dim_bg.gui_input.connect(_on_dim_input)
@@ -76,7 +73,7 @@ func _build_ui() -> void:
 
 	# Centered panel
 	var center := CenterContainer.new()
-	center.set_anchors_preset(PRESET_FULL_RECT)
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
 

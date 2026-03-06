@@ -1,4 +1,4 @@
-extends Control
+extends CanvasLayer
 
 ## StaffScreen — full-screen overlay UI for staff management.
 ## Built entirely in code (no .tscn needed).
@@ -23,13 +23,13 @@ var _candidates_container: HBoxContainer = null
 
 
 func _ready() -> void:
+	layer = 10
 	_build_ui()
 	visible = false
 
 
 ## Open the staff screen and refresh the display.
 func show_screen() -> void:
-	modulate.a = 1.0
 	visible = true
 	_refresh()
 
@@ -81,12 +81,9 @@ func _refresh() -> void:
 # ---------------------------------------------------------------------------
 
 func _build_ui() -> void:
-	set_anchors_preset(PRESET_FULL_RECT)
-	mouse_filter = Control.MOUSE_FILTER_STOP
-
 	# Dim overlay
 	_dim_bg = ColorRect.new()
-	_dim_bg.set_anchors_preset(PRESET_FULL_RECT)
+	_dim_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_dim_bg.color = Color(0, 0, 0, 0.6)
 	_dim_bg.mouse_filter = Control.MOUSE_FILTER_STOP
 	_dim_bg.gui_input.connect(_on_dim_input)
@@ -94,7 +91,7 @@ func _build_ui() -> void:
 
 	# Centered panel
 	var center := CenterContainer.new()
-	center.set_anchors_preset(PRESET_FULL_RECT)
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
 
@@ -685,7 +682,7 @@ func _on_fire_pressed(staff_id: String) -> void:
 
 func _create_dialog_overlay() -> ColorRect:
 	var overlay := ColorRect.new()
-	overlay.set_anchors_preset(PRESET_FULL_RECT)
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.color = Color(0, 0, 0, 0.5)
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	return overlay
@@ -695,7 +692,7 @@ func _create_dialog_overlay() -> ColorRect:
 ## add content children to the panel.
 func _create_dialog_panel(size: Vector2) -> Array:
 	var center := CenterContainer.new()
-	center.set_anchors_preset(PRESET_FULL_RECT)
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var panel := PanelContainer.new()
