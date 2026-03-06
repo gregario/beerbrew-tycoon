@@ -18,11 +18,11 @@ const STYLE_IDS := ["lager", "pale_ale", "wheat_beer", "stout"]
 @onready var sfx_win: AudioStreamPlayer = $SFX/WinSFX
 @onready var sfx_lose: AudioStreamPlayer = $SFX/LoseSFX
 
-var _all_overlays: Array[Control] = []
-var equipment_popup: Control = null
-var equipment_shop: Control = null
-var research_tree: Control = null
-var staff_screen: Control = null
+var _managed_overlays: Array = []
+var equipment_popup: CanvasLayer = null
+var equipment_shop: CanvasLayer = null
+var research_tree: CanvasLayer = null
+var staff_screen: CanvasLayer = null
 var _sell_overlay: CanvasLayer = null
 
 func _ready() -> void:
@@ -31,31 +31,31 @@ func _ready() -> void:
 
 	# Create equipment popup and shop (programmatic UI, no .tscn)
 	var popup_script = preload("res://ui/EquipmentPopup.gd")
-	equipment_popup = Control.new()
+	equipment_popup = CanvasLayer.new()
 	equipment_popup.set_script(popup_script)
 	equipment_popup.name = "EquipmentPopup"
 	add_child(equipment_popup)
 
 	var shop_script = preload("res://ui/EquipmentShop.gd")
-	equipment_shop = Control.new()
+	equipment_shop = CanvasLayer.new()
 	equipment_shop.set_script(shop_script)
 	equipment_shop.name = "EquipmentShop"
 	add_child(equipment_shop)
 
 	var research_script = preload("res://ui/ResearchTree.gd")
-	research_tree = Control.new()
+	research_tree = CanvasLayer.new()
 	research_tree.set_script(research_script)
 	research_tree.name = "ResearchTree"
 	add_child(research_tree)
 
 	var staff_script = preload("res://ui/StaffScreen.gd")
-	staff_screen = Control.new()
+	staff_screen = CanvasLayer.new()
 	staff_screen.set_script(staff_script)
 	staff_screen.name = "StaffScreen"
 	add_child(staff_screen)
 
-	# Collect all overlay references
-	_all_overlays = [style_picker, recipe_designer, brewing_phases,
+	# Collect all overlay references (Control scene-tree overlays + CanvasLayer programmatic ones)
+	_managed_overlays = [style_picker, recipe_designer, brewing_phases,
 		results_overlay, game_over_screen, equipment_popup, equipment_shop,
 		research_tree, staff_screen]
 
@@ -140,17 +140,26 @@ func _on_state_changed(new_state: GameState.State) -> void:
 			else:
 				_play_sfx(sfx_lose)
 
-func _show_overlay(overlay: Control) -> void:
-	overlay.modulate.a = 0.0
-	overlay.visible = true
-	var tween := create_tween()
-	tween.tween_property(overlay, "modulate:a", 1.0, 0.2).set_ease(Tween.EASE_OUT)
+func _show_overlay(overlay) -> void:
+	if overlay is Control:
+		overlay.modulate.a = 0.0
+		overlay.visible = true
+		var tween := create_tween()
+		tween.tween_property(overlay, "modulate:a", 1.0, 0.2).set_ease(Tween.EASE_OUT)
+	else:
+		overlay.visible = true
 
-func _hide_all_overlays() -> void:
-	for overlay in _all_overlays:
+func _close_all_managed_overlays() -> void:
+	for overlay in _managed_overlays:
 		if overlay:
 			overlay.visible = false
-			overlay.modulate.a = 0.0
+
+func _hide_all_overlays() -> void:
+	for overlay in _managed_overlays:
+		if overlay:
+			overlay.visible = false
+			if overlay is Control:
+				overlay.modulate.a = 0.0
 
 # ---------------------------------------------------------------------------
 # Audio helpers
@@ -169,6 +178,7 @@ func _play_sfx(player: AudioStreamPlayer) -> void:
 # ---------------------------------------------------------------------------
 
 func _on_slot_clicked(slot_index: int) -> void:
+	_close_all_managed_overlays()
 	equipment_popup.show_for_slot(slot_index)
 
 func _on_start_brewing() -> void:
@@ -186,7 +196,7 @@ func _on_equipment_upgrade(equipment_id: String) -> void:
 	brewery_scene.refresh_slots()
 
 func _on_browse_shop() -> void:
-	equipment_popup.visible = false
+	_close_all_managed_overlays()
 	equipment_shop.show_shop()
 
 func _on_popup_closed() -> void:
@@ -197,12 +207,14 @@ func _on_shop_closed() -> void:
 	brewery_scene.refresh_slots()
 
 func _on_research_requested() -> void:
+	_close_all_managed_overlays()
 	research_tree.show_tree()
 
 func _on_research_tree_closed() -> void:
 	pass  # Stay in equipment mode, research is just an overlay
 
 func _on_staff_requested() -> void:
+	_close_all_managed_overlays()
 	staff_screen.show_screen()
 
 func _on_staff_screen_closed() -> void:
@@ -213,9 +225,11 @@ func _on_staff_screen_closed() -> void:
 # ---------------------------------------------------------------------------
 
 func _show_sell_overlay() -> void:
+	_close_all_managed_overlays()
 	if _sell_overlay == null:
 		_sell_overlay = preload("res://ui/SellOverlay.gd").new()
 		add_child(_sell_overlay)
+		_managed_overlays.append(_sell_overlay)
 		_sell_overlay.sale_confirmed.connect(_on_sale_confirmed)
 		_sell_overlay.closed.connect(_on_sell_closed)
 	var style_name: String = GameState.current_style.style_name if GameState.current_style else "Unknown"
