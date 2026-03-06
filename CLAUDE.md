@@ -72,7 +72,8 @@ Before writing any code, read: `../../stacks/godot/STACK.md`
 - **Stage 3A (Staff System) complete** — Staff Resource, StaffManager autoload (hire/fire/assign/train/specialize/salary/save-load), StaffScreen overlay UI, staff bonus in QualityCalculator, GameState lifecycle integration. 273/273 GUT tests.
 - **Stage 3B (Brewery Expansion) complete** — BreweryExpansion autoload (stage enum, thresholds, costs, stage-dependent getters), dynamic station slots (3→5→7), rent scaling ($150→$400→$600/$800), staff hiring gated behind microbrewery, T3-T4 equipment gated behind microbrewery, ExpansionOverlay UI, expansion banner in BreweryScene. 307/307 GUT tests.
 - **Stage 4A (Contracts) complete** — ContractManager autoload (generation, acceptance, fulfillment, deadline tracking, save/load), GameState integration (fulfillment in execute_brew, deadlines in _on_results_continue, reset), ContractBoard overlay UI, Contracts button in BreweryScene, contract fulfillment panel in ResultsOverlay. 338/338 GUT tests.
-- OpenSpec change `post-mvp-roadmap` has 6 stages. Next: Stage 4B.
+- **Stage 4B (Competitions) complete** — CompetitionManager autoload (scheduling every 8-10 turns, 2-turn entry window, simulated judging with 3 scaling competitors, gold/silver/bronze medals, prize awards, 25% rare ingredient unlock on gold, save/load), GameState integration (tick in _on_results_continue, reset), CompetitionScreen overlay UI (prizes, entry, medal cabinet), Compete button in BreweryScene with active indicator. 368/368 GUT tests.
+- OpenSpec change `post-mvp-roadmap` has 6 stages. Next: Stage 4C (Market & Distribution).
 - Godot binary (Steam): `/Users/gregario/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot`
 - Manual tasks outstanding: 14.6 (60fps profiler check), 14.7 (pixel aliasing at 1080p), 6.1–6.5 (UI folder restructure via Godot editor).
 
