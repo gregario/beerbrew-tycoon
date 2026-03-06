@@ -79,7 +79,7 @@ func _build_ui() -> void:
 
 	_panel = PanelContainer.new()
 	_panel.custom_minimum_size = Vector2(900, 600)
-	_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = COLOR_SURFACE
 	panel_style.border_color = COLOR_MUTED
@@ -94,11 +94,13 @@ func _build_ui() -> void:
 
 	var main_vbox := VBoxContainer.new()
 	main_vbox.add_theme_constant_override("separation", 12)
+	main_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	_panel.add_child(main_vbox)
 
 	# Header
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 16)
+	header.mouse_filter = Control.MOUSE_FILTER_PASS
 
 	var title := Label.new()
 	title.text = "Research Tree"
@@ -132,6 +134,7 @@ func _build_ui() -> void:
 	# Category tabs
 	var tab_hbox := HBoxContainer.new()
 	tab_hbox.add_theme_constant_override("separation", 8)
+	tab_hbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	for i in range(CATEGORY_LABELS.size()):
 		var tab_btn := Button.new()
 		tab_btn.text = CATEGORY_LABELS[i]
@@ -146,6 +149,7 @@ func _build_ui() -> void:
 	# Scroll + node graph
 	_scroll = ScrollContainer.new()
 	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
 
 	_node_graph = Control.new()
 	_node_graph.custom_minimum_size = Vector2(850, 400)
