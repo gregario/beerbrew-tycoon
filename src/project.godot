@@ -35,6 +35,7 @@ ResearchManager="*res://autoloads/ResearchManager.gd"
 StaffManager="*res://autoloads/StaffManager.gd"
 BreweryExpansion="*res://autoloads/BreweryExpansion.gd"
 ContractManager="*res://autoloads/ContractManager.gd"
+CompetitionManager="*res://autoloads/CompetitionManager.gd"
 
 [display]
 
