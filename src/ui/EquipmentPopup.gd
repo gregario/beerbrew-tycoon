@@ -50,7 +50,7 @@ func _build_ui() -> void:
 
 	_panel = PanelContainer.new()
 	_panel.custom_minimum_size = Vector2(500, 400)
-	_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color("#0B1220")
 	panel_style.border_color = Color("#5AA9FF", 0.4)
@@ -64,6 +64,7 @@ func _build_ui() -> void:
 	center.add_child(_panel)
 
 	_content_vbox = VBoxContainer.new()
+	_content_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	_content_vbox.add_theme_constant_override("separation", 16)
 	_panel.add_child(_content_vbox)
 
@@ -90,6 +91,7 @@ func _build_content() -> void:
 
 	# Header row: title + close button
 	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_PASS
 	header.add_theme_constant_override("separation", 8)
 
 	_title_label = Label.new()
@@ -135,9 +137,11 @@ func _build_empty_slot_content(slot_name: String) -> void:
 		_content_vbox.add_child(empty_msg)
 	else:
 		var scroll := ScrollContainer.new()
+		scroll.mouse_filter = Control.MOUSE_FILTER_PASS
 		scroll.custom_minimum_size = Vector2(0, 200)
 		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		var list := VBoxContainer.new()
+		list.mouse_filter = Control.MOUSE_FILTER_PASS
 		list.add_theme_constant_override("separation", 8)
 
 		for equip_id in unslotted:
@@ -167,6 +171,7 @@ func _build_occupied_slot_content(slot_name: String, slot_id: String) -> void:
 
 	# Action buttons row
 	var actions := HBoxContainer.new()
+	actions.mouse_filter = Control.MOUSE_FILTER_PASS
 	actions.add_theme_constant_override("separation", 12)
 
 	# Swap (unassign) button
@@ -226,9 +231,11 @@ func _build_occupied_slot_content(slot_name: String, slot_id: String) -> void:
 
 func _create_equipment_row(equip: Equipment, show_assign: bool) -> HBoxContainer:
 	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_PASS
 	row.add_theme_constant_override("separation", 12)
 
 	var info := VBoxContainer.new()
+	info.mouse_filter = Control.MOUSE_FILTER_PASS
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var name_label := Label.new()
@@ -276,6 +283,7 @@ func _create_equipment_row(equip: Equipment, show_assign: bool) -> HBoxContainer
 
 func _create_stats_panel(equip: Equipment) -> PanelContainer:
 	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("#0F1724", 0.8)
 	style.set_corner_radius_all(8)
@@ -286,6 +294,7 @@ func _create_stats_panel(equip: Equipment) -> PanelContainer:
 	panel.add_theme_stylebox_override("panel", style)
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 6)
 
 	var desc_label := Label.new()

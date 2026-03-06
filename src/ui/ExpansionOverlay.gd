@@ -28,9 +28,11 @@ func _build_ui() -> void:
 	# Center panel 900x550
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
 
 	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	panel.custom_minimum_size = Vector2(900, 550)
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color("#0B1220")
@@ -42,11 +44,13 @@ func _build_ui() -> void:
 	center.add_child(panel)
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 12)
 	panel.add_child(vbox)
 
 	# Header
 	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_child(header)
 	var title := Label.new()
 	title.text = "EXPAND YOUR BREWERY"
@@ -63,6 +67,7 @@ func _build_ui() -> void:
 
 	# Stage transition row
 	var stage_row := HBoxContainer.new()
+	stage_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	stage_row.add_theme_constant_override("separation", 16)
 	stage_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_child(stage_row)
@@ -107,6 +112,7 @@ func _build_ui() -> void:
 
 	# Button row
 	var btn_row := HBoxContainer.new()
+	btn_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	btn_row.add_theme_constant_override("separation", 24)
 	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_child(btn_row)
@@ -137,6 +143,7 @@ func _add_section_label(parent: VBoxContainer, text: String, color: Color) -> vo
 
 func _add_info_box(parent: VBoxContainer, border_color: Color) -> VBoxContainer:
 	var pc := PanelContainer.new()
+	pc.mouse_filter = Control.MOUSE_FILTER_PASS
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("#0B1220")
 	style.border_color = border_color
@@ -145,6 +152,7 @@ func _add_info_box(parent: VBoxContainer, border_color: Color) -> VBoxContainer:
 	pc.add_theme_stylebox_override("panel", style)
 	parent.add_child(pc)
 	var vb := VBoxContainer.new()
+	vb.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_theme_constant_override("separation", 6)
 	pc.add_child(vb)
 	return vb

@@ -30,9 +30,11 @@ func _build_ui() -> void:
 	# Center panel 900x550
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
 
 	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	panel.custom_minimum_size = Vector2(900, 550)
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color("#0B1220")
@@ -44,17 +46,20 @@ func _build_ui() -> void:
 	center.add_child(panel)
 
 	var scroll := ScrollContainer.new()
+	scroll.mouse_filter = Control.MOUSE_FILTER_PASS
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	panel.add_child(scroll)
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 12)
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(vbox)
 
 	# Header
 	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_child(header)
 	var title := Label.new()
 	title.text = "BEER COMPETITION"
@@ -96,6 +101,7 @@ func _build_active_competition(parent: VBoxContainer) -> void:
 
 	# Details row
 	var details := HBoxContainer.new()
+	details.mouse_filter = Control.MOUSE_FILTER_PASS
 	details.add_theme_constant_override("separation", 24)
 	parent.add_child(details)
 
@@ -127,6 +133,7 @@ func _build_active_competition(parent: VBoxContainer) -> void:
 	parent.add_child(prizes_label)
 
 	var prizes_row := HBoxContainer.new()
+	prizes_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	prizes_row.add_theme_constant_override("separation", 16)
 	parent.add_child(prizes_row)
 
@@ -163,6 +170,7 @@ func _build_active_competition(parent: VBoxContainer) -> void:
 		var matches: bool = category == "open" or category == brew_style_id
 
 		var entry_card := PanelContainer.new()
+		entry_card.mouse_filter = Control.MOUSE_FILTER_PASS
 		var entry_style := StyleBoxFlat.new()
 		entry_style.bg_color = Color("#0B1220")
 		entry_style.border_color = Color("#5AA9FF") if matches else Color("#8A9BB1")
@@ -173,6 +181,7 @@ func _build_active_competition(parent: VBoxContainer) -> void:
 		parent.add_child(entry_card)
 
 		var entry_vbox := VBoxContainer.new()
+		entry_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 		entry_vbox.add_theme_constant_override("separation", 8)
 		entry_card.add_child(entry_vbox)
 
@@ -230,6 +239,7 @@ func _build_medal_cabinet(parent: VBoxContainer) -> void:
 	parent.add_child(cabinet_label)
 
 	var medals_row := HBoxContainer.new()
+	medals_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	medals_row.add_theme_constant_override("separation", 24)
 	parent.add_child(medals_row)
 
@@ -239,6 +249,7 @@ func _build_medal_cabinet(parent: VBoxContainer) -> void:
 
 func _add_prize_card(parent: HBoxContainer, tier: String, amount: int, color: Color) -> void:
 	var card := PanelContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.custom_minimum_size = Vector2(150, 80)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("#0B1220")
@@ -250,6 +261,7 @@ func _add_prize_card(parent: HBoxContainer, tier: String, amount: int, color: Co
 	parent.add_child(card)
 
 	var vb := VBoxContainer.new()
+	vb.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_theme_constant_override("separation", 4)
 	card.add_child(vb)
 

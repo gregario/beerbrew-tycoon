@@ -53,9 +53,11 @@ func _build_ui() -> void:
 	# Center panel 900x550
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
 
 	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	panel.custom_minimum_size = Vector2(900, 550)
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color("#0B1220")
@@ -67,11 +69,13 @@ func _build_ui() -> void:
 	center.add_child(panel)
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 12)
 	panel.add_child(vbox)
 
 	# Header
 	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_child(header)
 	var title := Label.new()
 	title.text = "MARKET FORECAST"
@@ -100,6 +104,7 @@ func _build_ui() -> void:
 
 	# Tab bar
 	var tab_bar := HBoxContainer.new()
+	tab_bar.mouse_filter = Control.MOUSE_FILTER_PASS
 	tab_bar.add_theme_constant_override("separation", 4)
 	vbox.add_child(tab_bar)
 	for i in range(TAB_NAMES.size()):
@@ -125,11 +130,13 @@ func _build_ui() -> void:
 
 	# Tab content area (ScrollContainer for overflow)
 	var scroll := ScrollContainer.new()
+	scroll.mouse_filter = Control.MOUSE_FILTER_PASS
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	vbox.add_child(scroll)
 
 	var content := VBoxContainer.new()
+	content.mouse_filter = Control.MOUSE_FILTER_PASS
 	content.add_theme_constant_override("separation", 12)
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(content)
@@ -152,6 +159,7 @@ func _switch_tab(idx: int) -> void:
 func _build_forecast_tab(parent: VBoxContainer) -> void:
 	# Trend info
 	var trend_row := HBoxContainer.new()
+	trend_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	trend_row.add_theme_constant_override("separation", 24)
 	parent.add_child(trend_row)
 
@@ -250,6 +258,7 @@ func _build_seasonal_table(parent: VBoxContainer) -> void:
 			if is_current:
 				# Wrap in a subtle highlight panel
 				var cell_panel := PanelContainer.new()
+				cell_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 				var cell_style := StyleBoxFlat.new()
 				cell_style.bg_color = Color("#5AA9FF", 0.15)
 				cell_style.set_corner_radius_all(2)
@@ -279,6 +288,7 @@ func _add_grid_cell(parent: GridContainer, text: String, color: Color, font_size
 
 func _build_saturation_row(parent: VBoxContainer, style_id: String, penalty: float) -> void:
 	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_PASS
 	row.add_theme_constant_override("separation", 12)
 	parent.add_child(row)
 
@@ -321,6 +331,7 @@ func _build_demand_row(parent: VBoxContainer, style_id: String) -> void:
 	var total: float = MarketManager.get_demand_multiplier(style_id)
 
 	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_PASS
 	row.add_theme_constant_override("separation", 8)
 	parent.add_child(row)
 
@@ -386,6 +397,7 @@ func _build_channel_card(parent: GridContainer, channel: Dictionary) -> void:
 	var unlocked: bool = MarketManager.is_channel_unlocked(channel.id)
 
 	var card := PanelContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.custom_minimum_size = Vector2(380, 160)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("#0B1220")
@@ -397,6 +409,7 @@ func _build_channel_card(parent: GridContainer, channel: Dictionary) -> void:
 	parent.add_child(card)
 
 	var vb := VBoxContainer.new()
+	vb.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_theme_constant_override("separation", 6)
 	card.add_child(vb)
 

@@ -35,9 +35,11 @@ func _build_ui() -> void:
 	# Center panel 900x550
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
 
 	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	panel.custom_minimum_size = Vector2(900, 550)
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color("#0B1220")
@@ -49,11 +51,13 @@ func _build_ui() -> void:
 	center.add_child(panel)
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 12)
 	panel.add_child(vbox)
 
 	# Header
 	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_child(header)
 	var title := Label.new()
 	title.text = "CONTRACT BOARD"
@@ -103,6 +107,7 @@ func _build_ui() -> void:
 
 	# Available contracts section
 	var avail_header := HBoxContainer.new()
+	avail_header.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_child(avail_header)
 	var avail_label := Label.new()
 	avail_label.text = "AVAILABLE CONTRACTS"
@@ -117,6 +122,7 @@ func _build_ui() -> void:
 	avail_header.add_child(refresh_label)
 
 	var cards_row := HBoxContainer.new()
+	cards_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	cards_row.add_theme_constant_override("separation", 16)
 	vbox.add_child(cards_row)
 
@@ -126,6 +132,7 @@ func _build_ui() -> void:
 
 func _add_active_card(parent: VBoxContainer, contract: Dictionary) -> void:
 	var card := PanelContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("#0B1220")
 	style.border_color = Color("#FFC857")
@@ -136,10 +143,12 @@ func _add_active_card(parent: VBoxContainer, contract: Dictionary) -> void:
 	parent.add_child(card)
 
 	var vb := VBoxContainer.new()
+	vb.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_theme_constant_override("separation", 4)
 	card.add_child(vb)
 
 	var row1 := HBoxContainer.new()
+	row1.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_child(row1)
 	var client := Label.new()
 	client.text = "%s" % contract["client_name"]
@@ -153,6 +162,7 @@ func _add_active_card(parent: VBoxContainer, contract: Dictionary) -> void:
 	row1.add_child(wants)
 
 	var row2 := HBoxContainer.new()
+	row2.mouse_filter = Control.MOUSE_FILTER_PASS
 	row2.add_theme_constant_override("separation", 24)
 	vb.add_child(row2)
 	var quality := Label.new()
@@ -167,6 +177,7 @@ func _add_active_card(parent: VBoxContainer, contract: Dictionary) -> void:
 	row2.add_child(reward)
 
 	var row3 := HBoxContainer.new()
+	row3.mouse_filter = Control.MOUSE_FILTER_PASS
 	row3.add_theme_constant_override("separation", 24)
 	vb.add_child(row3)
 	var remaining: int = contract.get("remaining_turns", 0)
@@ -185,6 +196,7 @@ func _add_active_card(parent: VBoxContainer, contract: Dictionary) -> void:
 
 func _add_available_card(parent: HBoxContainer, contract: Dictionary) -> void:
 	var card := PanelContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.custom_minimum_size = Vector2(250, 200)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("#0B1220")
@@ -196,6 +208,7 @@ func _add_available_card(parent: HBoxContainer, contract: Dictionary) -> void:
 	parent.add_child(card)
 
 	var vb := VBoxContainer.new()
+	vb.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_theme_constant_override("separation", 6)
 	card.add_child(vb)
 

@@ -91,9 +91,11 @@ func _build_ui() -> void:
 	# Center panel 900x550
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
 
 	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	panel.custom_minimum_size = Vector2(900, 550)
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color("#0B1220")
@@ -105,11 +107,13 @@ func _build_ui() -> void:
 	center.add_child(panel)
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 10)
 	panel.add_child(vbox)
 
 	# ---- Header row ----
 	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_child(header)
 	var title := Label.new()
 	title.text = "SELL: %s" % _style_name
@@ -141,6 +145,7 @@ func _build_ui() -> void:
 
 	# ---- Pricing section ----
 	var pricing_header := HBoxContainer.new()
+	pricing_header.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_child(pricing_header)
 	var pricing_title := Label.new()
 	pricing_title.text = "PRICING"
@@ -156,6 +161,7 @@ func _build_ui() -> void:
 
 	# Base price
 	var base_row := HBoxContainer.new()
+	base_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	base_row.add_theme_constant_override("separation", 8)
 	vbox.add_child(base_row)
 	var base_label := Label.new()
@@ -166,6 +172,7 @@ func _build_ui() -> void:
 
 	# Adjusted price + slider row
 	var slider_row := HBoxContainer.new()
+	slider_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	slider_row.add_theme_constant_override("separation", 12)
 	vbox.add_child(slider_row)
 
@@ -195,6 +202,7 @@ func _build_ui() -> void:
 
 	# Volume effect
 	var vol_row := HBoxContainer.new()
+	vol_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_child(vol_row)
 	_volume_label = Label.new()
 	_volume_label.add_theme_font_size_override("font_size", 16)
@@ -205,6 +213,7 @@ func _build_ui() -> void:
 
 	# ---- Distribution section ----
 	var dist_header := HBoxContainer.new()
+	dist_header.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_child(dist_header)
 	var dist_title := Label.new()
 	dist_title.text = "DISTRIBUTION"
@@ -219,6 +228,7 @@ func _build_ui() -> void:
 
 	# Channel rows (all 4 — unlocked get +/- buttons, locked show "Locked")
 	var channels_container := VBoxContainer.new()
+	channels_container.mouse_filter = Control.MOUSE_FILTER_PASS
 	channels_container.add_theme_constant_override("separation", 4)
 	vbox.add_child(channels_container)
 
@@ -230,6 +240,7 @@ func _build_ui() -> void:
 
 	# ---- Projected revenue box ----
 	var proj_panel := PanelContainer.new()
+	proj_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var proj_style := StyleBoxFlat.new()
 	proj_style.bg_color = Color("#0B1220")
 	proj_style.border_color = Color("#5EE8A4")
@@ -240,6 +251,7 @@ func _build_ui() -> void:
 	vbox.add_child(proj_panel)
 
 	var proj_vbox := VBoxContainer.new()
+	proj_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	proj_vbox.add_theme_constant_override("separation", 2)
 	proj_panel.add_child(proj_vbox)
 
@@ -255,6 +267,7 @@ func _build_ui() -> void:
 
 	# ---- Confirm button ----
 	var btn_row := HBoxContainer.new()
+	btn_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	btn_row.alignment = BoxContainer.ALIGNMENT_END
 	vbox.add_child(btn_row)
 
@@ -280,6 +293,7 @@ func _build_ui() -> void:
 
 func _add_channel_row(parent: VBoxContainer, ch: Dictionary, unlocked: bool) -> void:
 	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_PASS
 	row.add_theme_constant_override("separation", 8)
 	parent.add_child(row)
 

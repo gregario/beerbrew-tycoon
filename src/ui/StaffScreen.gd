@@ -97,7 +97,7 @@ func _build_ui() -> void:
 
 	_panel = PanelContainer.new()
 	_panel.custom_minimum_size = Vector2(900, 550)
-	_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = COLOR_SURFACE
 	panel_style.border_color = COLOR_MUTED
@@ -111,11 +111,13 @@ func _build_ui() -> void:
 	center.add_child(_panel)
 
 	var main_vbox := VBoxContainer.new()
+	main_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	main_vbox.add_theme_constant_override("separation", 12)
 	_panel.add_child(main_vbox)
 
 	# Header row
 	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_PASS
 	header.add_theme_constant_override("separation", 16)
 
 	var title := Label.new()
@@ -155,9 +157,11 @@ func _build_ui() -> void:
 	main_vbox.add_child(roster_header)
 
 	var roster_scroll := ScrollContainer.new()
+	roster_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
 	roster_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
 	_roster_container = VBoxContainer.new()
+	_roster_container.mouse_filter = Control.MOUSE_FILTER_PASS
 	_roster_container.add_theme_constant_override("separation", 8)
 	_roster_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	roster_scroll.add_child(_roster_container)
@@ -176,6 +180,7 @@ func _build_ui() -> void:
 	main_vbox.add_child(candidates_header)
 
 	_candidates_container = HBoxContainer.new()
+	_candidates_container.mouse_filter = Control.MOUSE_FILTER_PASS
 	_candidates_container.add_theme_constant_override("separation", 8)
 	main_vbox.add_child(_candidates_container)
 
@@ -186,6 +191,7 @@ func _build_ui() -> void:
 
 func _build_roster_card(staff: Dictionary) -> PanelContainer:
 	var card := PanelContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	var style := StyleBoxFlat.new()
 	style.bg_color = COLOR_SURFACE
 	style.border_color = COLOR_PRIMARY
@@ -198,10 +204,12 @@ func _build_roster_card(staff: Dictionary) -> PanelContainer:
 	card.add_theme_stylebox_override("panel", style)
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 4)
 
 	# Header: Name | Lv.N | Salary (right-aligned)
 	var header_row := HBoxContainer.new()
+	header_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	header_row.add_theme_constant_override("separation", 12)
 
 	var name_label := Label.new()
@@ -243,6 +251,7 @@ func _build_roster_card(staff: Dictionary) -> PanelContainer:
 
 	# Status row
 	var status_row := HBoxContainer.new()
+	status_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	status_row.add_theme_constant_override("separation", 16)
 
 	var assigned_phase: String = staff.get("assigned_phase", "")
@@ -281,6 +290,7 @@ func _build_roster_card(staff: Dictionary) -> PanelContainer:
 
 	# Action buttons
 	var actions_row := HBoxContainer.new()
+	actions_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	actions_row.add_theme_constant_override("separation", 8)
 
 	var staff_id: String = staff.get("staff_id", "")
@@ -320,6 +330,7 @@ func _build_roster_card(staff: Dictionary) -> PanelContainer:
 
 func _build_candidate_card(candidate: Dictionary) -> PanelContainer:
 	var card := PanelContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.custom_minimum_size = Vector2(200, 0)
 	var style := StyleBoxFlat.new()
 	style.bg_color = COLOR_SURFACE
@@ -333,6 +344,7 @@ func _build_candidate_card(candidate: Dictionary) -> PanelContainer:
 	card.add_theme_stylebox_override("panel", style)
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 4)
 
 	var name_label := Label.new()
@@ -452,6 +464,7 @@ func _show_assign_dialog(staff_id: String) -> void:
 	var panel: PanelContainer = parts[1]
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 8)
 
 	var header := Label.new()
@@ -512,6 +525,7 @@ func _show_training_dialog(staff_id: String) -> void:
 	var panel: PanelContainer = parts[1]
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 8)
 
 	var staff_name: String = staff.get("staff_name", "Unknown")
@@ -586,6 +600,7 @@ func _show_specialization_dialog(staff_id: String) -> void:
 	var panel: PanelContainer = parts[1]
 
 	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox.add_theme_constant_override("separation", 8)
 
 	var staff_name: String = staff.get("staff_name", "Unknown")
@@ -697,7 +712,7 @@ func _create_dialog_panel(size: Vector2) -> Array:
 
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = size
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var style := StyleBoxFlat.new()
 	style.bg_color = COLOR_SURFACE
 	style.border_color = COLOR_PRIMARY

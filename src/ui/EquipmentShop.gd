@@ -59,7 +59,7 @@ func _build_ui() -> void:
 
 	_panel = PanelContainer.new()
 	_panel.custom_minimum_size = Vector2(900, 550)
-	_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color("#0B1220")
 	panel_style.border_color = Color("#5AA9FF", 0.4)
@@ -73,11 +73,13 @@ func _build_ui() -> void:
 	center.add_child(_panel)
 
 	var main_vbox := VBoxContainer.new()
+	main_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	main_vbox.add_theme_constant_override("separation", 16)
 	_panel.add_child(main_vbox)
 
 	# Header: title, balance, close
 	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_PASS
 	header.add_theme_constant_override("separation", 16)
 
 	var title := Label.new()
@@ -107,6 +109,7 @@ func _build_ui() -> void:
 
 	# Category tabs
 	_tab_container = HBoxContainer.new()
+	_tab_container.mouse_filter = Control.MOUSE_FILTER_PASS
 	_tab_container.add_theme_constant_override("separation", 8)
 	for i in range(CATEGORY_LABELS.size()):
 		var tab_btn := Button.new()
@@ -121,10 +124,12 @@ func _build_ui() -> void:
 
 	# Scrollable item list
 	_item_scroll = ScrollContainer.new()
+	_item_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
 	_item_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_item_scroll.custom_minimum_size = Vector2(0, 350)
 
 	_item_list = VBoxContainer.new()
+	_item_list.mouse_filter = Control.MOUSE_FILTER_PASS
 	_item_list.add_theme_constant_override("separation", 8)
 	_item_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_item_scroll.add_child(_item_list)
@@ -214,6 +219,7 @@ func _build_item_rows(items: Array) -> void:
 
 func _create_shop_row(equip: Equipment) -> PanelContainer:
 	var row_panel := PanelContainer.new()
+	row_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var row_style := StyleBoxFlat.new()
 	var is_owned: bool = equip.equipment_id in EquipmentManager.owned_equipment
 	row_style.bg_color = Color("#0F1724", 0.6)
@@ -227,13 +233,16 @@ func _create_shop_row(equip: Equipment) -> PanelContainer:
 	row_panel.add_theme_stylebox_override("panel", row_style)
 
 	var hbox := HBoxContainer.new()
+	hbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	hbox.add_theme_constant_override("separation", 16)
 
 	# Name + tier badge column
 	var info := VBoxContainer.new()
+	info.mouse_filter = Control.MOUSE_FILTER_PASS
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var name_row := HBoxContainer.new()
+	name_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	name_row.add_theme_constant_override("separation", 8)
 
 	# Owned checkmark
@@ -327,6 +336,7 @@ func _create_shop_row(equip: Equipment) -> PanelContainer:
 
 func _create_locked_row(equip: Equipment, message: String = "Research Required") -> PanelContainer:
 	var row_panel := PanelContainer.new()
+	row_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var row_style := StyleBoxFlat.new()
 	row_style.bg_color = Color("#0F1724", 0.4)
 	row_style.border_color = Color("#8A9BB1", 0.1)
@@ -340,13 +350,16 @@ func _create_locked_row(equip: Equipment, message: String = "Research Required")
 	row_panel.modulate.a = 0.5
 
 	var hbox := HBoxContainer.new()
+	hbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	hbox.add_theme_constant_override("separation", 16)
 
 	# Name + tier badge column
 	var info := VBoxContainer.new()
+	info.mouse_filter = Control.MOUSE_FILTER_PASS
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var name_row := HBoxContainer.new()
+	name_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	name_row.add_theme_constant_override("separation", 8)
 
 	var name_label := Label.new()
