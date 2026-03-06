@@ -23,6 +23,14 @@ const SATURATION_PER_BREW: float = 0.1
 const SATURATION_RECOVERY: float = 0.05
 const SATURATION_MAX_PENALTY: float = 0.5
 
+# -- Distribution channels --
+const CHANNELS: Array = [
+	{"id": "taproom", "name": "Taproom", "margin": 1.0, "volume_pct": 0.3, "unlock_type": "always"},
+	{"id": "local_bars", "name": "Local Bars", "margin": 0.7, "volume_pct": 0.5, "unlock_type": "brewery_stage"},
+	{"id": "retail", "name": "Retail", "margin": 0.5, "volume_pct": 1.0, "unlock_type": "research"},
+	{"id": "events", "name": "Events", "margin": 1.5, "volume_pct": 0.2, "unlock_type": "events"},
+]
+
 # Seasonal modifiers: {style_id: [spring, summer, fall, winter]}
 const SEASONAL_MODIFIERS: Dictionary = {
 	"pale_ale":   [0.1, 0.2, 0.0, -0.1],
@@ -130,6 +138,49 @@ func get_all_demand_weights() -> Dictionary:
 	for sid in _style_ids:
 		weights[sid] = get_demand_multiplier(sid)
 	return weights
+
+# -- Distribution channel methods --
+
+func get_channel(channel_id: String) -> Dictionary:
+	for ch in CHANNELS:
+		if ch.id == channel_id:
+			return ch
+	return {}
+
+func get_unlocked_channels() -> Array:
+	var result: Array = []
+	for ch in CHANNELS:
+		if is_channel_unlocked(ch.id):
+			result.append(ch)
+	return result
+
+func is_channel_unlocked(channel_id: String) -> bool:
+	var ch: Dictionary = get_channel(channel_id)
+	if ch.is_empty():
+		return false
+	match ch.unlock_type:
+		"always":
+			return true
+		"brewery_stage":
+			if is_instance_valid(BreweryExpansion):
+				return BreweryExpansion.current_stage >= BreweryExpansion.Stage.MICROBREWERY
+			return false
+		"research":
+			if is_instance_valid(ResearchManager):
+				return ResearchManager.is_unlocked("distribution_retail")
+			return false
+		"events":
+			if is_instance_valid(CompetitionManager):
+				var m: Dictionary = CompetitionManager.medals
+				return (m.get("gold", 0) + m.get("silver", 0) + m.get("bronze", 0)) > 0
+			return false
+	return false
+
+func get_max_units(channel_id: String, batch_size: int) -> int:
+	var ch: Dictionary = get_channel(channel_id)
+	if ch.is_empty():
+		return 0
+	return int(floor(batch_size * ch.volume_pct))
 
 func reset() -> void:
 	initialize()

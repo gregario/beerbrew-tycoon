@@ -188,3 +188,63 @@ func test_saturation_reset_on_initialize() -> void:
 	manager.record_brew("pale_ale")
 	manager.initialize()
 	assert_eq(manager.get_saturation_penalty("pale_ale"), 0.0)
+
+# -- Distribution channels --
+
+func test_channel_count() -> void:
+	assert_eq(manager.CHANNELS.size(), 4)
+
+func test_taproom_always_unlocked() -> void:
+	manager.initialize()
+	var unlocked: Array = manager.get_unlocked_channels()
+	assert_true(unlocked.any(func(c): return c.id == "taproom"))
+
+func test_channel_has_required_fields() -> void:
+	var ch: Dictionary = manager.CHANNELS[0]
+	assert_has(ch, "id")
+	assert_has(ch, "name")
+	assert_has(ch, "margin")
+	assert_has(ch, "volume_pct")
+	assert_has(ch, "unlock_type")
+
+func test_taproom_margin_is_1() -> void:
+	var taproom: Dictionary = manager.get_channel("taproom")
+	assert_eq(taproom.margin, 1.0)
+
+func test_local_bars_margin_is_07() -> void:
+	var bars: Dictionary = manager.get_channel("local_bars")
+	assert_almost_eq(bars.margin, 0.7, 0.001)
+
+func test_retail_margin_is_05() -> void:
+	var retail: Dictionary = manager.get_channel("retail")
+	assert_almost_eq(retail.margin, 0.5, 0.001)
+
+func test_events_margin_is_15() -> void:
+	var events: Dictionary = manager.get_channel("events")
+	assert_almost_eq(events.margin, 1.5, 0.001)
+
+func test_is_channel_unlocked_taproom() -> void:
+	manager.initialize()
+	assert_true(manager.is_channel_unlocked("taproom"))
+
+func test_local_bars_locked_in_garage() -> void:
+	manager.initialize()
+	# Without BreweryExpansion autoload, bars should be locked
+	assert_false(manager.is_channel_unlocked("local_bars"))
+
+func test_get_max_units_for_channel() -> void:
+	manager.initialize()
+	var max_units: int = manager.get_max_units("taproom", 10)
+	assert_eq(max_units, 3)
+
+func test_get_max_units_local_bars() -> void:
+	var max_units: int = manager.get_max_units("local_bars", 10)
+	assert_eq(max_units, 5)
+
+func test_get_max_units_retail() -> void:
+	var max_units: int = manager.get_max_units("retail", 10)
+	assert_eq(max_units, 10)
+
+func test_get_max_units_events() -> void:
+	var max_units: int = manager.get_max_units("events", 10)
+	assert_eq(max_units, 2)
