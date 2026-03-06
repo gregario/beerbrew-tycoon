@@ -24,6 +24,7 @@ var _research_button: Button = null
 var _staff_button: Button = null
 var _contracts_button: Button = null
 var _compete_button: Button = null
+var _market_button: Button = null
 var _equipment_ui: CanvasLayer = null
 
 const SLOT_NAMES: Array[String] = ["Kettle", "Fermenter", "Bottler"]
@@ -41,6 +42,7 @@ const SLOT_POSITIONS_MICRO: Array[Vector2] = [
 var _contract_board: CanvasLayer = null
 var _competition_screen: CanvasLayer = null
 var _expansion_overlay: CanvasLayer = null
+var _market_forecast: CanvasLayer = null
 
 func _ready() -> void:
 	set_brewing(false)
@@ -339,6 +341,31 @@ func _build_equipment_ui() -> void:
 	_compete_button.pressed.connect(func(): _on_compete_pressed())
 	_equipment_ui.add_child(_compete_button)
 
+	# "Market" button next to Compete
+	_market_button = Button.new()
+	_market_button.name = "MarketButton"
+	_market_button.text = "Market"
+	_market_button.custom_minimum_size = Vector2(160, 48)
+	_market_button.position = Vector2(1500, 620)
+	_market_button.add_theme_font_size_override("font_size", 24)
+	_market_button.add_theme_color_override("font_color", Color("#0F1724"))
+
+	var market_style := StyleBoxFlat.new()
+	market_style.bg_color = Color("#5AA9FF")
+	market_style.set_corner_radius_all(8)
+	market_style.content_margin_left = 24
+	market_style.content_margin_right = 24
+	market_style.content_margin_top = 8
+	market_style.content_margin_bottom = 8
+	_market_button.add_theme_stylebox_override("normal", market_style)
+
+	var market_hover := market_style.duplicate()
+	market_hover.bg_color = Color("#7BBFFF")
+	_market_button.add_theme_stylebox_override("hover", market_hover)
+
+	_market_button.pressed.connect(func(): _on_market_pressed())
+	_equipment_ui.add_child(_market_button)
+
 func _on_contracts_pressed() -> void:
 	if _contract_board == null:
 		_contract_board = preload("res://ui/ContractBoard.gd").new()
@@ -379,3 +406,13 @@ func _on_competition_screen_closed() -> void:
 			_compete_button.text = "Compete (!)"
 		else:
 			_compete_button.text = "Compete"
+
+func _on_market_pressed() -> void:
+	if _market_forecast == null:
+		_market_forecast = preload("res://ui/MarketForecast.gd").new()
+		add_child(_market_forecast)
+		_market_forecast.closed.connect(_on_market_forecast_closed)
+	_market_forecast.show_screen()
+
+func _on_market_forecast_closed() -> void:
+	pass
