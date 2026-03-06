@@ -74,3 +74,56 @@ func test_demand_multiplier_clamped_maximum() -> void:
 	manager.initialize()
 	var demand: float = manager.get_demand_multiplier("pale_ale")
 	assert_lte(demand, 2.5)
+
+# -- Trending styles --
+
+func test_no_trend_initially() -> void:
+	manager.initialize()
+	assert_eq(manager.active_trend_style, "", "No trend at start")
+
+func test_trend_bonus_constant() -> void:
+	assert_eq(manager.TREND_BONUS, 0.5)
+
+func test_get_trend_bonus_zero_when_no_trend() -> void:
+	manager.initialize()
+	assert_eq(manager.get_trend_bonus("pale_ale"), 0.0)
+
+func test_get_trend_bonus_when_trending() -> void:
+	manager.initialize()
+	manager.active_trend_style = "pale_ale"
+	manager.trend_remaining_turns = 4
+	assert_eq(manager.get_trend_bonus("pale_ale"), 0.5)
+
+func test_trend_bonus_zero_for_non_trending_style() -> void:
+	manager.initialize()
+	manager.active_trend_style = "stout"
+	manager.trend_remaining_turns = 4
+	assert_eq(manager.get_trend_bonus("pale_ale"), 0.0)
+
+func test_trend_expires_after_duration() -> void:
+	manager.initialize()
+	manager.active_trend_style = "pale_ale"
+	manager.trend_remaining_turns = 2
+	manager.tick()
+	assert_eq(manager.trend_remaining_turns, 1)
+	manager.tick()
+	assert_eq(manager.active_trend_style, "", "Trend should expire")
+
+func test_trend_included_in_demand_multiplier() -> void:
+	manager.initialize()
+	manager.active_trend_style = "pale_ale"
+	manager.trend_remaining_turns = 4
+	var demand: float = manager.get_demand_multiplier("pale_ale")
+	var seasonal: float = manager.get_seasonal_modifier("pale_ale")
+	var expected: float = clampf(1.0 + seasonal + 0.5, 0.3, 2.5)
+	assert_almost_eq(demand, expected, 0.001)
+
+func test_new_trend_starts_within_range() -> void:
+	manager.initialize()
+	# Force next_trend_in to 1 so a trend triggers on next tick
+	manager._next_trend_in = 1
+	manager.tick()
+	if manager.active_trend_style != "":
+		assert_true(manager._style_ids.has(manager.active_trend_style))
+		assert_gte(manager.trend_remaining_turns, 4)
+		assert_lte(manager.trend_remaining_turns, 6)

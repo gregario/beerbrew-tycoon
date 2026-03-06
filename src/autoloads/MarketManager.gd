@@ -14,6 +14,11 @@ const SEASON_NAMES: Array[String] = ["Spring", "Summer", "Fall", "Winter"]
 const TURNS_PER_SEASON: int = 6
 const DEMAND_MIN: float = 0.3
 const DEMAND_MAX: float = 2.5
+const TREND_BONUS: float = 0.5
+const TREND_MIN_INTERVAL: int = 8
+const TREND_MAX_INTERVAL: int = 12
+const TREND_MIN_DURATION: int = 4
+const TREND_MAX_DURATION: int = 6
 
 # Seasonal modifiers: {style_id: [spring, summer, fall, winter]}
 const SEASONAL_MODIFIERS: Dictionary = {
@@ -31,6 +36,9 @@ var _style_ids: Array = []
 var current_season: int = 0
 var season_turn: int = 0
 var _market_turn: int = 0
+var active_trend_style: String = ""
+var trend_remaining_turns: int = 0
+var _next_trend_in: int = 0
 
 func register_styles(style_ids: Array) -> void:
 	_style_ids = style_ids.duplicate()
@@ -39,9 +47,23 @@ func initialize() -> void:
 	current_season = 0
 	season_turn = 0
 	_market_turn = 0
+	active_trend_style = ""
+	trend_remaining_turns = 0
+	_next_trend_in = randi_range(TREND_MIN_INTERVAL, TREND_MAX_INTERVAL)
 
 func tick() -> void:
 	_market_turn += 1
+	# Trend tick — BEFORE season tick (order matters for signal timing)
+	if trend_remaining_turns > 0:
+		trend_remaining_turns -= 1
+		if trend_remaining_turns <= 0:
+			var old_style := active_trend_style
+			active_trend_style = ""
+			trend_ended.emit(old_style)
+	_next_trend_in -= 1
+	if _next_trend_in <= 0 and active_trend_style == "":
+		_start_new_trend()
+	# Season tick
 	season_turn += 1
 	if season_turn >= TURNS_PER_SEASON:
 		season_turn = 0
@@ -57,9 +79,25 @@ func get_seasonal_modifier(style_id: String) -> float:
 		return 0.0
 	return mods[current_season]
 
+func get_trend_bonus(style_id: String) -> float:
+	if style_id == active_trend_style and trend_remaining_turns > 0:
+		return TREND_BONUS
+	return 0.0
+
+func _start_new_trend() -> void:
+	if _style_ids.is_empty():
+		return
+	var candidates := _style_ids.duplicate()
+	candidates.shuffle()
+	active_trend_style = candidates[0]
+	trend_remaining_turns = randi_range(TREND_MIN_DURATION, TREND_MAX_DURATION)
+	_next_trend_in = randi_range(TREND_MIN_INTERVAL, TREND_MAX_INTERVAL)
+	trend_started.emit(active_trend_style)
+
 func get_demand_multiplier(style_id: String) -> float:
 	var base: float = 1.0
 	base += get_seasonal_modifier(style_id)
+	base += get_trend_bonus(style_id)
 	return clampf(base, DEMAND_MIN, DEMAND_MAX)
 
 # -- Backward compatibility (MarketSystem API) --
