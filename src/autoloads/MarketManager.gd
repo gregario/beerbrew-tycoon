@@ -19,6 +19,9 @@ const TREND_MIN_INTERVAL: int = 8
 const TREND_MAX_INTERVAL: int = 12
 const TREND_MIN_DURATION: int = 4
 const TREND_MAX_DURATION: int = 6
+const SATURATION_PER_BREW: float = 0.1
+const SATURATION_RECOVERY: float = 0.05
+const SATURATION_MAX_PENALTY: float = 0.5
 
 # Seasonal modifiers: {style_id: [spring, summer, fall, winter]}
 const SEASONAL_MODIFIERS: Dictionary = {
@@ -39,6 +42,7 @@ var _market_turn: int = 0
 var active_trend_style: String = ""
 var trend_remaining_turns: int = 0
 var _next_trend_in: int = 0
+var _saturation: Dictionary = {}  # {style_id: float}
 
 func register_styles(style_ids: Array) -> void:
 	_style_ids = style_ids.duplicate()
@@ -50,9 +54,15 @@ func initialize() -> void:
 	active_trend_style = ""
 	trend_remaining_turns = 0
 	_next_trend_in = randi_range(TREND_MIN_INTERVAL, TREND_MAX_INTERVAL)
+	_saturation = {}
 
 func tick() -> void:
 	_market_turn += 1
+	# Saturation recovery (all styles decay each turn)
+	for sid in _saturation.keys():
+		_saturation[sid] = maxf(_saturation[sid] - SATURATION_RECOVERY, 0.0)
+		if _saturation[sid] == 0.0:
+			_saturation.erase(sid)
 	# Trend tick — BEFORE season tick (order matters for signal timing)
 	if trend_remaining_turns > 0:
 		trend_remaining_turns -= 1
@@ -94,10 +104,21 @@ func _start_new_trend() -> void:
 	_next_trend_in = randi_range(TREND_MIN_INTERVAL, TREND_MAX_INTERVAL)
 	trend_started.emit(active_trend_style)
 
+func record_brew(style_id: String) -> void:
+	var current: float = _saturation.get(style_id, 0.0)
+	_saturation[style_id] = minf(current + SATURATION_PER_BREW, SATURATION_MAX_PENALTY)
+
+func get_saturation_penalty(style_id: String) -> float:
+	return _saturation.get(style_id, 0.0)
+
+func get_all_saturation() -> Dictionary:
+	return _saturation.duplicate()
+
 func get_demand_multiplier(style_id: String) -> float:
 	var base: float = 1.0
 	base += get_seasonal_modifier(style_id)
 	base += get_trend_bonus(style_id)
+	base -= get_saturation_penalty(style_id)
 	return clampf(base, DEMAND_MIN, DEMAND_MAX)
 
 # -- Backward compatibility (MarketSystem API) --

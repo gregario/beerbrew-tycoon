@@ -127,3 +127,64 @@ func test_new_trend_starts_within_range() -> void:
 		assert_true(manager._style_ids.has(manager.active_trend_style))
 		assert_gte(manager.trend_remaining_turns, 4)
 		assert_lte(manager.trend_remaining_turns, 6)
+
+# -- Market saturation --
+
+func test_initial_saturation_is_zero() -> void:
+	manager.initialize()
+	assert_eq(manager.get_saturation_penalty("pale_ale"), 0.0)
+
+func test_record_brew_increases_saturation() -> void:
+	manager.initialize()
+	manager.record_brew("pale_ale")
+	assert_almost_eq(manager.get_saturation_penalty("pale_ale"), 0.1, 0.001)
+
+func test_multiple_brews_stack_saturation() -> void:
+	manager.initialize()
+	manager.record_brew("pale_ale")
+	manager.record_brew("pale_ale")
+	manager.record_brew("pale_ale")
+	assert_almost_eq(manager.get_saturation_penalty("pale_ale"), 0.3, 0.001)
+
+func test_saturation_capped_at_floor() -> void:
+	manager.initialize()
+	for i in range(10):
+		manager.record_brew("pale_ale")
+	assert_almost_eq(manager.get_saturation_penalty("pale_ale"), 0.5, 0.001)
+
+func test_saturation_recovers_on_tick() -> void:
+	manager.initialize()
+	manager.record_brew("pale_ale")
+	manager.record_brew("pale_ale")  # 0.2 saturation
+	manager.tick()  # recovers 0.05 → 0.15
+	assert_almost_eq(manager.get_saturation_penalty("pale_ale"), 0.15, 0.001)
+
+func test_saturation_does_not_go_below_zero() -> void:
+	manager.initialize()
+	manager.record_brew("pale_ale")  # 0.1
+	manager.tick()  # 0.05
+	manager.tick()  # 0.0
+	manager.tick()  # still 0.0
+	assert_almost_eq(manager.get_saturation_penalty("pale_ale"), 0.0, 0.001)
+
+func test_saturation_only_recovers_for_styles_not_brewed_this_turn() -> void:
+	manager.initialize()
+	manager.record_brew("pale_ale")
+	manager.record_brew("stout")
+	manager.tick()
+	assert_almost_eq(manager.get_saturation_penalty("pale_ale"), 0.05, 0.001)
+
+func test_saturation_subtracted_from_demand() -> void:
+	manager.initialize()
+	manager.record_brew("pale_ale")
+	manager.record_brew("pale_ale")  # 0.2 saturation
+	var demand: float = manager.get_demand_multiplier("pale_ale")
+	var seasonal: float = manager.get_seasonal_modifier("pale_ale")
+	var expected: float = clampf(1.0 + seasonal - 0.2, 0.3, 2.5)
+	assert_almost_eq(demand, expected, 0.001)
+
+func test_saturation_reset_on_initialize() -> void:
+	manager.initialize()
+	manager.record_brew("pale_ale")
+	manager.initialize()
+	assert_eq(manager.get_saturation_penalty("pale_ale"), 0.0)
