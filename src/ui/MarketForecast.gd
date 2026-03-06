@@ -26,7 +26,7 @@ const UNLOCK_HINTS: Dictionary = {
 
 
 func _ready() -> void:
-	layer = 6
+	layer = 10
 	visible = false
 
 
@@ -51,10 +51,12 @@ func _build_ui() -> void:
 	add_child(dim)
 
 	# Center panel 900x550
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(center)
+
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = Vector2(900, 550)
-	panel.set_anchors_preset(Control.PRESET_CENTER)
-	panel.position = Vector2(190, 85)
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color("#0B1220")
 	panel_style.border_color = Color("#8A9BB1")
@@ -62,7 +64,7 @@ func _build_ui() -> void:
 	panel_style.set_corner_radius_all(4)
 	panel_style.set_content_margin_all(32)
 	panel.add_theme_stylebox_override("panel", panel_style)
-	add_child(panel)
+	center.add_child(panel)
 
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 12)
