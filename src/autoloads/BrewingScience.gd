@@ -7,7 +7,7 @@ extends Node
 
 ## Calculates fermentability from mash temperature.
 ## 62°C -> 0.82 (dry/crisp), 69°C -> 0.57 (full/sweet).
-static func calc_fermentability(mash_temp_c: float) -> float:
+func calc_fermentability(mash_temp_c: float) -> float:
 	return 0.82 - ((mash_temp_c - 62.0) / 7.0 * 0.25)
 
 
@@ -23,7 +23,7 @@ func calc_hop_utilization(boil_min: float, alpha_acid_pct: float) -> Dictionary:
 
 
 ## Calculates quality bonus and off-flavors based on fermentation temp vs yeast range.
-static func calc_yeast_accuracy(ferment_temp_c: float, yeast: Yeast) -> Dictionary:
+func calc_yeast_accuracy(ferment_temp_c: float, yeast: Yeast) -> Dictionary:
 	var off_flavors: Array[String] = []
 	var quality_bonus: float = 1.0
 
@@ -52,7 +52,7 @@ static func calc_yeast_accuracy(ferment_temp_c: float, yeast: Yeast) -> Dictiona
 
 
 ## Temperature drift based on equipment quality (0-100).
-static func calc_temp_drift(temp_control_quality: int) -> float:
+func calc_temp_drift(temp_control_quality: int) -> float:
 	var max_drift: float = float(100 - temp_control_quality) / 25.0
 	if max_drift <= 0.0:
 		return 0.0
@@ -71,7 +71,7 @@ func apply_noise(value: float, brew_seed: int) -> float:
 
 
 ## Scores mash temp against style's ideal range. Returns 0.0-1.0.
-static func calc_mash_score(mash_temp_c: float, style: BeerStyle) -> float:
+func calc_mash_score(mash_temp_c: float, style: BeerStyle) -> float:
 	if mash_temp_c >= style.ideal_mash_temp_min and mash_temp_c <= style.ideal_mash_temp_max:
 		return 1.0
 	var distance: float = 0.0
@@ -83,7 +83,7 @@ static func calc_mash_score(mash_temp_c: float, style: BeerStyle) -> float:
 
 
 ## Scores boil duration against style's ideal range. Returns 0.0-1.0.
-static func calc_boil_score(boil_min: float, style: BeerStyle) -> float:
+func calc_boil_score(boil_min: float, style: BeerStyle) -> float:
 	if boil_min >= style.ideal_boil_min and boil_min <= style.ideal_boil_max:
 		return 1.0
 	var distance: float = 0.0
@@ -95,7 +95,7 @@ static func calc_boil_score(boil_min: float, style: BeerStyle) -> float:
 
 
 ## Determines which flavor attributes are present in this brew's output.
-static func detect_brew_attributes(
+func detect_brew_attributes(
 	mash_temp_c: float,
 	boil_min: float,
 	ferment_temp_c: float,

@@ -246,16 +246,16 @@ func _on_sell_closed() -> void:
 func _on_trend_started(style_id: String) -> void:
 	var display_name: String = _get_style_display_name(style_id)
 	if is_instance_valid(ToastManager):
-		ToastManager.show_toast("%s is trending! (+50%% demand)" % display_name, 1)
+		ToastManager.show_toast("%s is trending! (+50%% demand)" % display_name)
 
 func _on_trend_ended(style_id: String) -> void:
 	var display_name: String = _get_style_display_name(style_id)
 	if is_instance_valid(ToastManager):
-		ToastManager.show_toast("%s trend ended" % display_name, 0)
+		ToastManager.show_toast("%s trend ended" % display_name)
 
 func _on_season_changed(season_name: String) -> void:
 	if is_instance_valid(ToastManager):
-		ToastManager.show_toast("Season changed to %s" % season_name, 0)
+		ToastManager.show_toast("Season changed to %s" % season_name)
 
 func _get_style_display_name(style_id: String) -> String:
 	# Fallback: convert style_id to display name

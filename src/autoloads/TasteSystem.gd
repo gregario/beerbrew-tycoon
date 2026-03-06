@@ -55,7 +55,7 @@ const ATTRIBUTE_LINKS: Dictionary = {
 # ---------------------------------------------------------------------------
 
 ## Generates tasting notes text based on taste level, brew attributes, and discoveries.
-static func generate_tasting_notes(
+func generate_tasting_notes(
 	attributes: Array[String],
 	style_name: String,
 	sliders: Dictionary
@@ -77,11 +77,11 @@ static func generate_tasting_notes(
 		return _level_5_notes(attributes, style_name, discoveries, sliders)
 
 
-static func _level_0_notes() -> String:
+func _level_0_notes() -> String:
 	return "Your friends shrug. \"It's... beer? Tastes like beer.\""
 
 
-static func _level_1_notes(attributes: Array[String]) -> String:
+func _level_1_notes(attributes: Array[String]) -> String:
 	if attributes.size() == 0:
 		return "You notice something, but can't quite place it."
 	var key: String = attributes[0]
@@ -89,15 +89,15 @@ static func _level_1_notes(attributes: Array[String]) -> String:
 	return "You get a vague sense of the %s." % category
 
 
-static func _level_2_notes(attributes: Array[String]) -> String:
+func _level_2_notes(attributes: Array[String]) -> String:
 	var parts: Array[String] = []
 	var body_note: String = ""
 	for attr in attributes:
-		var name: String = ATTRIBUTE_NAMES.get(attr, attr)
+		var attr_name: String = ATTRIBUTE_NAMES.get(attr, attr)
 		if attr.ends_with("_body"):
-			body_note = name
+			body_note = attr_name
 		elif parts.size() < 2:
-			parts.append(name)
+			parts.append(attr_name)
 	var text: String = ""
 	if body_note != "":
 		text = "The beer has a %s." % body_note
@@ -108,16 +108,16 @@ static func _level_2_notes(attributes: Array[String]) -> String:
 	return text.strip_edges()
 
 
-static func _level_3_notes(
+func _level_3_notes(
 	attributes: Array[String],
 	discoveries: Dictionary
 ) -> String:
 	var tags: Array[String] = []
 	for attr in attributes:
-		var name: String = ATTRIBUTE_NAMES.get(attr, attr)
+		var attr_name: String = ATTRIBUTE_NAMES.get(attr, attr)
 		if discoveries.has(attr) and discoveries[attr].get("discovered", false):
-			name = "[color=#FFC857]%s[/color]" % name
-		tags.append(name)
+			attr_name = "[color=#FFC857]%s[/color]" % attr_name
+		tags.append(attr_name)
 
 	var text: String = "Flavor profile: %s." % ", ".join(tags)
 
@@ -133,17 +133,17 @@ static func _level_3_notes(
 	return text
 
 
-static func _level_4_notes(
+func _level_4_notes(
 	attributes: Array[String],
 	style_name: String,
 	discoveries: Dictionary
 ) -> String:
 	var tags: Array[String] = []
 	for attr in attributes:
-		var name: String = ATTRIBUTE_NAMES.get(attr, attr)
+		var attr_name: String = ATTRIBUTE_NAMES.get(attr, attr)
 		if discoveries.has(attr) and discoveries[attr].get("discovered", false):
-			name = "[color=#FFC857]%s[/color]" % name
-		tags.append(name)
+			attr_name = "[color=#FFC857]%s[/color]" % attr_name
+		tags.append(attr_name)
 
 	var text: String = "Full tasting notes for this %s:\n" % style_name
 	text += "Attributes: %s.\n" % ", ".join(tags)
@@ -154,8 +154,8 @@ static func _level_4_notes(
 			var linked: String = discoveries[attr].get("linked_to", "")
 			if linked != "":
 				var detail: String = discoveries[attr].get("linked_detail", "")
-				var name: String = ATTRIBUTE_NAMES.get(attr, attr)
-				text += "  - %s: %s\n" % [name, detail]
+				var attr_name: String = ATTRIBUTE_NAMES.get(attr, attr)
+				text += "  - %s: %s\n" % [attr_name, detail]
 
 	var style_level: int = GameState.style_taste.get(style_name, 0)
 	if style_level >= 3:
@@ -166,7 +166,7 @@ static func _level_4_notes(
 	return text
 
 
-static func _level_5_notes(
+func _level_5_notes(
 	attributes: Array[String],
 	style_name: String,
 	discoveries: Dictionary,
@@ -182,7 +182,7 @@ static func _level_5_notes(
 	return text
 
 
-static func _get_category(attr_key: String) -> String:
+func _get_category(attr_key: String) -> String:
 	if attr_key.ends_with("_body"):
 		return "body"
 	elif attr_key.ends_with("_bitter"):
@@ -198,18 +198,18 @@ static func _get_category(attr_key: String) -> String:
 # ---------------------------------------------------------------------------
 
 ## Returns the chance of discovering a new attribute (0.0 - 0.80).
-static func get_discovery_chance(general_taste: int) -> float:
+func get_discovery_chance(general_taste: int) -> float:
 	return minf(0.20 + general_taste * 0.05, 0.80)
 
 
 ## Returns the chance of linking an attribute to its process (0.0 - 0.80).
-static func get_link_chance(style_taste_level: int) -> float:
+func get_link_chance(style_taste_level: int) -> float:
 	return minf(0.10 + style_taste_level * 0.05, 0.80)
 
 
 ## Rolls for attribute discovery and process linking.
 ## Returns {"attribute_discovered": "key_or_empty", "process_linked": "key_or_empty"}.
-static func roll_discoveries(
+func roll_discoveries(
 	brew_attributes: Array[String],
 	style_name: String
 ) -> Dictionary:

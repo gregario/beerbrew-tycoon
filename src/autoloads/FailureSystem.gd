@@ -27,13 +27,13 @@ const OFF_FLAVOR_INFO := {
 
 ## Calculates infection probability from sanitation quality.
 ## Formula: max(0, (100 - sanitation_quality) / 200.0)
-static func calc_infection_chance(sanitation_quality: int) -> float:
+func calc_infection_chance(sanitation_quality: int) -> float:
 	return maxf(0.0, float(100 - sanitation_quality) / 200.0)
 
 
 ## Applies infection penalty to a quality score.
 ## Returns {penalized_score: float, infected: bool, message: String}
-static func apply_infection_penalty(score: float) -> Dictionary:
+func apply_infection_penalty(score: float) -> Dictionary:
 	var multiplier: float = randf_range(0.4, 0.6)
 	return {
 		"penalized_score": score * multiplier,
@@ -44,13 +44,13 @@ static func apply_infection_penalty(score: float) -> Dictionary:
 
 ## Calculates off-flavor probability from temperature control quality.
 ## Same formula as infection: max(0, (100 - stat) / 200.0)
-static func calc_off_flavor_chance(temp_control_quality: int) -> float:
+func calc_off_flavor_chance(temp_control_quality: int) -> float:
 	return maxf(0.0, float(100 - temp_control_quality) / 200.0)
 
 
 ## Applies off-flavor penalty to a quality score.
 ## Returns {penalized_score: float, off_flavor_tags: Array[String], message: String}
-static func apply_off_flavor_penalty(score: float) -> Dictionary:
+func apply_off_flavor_penalty(score: float) -> Dictionary:
 	var multiplier: float = randf_range(0.7, 0.85)
 	var types: Array[String] = ["esters", "fusel_alcohols", "dms"]
 	var tag: String = types[randi() % types.size()]
@@ -64,7 +64,7 @@ static func apply_off_flavor_penalty(score: float) -> Dictionary:
 
 ## Roll for all failure modes and apply penalties to the score.
 ## Returns {final_score, infected, infection_message, off_flavor_tags, off_flavor_message, failure_messages}
-static func roll_failures(base_score: float, sanitation_quality: int, temp_control_quality: int) -> Dictionary:
+func roll_failures(base_score: float, sanitation_quality: int, temp_control_quality: int) -> Dictionary:
 	var final_score: float = base_score
 	var infected: bool = false
 	var infection_message: String = ""
@@ -105,7 +105,7 @@ static func roll_failures(base_score: float, sanitation_quality: int, temp_contr
 # ---------------------------------------------------------------------------
 
 ## Pre-boil gravity estimate from mash temperature.
-static func calc_pre_boil_gravity(mash_temp_c: float) -> Dictionary:
+func calc_pre_boil_gravity(mash_temp_c: float) -> Dictionary:
 	var og: float = 1.050 + (mash_temp_c - 65.0) * 0.002
 	var assessment: String = "normal"
 	if og < 1.045:
@@ -116,7 +116,7 @@ static func calc_pre_boil_gravity(mash_temp_c: float) -> Dictionary:
 
 
 ## Boil vigor assessment from boil duration.
-static func calc_boil_vigor(boil_min: float) -> Dictionary:
+func calc_boil_vigor(boil_min: float) -> Dictionary:
 	var vigor: String = "good"
 	var assessment: String = "normal"
 	if boil_min < 45.0:
@@ -131,7 +131,7 @@ static func calc_boil_vigor(boil_min: float) -> Dictionary:
 
 ## Final gravity estimate from mash temp and yeast attenuation.
 ## yeast_attenuation: fraction in range 0.0-1.0 (e.g., 0.75 for 75%)
-static func calc_final_gravity(mash_temp_c: float, yeast_attenuation: float) -> Dictionary:
+func calc_final_gravity(mash_temp_c: float, yeast_attenuation: float) -> Dictionary:
 	var og: float = 1.050 + (mash_temp_c - 65.0) * 0.002
 	var fg: float = og - (og - 1.0) * yeast_attenuation
 	var attenuation_pct: float = ((og - fg) / (og - 1.0)) * 100.0
