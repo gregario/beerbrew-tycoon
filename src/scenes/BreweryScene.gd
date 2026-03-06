@@ -204,12 +204,25 @@ func _build_equipment_ui() -> void:
 		_equipment_ui.add_child(btn)
 		_slot_buttons.append(btn)
 
-	# "Start Brewing" button at bottom center
+	# Hub buttons container — anchored to bottom center via a Control wrapper
+	var hub_anchor := Control.new()
+	hub_anchor.name = "HubButtonAnchor"
+	hub_anchor.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_equipment_ui.add_child(hub_anchor)
+
+	var hub_buttons := HBoxContainer.new()
+	hub_buttons.name = "HubButtons"
+	hub_buttons.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	hub_buttons.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	hub_buttons.position.y = -80
+	hub_buttons.add_theme_constant_override("separation", 16)
+	hub_anchor.add_child(hub_buttons)
+
+	# "Start Brewing" button
 	_start_button = Button.new()
 	_start_button.name = "StartBrewingButton"
 	_start_button.text = "Start Brewing  >"
 	_start_button.custom_minimum_size = Vector2(240, 48)
-	_start_button.position = Vector2(520, 620)
 	_start_button.add_theme_font_size_override("font_size", 24)
 	_start_button.add_theme_color_override("font_color", Color("#0F1724"))
 
@@ -227,14 +240,13 @@ func _build_equipment_ui() -> void:
 	_start_button.add_theme_stylebox_override("hover", start_hover)
 
 	_start_button.pressed.connect(func(): start_brewing_pressed.emit())
-	_equipment_ui.add_child(_start_button)
+	hub_buttons.add_child(_start_button)
 
-	# "Research" button next to Start Brewing
+	# "Research" button
 	_research_button = Button.new()
 	_research_button.name = "ResearchButton"
 	_research_button.text = "Research"
 	_research_button.custom_minimum_size = Vector2(160, 48)
-	_research_button.position = Vector2(780, 620)
 	_research_button.add_theme_font_size_override("font_size", 24)
 	_research_button.add_theme_color_override("font_color", Color("#0F1724"))
 
@@ -252,14 +264,13 @@ func _build_equipment_ui() -> void:
 	_research_button.add_theme_stylebox_override("hover", research_hover)
 
 	_research_button.pressed.connect(func(): research_requested.emit())
-	_equipment_ui.add_child(_research_button)
+	hub_buttons.add_child(_research_button)
 
-	# "Staff" button next to Research
+	# "Staff" button
 	_staff_button = Button.new()
 	_staff_button.name = "StaffButton"
 	_staff_button.text = "Staff"
 	_staff_button.custom_minimum_size = Vector2(160, 48)
-	_staff_button.position = Vector2(960, 620)
 	_staff_button.add_theme_font_size_override("font_size", 24)
 	_staff_button.add_theme_color_override("font_color", Color("#0F1724"))
 
@@ -277,14 +288,14 @@ func _build_equipment_ui() -> void:
 	_staff_button.add_theme_stylebox_override("hover", staff_hover)
 
 	_staff_button.pressed.connect(func(): staff_requested.emit())
-	_equipment_ui.add_child(_staff_button)
+	hub_buttons.add_child(_staff_button)
 
 	# Disable staff button in garage stage
 	if is_instance_valid(BreweryExpansion) and BreweryExpansion.current_stage == BreweryExpansion.Stage.GARAGE:
 		_staff_button.disabled = true
 		_staff_button.tooltip_text = "Upgrade to Microbrewery to hire staff"
 
-	# "Contracts" button next to Staff
+	# "Contracts" button
 	_contracts_button = Button.new()
 	_contracts_button.name = "ContractsButton"
 	_contracts_button.text = "Contracts"
@@ -292,7 +303,6 @@ func _build_equipment_ui() -> void:
 	if is_instance_valid(ContractManager) and ContractManager.active_contracts.size() > 0:
 		_contracts_button.text = "Contracts (%d)" % ContractManager.active_contracts.size()
 	_contracts_button.custom_minimum_size = Vector2(160, 48)
-	_contracts_button.position = Vector2(1140, 620)
 	_contracts_button.add_theme_font_size_override("font_size", 24)
 	_contracts_button.add_theme_color_override("font_color", Color("#0F1724"))
 
@@ -310,9 +320,9 @@ func _build_equipment_ui() -> void:
 	_contracts_button.add_theme_stylebox_override("hover", contracts_hover)
 
 	_contracts_button.pressed.connect(func(): _on_contracts_pressed())
-	_equipment_ui.add_child(_contracts_button)
+	hub_buttons.add_child(_contracts_button)
 
-	# "Compete" button next to Contracts
+	# "Compete" button
 	_compete_button = Button.new()
 	_compete_button.name = "CompeteButton"
 	var has_active_comp: bool = is_instance_valid(CompetitionManager) and CompetitionManager.current_competition != null
@@ -321,7 +331,6 @@ func _build_equipment_ui() -> void:
 	else:
 		_compete_button.text = "Compete"
 	_compete_button.custom_minimum_size = Vector2(160, 48)
-	_compete_button.position = Vector2(1320, 620)
 	_compete_button.add_theme_font_size_override("font_size", 24)
 	_compete_button.add_theme_color_override("font_color", Color("#0F1724"))
 
@@ -339,14 +348,13 @@ func _build_equipment_ui() -> void:
 	_compete_button.add_theme_stylebox_override("hover", compete_hover)
 
 	_compete_button.pressed.connect(func(): _on_compete_pressed())
-	_equipment_ui.add_child(_compete_button)
+	hub_buttons.add_child(_compete_button)
 
-	# "Market" button next to Compete
+	# "Market" button
 	_market_button = Button.new()
 	_market_button.name = "MarketButton"
 	_market_button.text = "Market"
 	_market_button.custom_minimum_size = Vector2(160, 48)
-	_market_button.position = Vector2(1500, 620)
 	_market_button.add_theme_font_size_override("font_size", 24)
 	_market_button.add_theme_color_override("font_color", Color("#0F1724"))
 
@@ -364,7 +372,7 @@ func _build_equipment_ui() -> void:
 	_market_button.add_theme_stylebox_override("hover", market_hover)
 
 	_market_button.pressed.connect(func(): _on_market_pressed())
-	_equipment_ui.add_child(_market_button)
+	hub_buttons.add_child(_market_button)
 
 func _on_contracts_pressed() -> void:
 	if _contract_board == null:
