@@ -20,6 +20,7 @@ enum State {
 	RECIPE_DESIGN,   # Player picks malt, hop, yeast
 	BREWING_PHASES,  # Player adjusts phase sliders and confirms brew
 	RESULTS,         # Show quality score, revenue, balance
+	SELL,            # Player allocates units to channels and sets pricing
 	EQUIPMENT_MANAGE, # Player manages equipment between brews
 	RESEARCH_MANAGE, # Player manages research tree between brews
 	GAME_OVER        # Win or loss end screen
@@ -73,6 +74,8 @@ func advance_state() -> void:
 		State.BREWING_PHASES:
 			_set_state(State.RESULTS)
 		State.RESULTS:
+			_set_state(State.SELL)
+		State.SELL:
 			_on_results_continue()
 		State.EQUIPMENT_MANAGE:
 			_set_state(State.MARKET_CHECK)
@@ -80,10 +83,10 @@ func advance_state() -> void:
 			pass  # Handled by reset() or quit
 
 func _on_results_continue() -> void:
-	# Increment turn, rotate demand if scheduled, process rent, check win/loss, advance
+	# Increment turn, tick market (season/trend/saturation), process rent, check win/loss, advance
 	turn_counter += 1
-	if MarketSystem.should_rotate(turn_counter):
-		MarketSystem.rotate_demand()
+	if is_instance_valid(MarketManager):
+		MarketManager.tick()
 	rent_due_this_turn = check_rent_due()
 	if rent_due_this_turn:
 		deduct_rent()
@@ -246,7 +249,7 @@ func calculate_revenue(quality_score: float) -> float:
 	if current_style == null:
 		return 0.0
 	var style_id: String = current_style.style_id
-	var demand_multiplier := MarketSystem.get_demand_weight(style_id)
+	var demand_multiplier := MarketManager.get_demand_weight(style_id)
 	var quality_mult := quality_to_multiplier(quality_score)
 	var batch_mult := 1.0
 	if is_instance_valid(EquipmentManager):
@@ -256,9 +259,9 @@ func calculate_revenue(quality_score: float) -> float:
 # ---------------------------------------------------------------------------
 # Brew execution — canonical entry point for a complete brew turn
 # ---------------------------------------------------------------------------
-## Executes the full brew cycle: deduct cost → calculate quality → calculate
-## revenue → add revenue → record brew → store result → advance state.
-## Returns the result Dictionary (with "final_score" and "revenue" keys),
+## Executes the brew cycle: deduct cost → calculate quality → record brew →
+## store result → advance state to RESULTS. Revenue is deferred to the SELL step.
+## Returns the result Dictionary (with "final_score" key),
 ## or an empty Dictionary if the ingredient cost could not be deducted.
 func execute_brew(sliders: Dictionary) -> Dictionary:
 	if not deduct_ingredient_cost():
@@ -299,10 +302,6 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 	result["off_flavor_tags"] = failure_result["off_flavor_tags"]
 	result["off_flavor_message"] = failure_result["off_flavor_message"]
 	result["failure_messages"] = failure_result["failure_messages"]
-
-	var revenue := calculate_revenue(result["final_score"])
-	add_revenue(revenue)
-	result["revenue"] = revenue
 
 	record_brew(result["final_score"])
 
@@ -383,6 +382,44 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 	return result
 
 # ---------------------------------------------------------------------------
+# Sell execution — called from SellOverlay when the player confirms distribution
+# ---------------------------------------------------------------------------
+## Executes the sell step: calculate multi-channel revenue, add to balance, record
+## saturation. Returns {"total": float, "breakdown": Array} or {} if no brew result.
+func execute_sell(allocations: Array, price_offset: float) -> Dictionary:
+	if current_style == null or last_brew_result.is_empty():
+		return {}
+	var quality_score: float = last_brew_result.get("final_score", 0.0)
+	var demand_mult: float = MarketManager.get_demand_multiplier(current_style.style_id)
+	var volume_mod: float = MarketManager.calculate_volume_modifier(price_offset, quality_score)
+	var quality_mult: float = quality_to_multiplier(quality_score)
+	var adjusted_price: float = current_style.base_price * (1.0 + price_offset)
+
+	var total: float = 0.0
+	var breakdown: Array = []
+	for alloc in allocations:
+		var ch: Dictionary = MarketManager.get_channel(alloc.channel_id)
+		if ch.is_empty():
+			continue
+		var rev: float = alloc.units * adjusted_price * ch.margin * quality_mult * demand_mult * volume_mod
+		breakdown.append({
+			"channel_id": alloc.channel_id,
+			"channel_name": ch.name,
+			"units": alloc.units,
+			"price": adjusted_price,
+			"margin": ch.margin,
+			"revenue": rev,
+		})
+		total += rev
+
+	add_revenue(total)
+	last_brew_result["revenue"] = total
+	last_brew_result["revenue_breakdown"] = breakdown
+	last_brew_result["price_offset"] = price_offset
+	MarketManager.record_brew(current_style.style_id)
+	return {"total": total, "breakdown": breakdown}
+
+# ---------------------------------------------------------------------------
 # Reset (new run)
 # ---------------------------------------------------------------------------
 func reset() -> void:
@@ -415,5 +452,6 @@ func reset() -> void:
 		CompetitionManager.reset()
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.initialize_starting_equipment()
-	MarketSystem.initialize_demand()
+	if is_instance_valid(MarketManager):
+		MarketManager.initialize()
 	_set_state(State.EQUIPMENT_MANAGE)

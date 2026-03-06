@@ -23,10 +23,11 @@ var equipment_popup: Control = null
 var equipment_shop: Control = null
 var research_tree: Control = null
 var staff_screen: Control = null
+var _sell_overlay: CanvasLayer = null
 
 func _ready() -> void:
-	# Register styles with the market system before any demand init
-	MarketSystem.register_styles(STYLE_IDS)
+	# Register styles with the market manager before any demand init
+	MarketManager.register_styles(STYLE_IDS)
 
 	# Create equipment popup and shop (programmatic UI, no .tscn)
 	var popup_script = preload("res://ui/EquipmentPopup.gd")
@@ -77,6 +78,11 @@ func _ready() -> void:
 	brewery_scene.staff_requested.connect(_on_staff_requested)
 	staff_screen.closed.connect(_on_staff_screen_closed)
 
+	# Connect market toast signals
+	MarketManager.trend_started.connect(_on_trend_started)
+	MarketManager.trend_ended.connect(_on_trend_ended)
+	MarketManager.season_changed.connect(_on_season_changed)
+
 	# Start a fresh run
 	GameState.reset()
 
@@ -118,6 +124,9 @@ func _on_state_changed(new_state: GameState.State) -> void:
 			results_overlay.populate()
 			_show_overlay(results_overlay)
 			_play_sfx(sfx_results)
+
+		GameState.State.SELL:
+			_show_sell_overlay()
 
 		GameState.State.EQUIPMENT_MANAGE:
 			brewery_scene.set_brewing(false)
@@ -198,3 +207,56 @@ func _on_staff_requested() -> void:
 
 func _on_staff_screen_closed() -> void:
 	pass  # Stay in equipment mode, staff screen is just an overlay
+
+# ---------------------------------------------------------------------------
+# Sell overlay handlers
+# ---------------------------------------------------------------------------
+
+func _show_sell_overlay() -> void:
+	if _sell_overlay == null:
+		_sell_overlay = preload("res://ui/SellOverlay.gd").new()
+		add_child(_sell_overlay)
+		_sell_overlay.sale_confirmed.connect(_on_sale_confirmed)
+		_sell_overlay.closed.connect(_on_sell_closed)
+	var style_name: String = GameState.current_style.style_name if GameState.current_style else "Unknown"
+	var base_price: float = GameState.current_style.base_price if GameState.current_style else 10.0
+	var quality: float = GameState.last_brew_result.get("final_score", 50.0)
+	var batch_mult: float = 1.0
+	if is_instance_valid(EquipmentManager):
+		batch_mult = EquipmentManager.active_bonuses.get("batch_size", 1.0)
+	var batch_size: int = int(10 * batch_mult)
+	var demand: float = 1.0
+	if is_instance_valid(MarketManager) and GameState.current_style:
+		demand = MarketManager.get_demand_multiplier(GameState.current_style.style_id)
+	_sell_overlay.show_overlay(style_name, base_price, quality, batch_size, demand)
+
+func _on_sale_confirmed(allocations: Array, price_offset: float) -> void:
+	GameState.execute_sell(allocations, price_offset)
+	GameState.advance_state()
+
+func _on_sell_closed() -> void:
+	# Close button acts the same as confirm with current allocations
+	# (player can't skip selling — just confirm with defaults)
+	_on_sale_confirmed([], 0.0)
+
+# ---------------------------------------------------------------------------
+# Market toast handlers
+# ---------------------------------------------------------------------------
+
+func _on_trend_started(style_id: String) -> void:
+	var display_name: String = _get_style_display_name(style_id)
+	if is_instance_valid(ToastManager):
+		ToastManager.show_toast("%s is trending! (+50%% demand)" % display_name, 1)
+
+func _on_trend_ended(style_id: String) -> void:
+	var display_name: String = _get_style_display_name(style_id)
+	if is_instance_valid(ToastManager):
+		ToastManager.show_toast("%s trend ended" % display_name, 0)
+
+func _on_season_changed(season_name: String) -> void:
+	if is_instance_valid(ToastManager):
+		ToastManager.show_toast("Season changed to %s" % season_name, 0)
+
+func _get_style_display_name(style_id: String) -> String:
+	# Fallback: convert style_id to display name
+	return style_id.replace("_", " ").capitalize()

@@ -75,9 +75,22 @@ func populate() -> void:
 			tip = "A longer, more vigorous boil drives off DMS precursors."
 		_add_failure_panel("OFF-FLAVORS DETECTED", off_flavor_msg, tip)
 
-	# Revenue and current balance (revenue already in balance from BrewingPhases)
-	var revenue: float = result.get("revenue", 0.0)
-	revenue_label.text = "Revenue: +$%.0f" % revenue
+	# Revenue and current balance
+	var breakdown: Array = result.get("revenue_breakdown", [])
+	if breakdown.size() > 0:
+		# Per-channel revenue breakdown (after SELL step)
+		revenue_label.text = ""
+		for entry in breakdown:
+			if entry.units > 0:
+				revenue_label.text += "%s (%d × $%.0f × %.1fx): +$%.0f\n" % [
+					entry.channel_name, entry.units, entry.price, entry.margin, entry.revenue
+				]
+		revenue_label.text += "Total: +$%.0f" % result.get("revenue", 0.0)
+		revenue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	else:
+		# Fallback: single line (backward compat / pre-sell)
+		var revenue: float = result.get("revenue", 0.0)
+		revenue_label.text = "Revenue: +$%.0f" % revenue
 	balance_label.text = "Balance: $%.0f" % GameState.balance
 
 	# Research points earned

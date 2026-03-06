@@ -25,7 +25,7 @@ config/icon="res://icon.svg"
 
 GameState="*res://autoloads/GameState.gd"
 QualityCalculator="*res://autoloads/QualityCalculator.gd"
-MarketSystem="*res://autoloads/MarketSystem.gd"
+MarketManager="*res://autoloads/MarketManager.gd"
 ToastManager="*res://autoloads/ToastManager.gd"
 BrewingScience="*res://autoloads/BrewingScience.gd"
 TasteSystem="*res://autoloads/TasteSystem.gd"
