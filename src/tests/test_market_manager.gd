@@ -248,3 +248,63 @@ func test_get_max_units_retail() -> void:
 func test_get_max_units_events() -> void:
 	var max_units: int = manager.get_max_units("events", 10)
 	assert_eq(max_units, 2)
+
+# -- Player pricing --
+
+func test_default_price_offset_is_zero() -> void:
+	manager.initialize()
+	assert_eq(manager.get_price_offset(), 0.0)
+
+func test_set_price_offset_stores_value() -> void:
+	manager.initialize()
+	manager.set_price_offset(0.2)
+	assert_almost_eq(manager.get_price_offset(), 0.2, 0.001)
+
+func test_price_offset_clamped_min() -> void:
+	manager.initialize()
+	manager.set_price_offset(-0.5)
+	assert_almost_eq(manager.get_price_offset(), -0.3, 0.001)
+
+func test_price_offset_clamped_max() -> void:
+	manager.initialize()
+	manager.set_price_offset(0.8)
+	assert_almost_eq(manager.get_price_offset(), 0.5, 0.001)
+
+func test_volume_modifier_at_base_price() -> void:
+	var vol: float = manager.calculate_volume_modifier(0.0, 70.0)
+	assert_almost_eq(vol, 1.0, 0.001)
+
+func test_volume_modifier_premium_pricing() -> void:
+	# offset=+0.5 → base_vol = 1.0 - 0.5*0.5 = 0.75, quality_factor=0.7, penalty=0.5*0.5*(1-0.7)=0.075 → 0.675
+	var vol: float = manager.calculate_volume_modifier(0.5, 70.0)
+	assert_lt(vol, 1.0, "Premium pricing should reduce volume")
+	assert_gt(vol, 0.3, "Should be above floor")
+
+func test_volume_modifier_discount_pricing() -> void:
+	# offset=-0.3 → base_vol = 1.0 - (-0.3)*0.5 = 1.15, no premium penalty
+	var vol: float = manager.calculate_volume_modifier(-0.3, 70.0)
+	assert_almost_eq(vol, 1.15, 0.001)
+
+func test_volume_modifier_clamped_min() -> void:
+	var vol: float = manager.calculate_volume_modifier(0.5, 20.0)
+	assert_gte(vol, 0.3)
+
+func test_volume_modifier_clamped_max() -> void:
+	var vol: float = manager.calculate_volume_modifier(-0.3, 90.0)
+	assert_lte(vol, 1.5)
+
+func test_low_quality_harsh_premium_penalty() -> void:
+	var vol_low: float = manager.calculate_volume_modifier(0.4, 40.0)
+	var vol_high: float = manager.calculate_volume_modifier(0.4, 90.0)
+	assert_lt(vol_low, vol_high, "Low quality should suffer more from premium pricing")
+
+func test_price_offset_resets() -> void:
+	manager.initialize()
+	manager.set_price_offset(0.3)
+	manager.initialize()
+	assert_eq(manager.get_price_offset(), 0.0)
+
+func test_get_adjusted_price() -> void:
+	manager.initialize()
+	manager.set_price_offset(0.1)
+	assert_almost_eq(manager.get_adjusted_price(200.0), 220.0, 0.01)

@@ -22,6 +22,10 @@ const TREND_MAX_DURATION: int = 6
 const SATURATION_PER_BREW: float = 0.1
 const SATURATION_RECOVERY: float = 0.05
 const SATURATION_MAX_PENALTY: float = 0.5
+const PRICE_OFFSET_MIN: float = -0.3
+const PRICE_OFFSET_MAX: float = 0.5
+const VOLUME_MOD_MIN: float = 0.3
+const VOLUME_MOD_MAX: float = 1.5
 
 # -- Distribution channels --
 const CHANNELS: Array = [
@@ -51,6 +55,7 @@ var active_trend_style: String = ""
 var trend_remaining_turns: int = 0
 var _next_trend_in: int = 0
 var _saturation: Dictionary = {}  # {style_id: float}
+var _price_offset: float = 0.0
 
 func register_styles(style_ids: Array) -> void:
 	_style_ids = style_ids.duplicate()
@@ -63,6 +68,7 @@ func initialize() -> void:
 	trend_remaining_turns = 0
 	_next_trend_in = randi_range(TREND_MIN_INTERVAL, TREND_MAX_INTERVAL)
 	_saturation = {}
+	_price_offset = 0.0
 
 func tick() -> void:
 	_market_turn += 1
@@ -181,6 +187,25 @@ func get_max_units(channel_id: String, batch_size: int) -> int:
 	if ch.is_empty():
 		return 0
 	return int(floor(batch_size * ch.volume_pct))
+
+# -- Player pricing --
+
+func set_price_offset(offset: float) -> void:
+	_price_offset = clampf(offset, PRICE_OFFSET_MIN, PRICE_OFFSET_MAX)
+
+func get_price_offset() -> float:
+	return _price_offset
+
+func calculate_volume_modifier(price_offset: float, quality_score: float) -> float:
+	var base_vol: float = 1.0 - price_offset * 0.5
+	if price_offset > 0.0:
+		var quality_factor: float = quality_score / 100.0
+		var penalty: float = price_offset * 0.5 * (1.0 - quality_factor)
+		base_vol -= penalty
+	return clampf(base_vol, VOLUME_MOD_MIN, VOLUME_MOD_MAX)
+
+func get_adjusted_price(base_price: float) -> float:
+	return base_price * (1.0 + _price_offset)
 
 func reset() -> void:
 	initialize()
