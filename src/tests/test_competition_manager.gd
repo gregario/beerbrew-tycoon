@@ -269,3 +269,12 @@ func test_medals_persist_across_judgments() -> void:
 	var gold_count: int = CompetitionManager.medals["gold"]
 	# Medals should persist (may or may not have won gold due to randomness)
 	assert_gte(gold_count + CompetitionManager.medals["silver"] + CompetitionManager.medals["bronze"], 0)
+
+# --- GameState integration ---
+func test_reset_resets_competition_manager() -> void:
+	CompetitionManager.turns_until_next = 1
+	CompetitionManager.tick()
+	CompetitionManager.medals["gold"] = 3
+	GameState.reset()
+	assert_null(CompetitionManager.current_competition)
+	assert_eq(CompetitionManager.medals["gold"], 0)

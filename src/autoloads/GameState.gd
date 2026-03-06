@@ -102,6 +102,23 @@ func _on_results_continue() -> void:
 				ToastManager.show_toast("Contract expired! %s: -$%d penalty" % [
 					contract["client_name"], contract["reputation_penalty"]
 				])
+	# Competition tick (Stage 4B)
+	if is_instance_valid(CompetitionManager):
+		var comp_result: Dictionary = CompetitionManager.tick()
+		if comp_result.has("placement"):
+			var placement: String = comp_result["placement"]
+			var comp_name: String = comp_result.get("competition", {}).get("name", "")
+			if placement == "gold" or placement == "silver" or placement == "bronze":
+				if is_instance_valid(ToastManager):
+					var medal_labels: Dictionary = {"gold": "GOLD MEDAL", "silver": "Silver Medal", "bronze": "Bronze Medal"}
+					ToastManager.show_toast("%s! %s — +$%d" % [
+						medal_labels[placement], comp_name, comp_result["prize"]
+					])
+					if comp_result.get("rare_unlock", "") != "":
+						ToastManager.show_toast("Gold medal bonus! Unlocked: %s" % comp_result["rare_unlock"])
+			elif placement == "none" and comp_result.get("player_quality", 0.0) > 0.0:
+				if is_instance_valid(ToastManager):
+					ToastManager.show_toast("Competition ended. Your entry didn't place.")
 	if check_win_condition():
 		run_won = true
 		_set_state(State.GAME_OVER)
@@ -394,6 +411,8 @@ func reset() -> void:
 		BreweryExpansion.reset()
 	if is_instance_valid(ContractManager):
 		ContractManager.reset()
+	if is_instance_valid(CompetitionManager):
+		CompetitionManager.reset()
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.initialize_starting_equipment()
 	MarketSystem.initialize_demand()
