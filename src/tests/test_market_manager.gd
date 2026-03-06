@@ -308,3 +308,77 @@ func test_get_adjusted_price() -> void:
 	manager.initialize()
 	manager.set_price_offset(0.1)
 	assert_almost_eq(manager.get_adjusted_price(200.0), 220.0, 0.01)
+
+# -- Market research --
+
+func test_research_not_purchased_initially() -> void:
+	manager.initialize()
+	assert_false(manager.research_purchased)
+
+func test_research_cost() -> void:
+	assert_eq(manager.RESEARCH_COST, 100)
+
+func test_buy_research_returns_true() -> void:
+	manager.initialize()
+	var result: bool = manager.buy_research()
+	assert_true(result)
+	assert_true(manager.research_purchased)
+
+func test_buy_research_twice_returns_false() -> void:
+	manager.initialize()
+	manager.buy_research()
+	assert_false(manager.buy_research(), "Can only buy once per turn")
+
+func test_research_resets_each_turn() -> void:
+	manager.initialize()
+	manager.buy_research()
+	manager.tick()
+	assert_false(manager.research_purchased, "Research resets after tick")
+
+func test_get_trend_forecast_without_research() -> void:
+	manager.initialize()
+	var forecast: Dictionary = manager.get_trend_forecast()
+	assert_false(forecast.has("next_trend_in"))
+
+func test_get_trend_forecast_with_research() -> void:
+	manager.initialize()
+	manager._next_trend_in = 2
+	manager.buy_research()
+	var forecast: Dictionary = manager.get_trend_forecast()
+	assert_true(forecast.has("next_trend_in"))
+
+# -- Save/Load --
+
+func test_save_data_returns_dictionary() -> void:
+	manager.initialize()
+	var data: Dictionary = manager.save_data()
+	assert_typeof(data, TYPE_DICTIONARY)
+
+func test_save_load_preserves_season() -> void:
+	manager.initialize()
+	for i in range(8):
+		manager.tick()
+	var data: Dictionary = manager.save_data()
+	manager.initialize()
+	manager.load_data(data)
+	assert_eq(manager.current_season, 1)
+	assert_eq(manager.season_turn, 2)
+
+func test_save_load_preserves_saturation() -> void:
+	manager.initialize()
+	manager.record_brew("pale_ale")
+	manager.record_brew("pale_ale")
+	var data: Dictionary = manager.save_data()
+	manager.initialize()
+	manager.load_data(data)
+	assert_almost_eq(manager.get_saturation_penalty("pale_ale"), 0.2, 0.001)
+
+func test_save_load_preserves_trend() -> void:
+	manager.initialize()
+	manager.active_trend_style = "stout"
+	manager.trend_remaining_turns = 3
+	var data: Dictionary = manager.save_data()
+	manager.initialize()
+	manager.load_data(data)
+	assert_eq(manager.active_trend_style, "stout")
+	assert_eq(manager.trend_remaining_turns, 3)

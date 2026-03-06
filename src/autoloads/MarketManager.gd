@@ -24,6 +24,7 @@ const SATURATION_RECOVERY: float = 0.05
 const SATURATION_MAX_PENALTY: float = 0.5
 const PRICE_OFFSET_MIN: float = -0.3
 const PRICE_OFFSET_MAX: float = 0.5
+const RESEARCH_COST: int = 100
 const VOLUME_MOD_MIN: float = 0.3
 const VOLUME_MOD_MAX: float = 1.5
 
@@ -56,6 +57,7 @@ var trend_remaining_turns: int = 0
 var _next_trend_in: int = 0
 var _saturation: Dictionary = {}  # {style_id: float}
 var _price_offset: float = 0.0
+var research_purchased: bool = false
 
 func register_styles(style_ids: Array) -> void:
 	_style_ids = style_ids.duplicate()
@@ -69,8 +71,10 @@ func initialize() -> void:
 	_next_trend_in = randi_range(TREND_MIN_INTERVAL, TREND_MAX_INTERVAL)
 	_saturation = {}
 	_price_offset = 0.0
+	research_purchased = false
 
 func tick() -> void:
+	research_purchased = false
 	_market_turn += 1
 	# Saturation recovery (all styles decay each turn)
 	for sid in _saturation.keys():
@@ -206,6 +210,50 @@ func calculate_volume_modifier(price_offset: float, quality_score: float) -> flo
 
 func get_adjusted_price(base_price: float) -> float:
 	return base_price * (1.0 + _price_offset)
+
+func buy_research() -> bool:
+	if research_purchased:
+		return false
+	research_purchased = true
+	return true
+
+func get_trend_forecast() -> Dictionary:
+	var forecast: Dictionary = {
+		"current_season": current_season,
+		"season_turn": season_turn,
+		"next_season": (current_season + 1) % 4,
+		"turns_until_next_season": TURNS_PER_SEASON - season_turn,
+	}
+	if research_purchased:
+		forecast["next_trend_in"] = _next_trend_in
+		if active_trend_style != "":
+			forecast["active_trend"] = active_trend_style
+			forecast["trend_remaining"] = trend_remaining_turns
+	return forecast
+
+func save_data() -> Dictionary:
+	return {
+		"current_season": current_season,
+		"season_turn": season_turn,
+		"market_turn": _market_turn,
+		"active_trend_style": active_trend_style,
+		"trend_remaining_turns": trend_remaining_turns,
+		"next_trend_in": _next_trend_in,
+		"saturation": _saturation.duplicate(),
+		"price_offset": _price_offset,
+		"research_purchased": research_purchased,
+	}
+
+func load_data(data: Dictionary) -> void:
+	current_season = data.get("current_season", 0)
+	season_turn = data.get("season_turn", 0)
+	_market_turn = data.get("market_turn", 0)
+	active_trend_style = data.get("active_trend_style", "")
+	trend_remaining_turns = data.get("trend_remaining_turns", 0)
+	_next_trend_in = data.get("next_trend_in", randi_range(TREND_MIN_INTERVAL, TREND_MAX_INTERVAL))
+	_saturation = data.get("saturation", {}).duplicate()
+	_price_offset = data.get("price_offset", 0.0)
+	research_purchased = data.get("research_purchased", false)
 
 func reset() -> void:
 	initialize()
