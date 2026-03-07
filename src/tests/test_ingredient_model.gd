@@ -211,3 +211,16 @@ func test_all_yeast_have_flavor_profiles():
 	for path in paths:
 		var y = load(path) as Yeast
 		assert_gt(y.yeast_flavor_profile.size(), 0, "%s should have yeast_flavor_profile" % path)
+
+func test_malt_has_dms_risk():
+	var m := Malt.new()
+	m.dms_risk = "high"
+	assert_eq(m.dms_risk, "high")
+
+func test_malt_dms_risk_default_none():
+	var m := Malt.new()
+	assert_eq(m.dms_risk, "none")
+
+func test_pilsner_malt_has_high_dms_risk():
+	var m = load("res://data/ingredients/malts/pilsner_malt.tres") as Malt
+	assert_eq(m.dms_risk, "high", "Pilsner malt should have high DMS risk")

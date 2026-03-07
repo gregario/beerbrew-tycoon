@@ -17,3 +17,4 @@ body_contribution = 0.3
 sweetness = 0.2
 fermentability = 0.9
 is_base_malt = true
+dms_risk = "high"

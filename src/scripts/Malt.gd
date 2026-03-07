@@ -8,3 +8,6 @@ extends Ingredient
 @export var sweetness: float = 0.0
 @export var fermentability: float = 0.0
 @export var is_base_malt: bool = false
+## DMS (dimethyl sulfide) risk level: "none", "low", "high".
+## High DMS malts (pilsner) require vigorous/long boils to drive off DMS.
+@export var dms_risk: String = "none"
