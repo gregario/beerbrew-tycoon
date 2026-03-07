@@ -5,11 +5,37 @@ extends Control
 signal style_selected(style: Resource)
 
 const STYLE_PATHS := [
-	"res://data/styles/lager.tres",
+	# Ales
 	"res://data/styles/pale_ale.tres",
-	"res://data/styles/wheat_beer.tres",
+	"res://data/styles/ipa.tres",
+	# Dark
 	"res://data/styles/stout.tres",
+	"res://data/styles/porter.tres",
+	"res://data/styles/imperial_stout.tres",
+	# Wheat
+	"res://data/styles/wheat_beer.tres",
+	"res://data/styles/hefeweizen.tres",
+	# Lager
+	"res://data/styles/lager.tres",
+	"res://data/styles/czech_pilsner.tres",
+	"res://data/styles/helles.tres",
+	"res://data/styles/marzen.tres",
+	# Belgian
+	"res://data/styles/saison.tres",
+	"res://data/styles/belgian_dubbel.tres",
+	# Modern
+	"res://data/styles/neipa.tres",
 ]
+
+const FAMILY_ORDER := ["ales", "dark", "wheat", "lager", "belgian", "modern"]
+const FAMILY_LABELS := {
+	"ales": "ALES",
+	"dark": "DARK",
+	"wheat": "WHEAT",
+	"lager": "LAGER",
+	"belgian": "BELGIAN",
+	"modern": "MODERN",
+}
 
 const SPECIALTY_STYLE_PATHS := [
 	"res://data/styles/lambic.tres",
@@ -47,25 +73,46 @@ func _build_ui() -> void:
 		child.queue_free()
 	_style_buttons.clear()
 
+	# Group styles by family
+	var families: Dictionary = {}
 	for style in _styles:
-		var demand := MarketManager.get_demand_weight(style.style_id)
-		var demand_label := "High Demand" if demand > 1.0 else "Normal"
-		var btn := Button.new()
-		if style.unlocked:
-			btn.text = "%s  [%s]" % [style.style_name, demand_label]
-		else:
-			btn.text = "%s  (Research Required)" % style.style_name
-			btn.disabled = true
-			btn.modulate.a = 0.5
-		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		btn.custom_minimum_size.y = 60
-		btn.pressed.connect(_on_style_button_pressed.bind(style, btn))
-		style_buttons_container.add_child(btn)
-		_style_buttons.append(btn)
+		var fam: String = style.family if style.family != "" else "ales"
+		if not families.has(fam):
+			families[fam] = []
+		families[fam].append(style)
+
+	# Render each family in order
+	for family_key in FAMILY_ORDER:
+		if not families.has(family_key):
+			continue
+		_add_family_header(family_key)
+		for style in families[family_key]:
+			var demand := MarketManager.get_demand_weight(style.style_id)
+			var demand_label := "High Demand" if demand > 1.0 else "Normal"
+			var btn := Button.new()
+			if style.unlocked:
+				btn.text = "%s  [%s]" % [style.style_name, demand_label]
+			else:
+				btn.text = "%s  (Research Required)" % style.style_name
+				btn.disabled = true
+				btn.modulate.a = 0.5
+			btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+			btn.custom_minimum_size.y = 60
+			btn.pressed.connect(_on_style_button_pressed.bind(style, btn))
+			style_buttons_container.add_child(btn)
+			_style_buttons.append(btn)
 
 	# Specialty styles section (artisan + wild_fermentation research)
 	if _should_show_specialty():
 		_build_specialty_section()
+
+func _add_family_header(family_key: String) -> void:
+	var header := Label.new()
+	header.text = "── %s ──" % FAMILY_LABELS.get(family_key, family_key.to_upper())
+	header.add_theme_font_size_override("font_size", 16)
+	header.add_theme_color_override("font_color", Color("#8899AA"))
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	style_buttons_container.add_child(header)
 
 func _on_style_button_pressed(style: BeerStyle, btn: Button) -> void:
 	if not style.unlocked:

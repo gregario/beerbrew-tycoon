@@ -131,3 +131,11 @@ func test_modern_techniques_node_exists():
 func test_modern_techniques_in_catalog():
 	var node = ResearchManager.get_node_by_id("modern_techniques")
 	assert_not_null(node, "modern_techniques should be in ResearchManager catalog")
+
+func test_all_standard_styles_loadable():
+	var expected_ids := ["pale_ale", "ipa", "stout", "porter", "imperial_stout",
+		"wheat_beer", "hefeweizen", "lager", "czech_pilsner", "helles",
+		"marzen", "saison", "belgian_dubbel", "neipa"]
+	for id in expected_ids:
+		var s = load("res://data/styles/%s.tres" % id) as BeerStyle
+		assert_not_null(s, "%s.tres should exist for StylePicker" % id)
