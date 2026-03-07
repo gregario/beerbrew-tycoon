@@ -56,6 +56,11 @@ var total_revenue: float = 0.0
 var best_quality: float = 0.0
 var is_brewing: bool = false
 
+# Meta-progression tracking
+var equipment_spend: float = 0.0
+var unique_ingredients_used: int = 0
+var _used_ingredient_ids: Dictionary = {}
+
 # Win/loss tracking for game over screen
 var run_won: bool = false
 var rent_due_this_turn: bool = false
@@ -245,6 +250,9 @@ func check_rent_due() -> bool:
 
 func deduct_rent() -> void:
 	var amount: float = BreweryExpansion.get_rent_amount() if is_instance_valid(BreweryExpansion) else 150.0
+	# Apply meta-progression rent multiplier
+	if is_instance_valid(RunModifierManager) and is_instance_valid(MetaProgressionManager):
+		amount *= RunModifierManager.get_rent_multiplier(MetaProgressionManager)
 	balance -= amount
 	balance_changed.emit(balance)
 	rent_charged.emit(amount, balance)
@@ -377,8 +385,29 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 			if is_instance_valid(PathManager) and PathManager.has_chosen_path():
 				PathManager.add_reputation(2)
 
+	# Track unique ingredients for meta-progression
+	for _ing_key in ["malts", "hops", "adjuncts"]:
+		for _ing in current_recipe.get(_ing_key, []):
+			var _ing_id: String = ""
+			if _ing is Resource and "ingredient_id" in _ing:
+				_ing_id = _ing.ingredient_id
+			elif _ing is Dictionary:
+				_ing_id = str(_ing.get("ingredient_id", ""))
+			if _ing_id != "" and not _used_ingredient_ids.has(_ing_id):
+				_used_ingredient_ids[_ing_id] = true
+				unique_ingredients_used += 1
+	var _yeast_res: Resource = current_recipe.get("yeast", null) as Resource
+	if _yeast_res != null and "ingredient_id" in _yeast_res:
+		var _yeast_id: String = _yeast_res.ingredient_id
+		if _yeast_id != "" and not _used_ingredient_ids.has(_yeast_id):
+			_used_ingredient_ids[_yeast_id] = true
+			unique_ingredients_used += 1
+
 	# Award research points
 	var rp_earned: int = 2 + int(result["final_score"] / 20.0)
+	# Apply meta-progression RP bonus
+	if is_instance_valid(RunModifierManager) and is_instance_valid(MetaProgressionManager):
+		rp_earned += RunModifierManager.get_rp_bonus(MetaProgressionManager)
 	ResearchManager.add_rp(rp_earned)
 	result["rp_earned"] = rp_earned
 	ToastManager.show_toast("Earned %d Research Points" % rp_earned)
@@ -518,8 +547,14 @@ func execute_sell(allocations: Array, price_offset: float) -> Dictionary:
 # ---------------------------------------------------------------------------
 # Reset (new run)
 # ---------------------------------------------------------------------------
+func record_equipment_purchase(cost: float) -> void:
+	equipment_spend += cost
+
 func reset() -> void:
 	balance = STARTING_BALANCE
+	# Apply meta-progression starting cash multiplier
+	if is_instance_valid(RunModifierManager) and is_instance_valid(MetaProgressionManager):
+		balance = STARTING_BALANCE * RunModifierManager.get_starting_cash_multiplier(MetaProgressionManager)
 	turn_counter = 0
 	current_style = null
 	current_recipe = {}
@@ -535,6 +570,9 @@ func reset() -> void:
 	discoveries = {}
 	temp_control_quality = 50
 	sanitation_quality = 50
+	equipment_spend = 0.0
+	unique_ingredients_used = 0
+	_used_ingredient_ids = {}
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.reset()
 	ResearchManager.reset()
