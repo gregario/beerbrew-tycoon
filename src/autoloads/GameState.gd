@@ -43,6 +43,7 @@ var current_style: Resource = null
 var current_recipe: Dictionary = {}  # {malts: Array, hops: Array, yeast: Yeast, adjuncts: Array}
 var recipe_history: Array = []       # Array of {style_id, malt_ids, hop_ids, yeast_id, adjunct_ids}
 var last_brew_result: Dictionary = {}
+var current_water_profile = null  # WaterProfile resource, null = tap water
 
 # Taste skill
 var general_taste: int = 0
@@ -187,6 +188,9 @@ func set_style(style: Resource) -> void:
 func set_recipe(recipe: Dictionary) -> void:
 	current_recipe = recipe
 
+func set_water_profile(profile) -> void:
+	current_water_profile = profile
+
 # ---------------------------------------------------------------------------
 # Economy methods
 # ---------------------------------------------------------------------------
@@ -325,7 +329,8 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 		current_style,
 		current_recipe,
 		sliders,
-		recipe_history
+		recipe_history,
+		current_water_profile
 	)
 
 	# QA checkpoint toasts (Stage 1C)
@@ -560,6 +565,7 @@ func reset() -> void:
 	current_recipe = {}
 	recipe_history = []
 	last_brew_result = {}
+	current_water_profile = null
 	total_revenue = 0.0
 	best_quality = 0.0
 	is_brewing = false

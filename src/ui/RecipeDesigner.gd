@@ -42,6 +42,14 @@ const ADJUNCT_PATHS := [
 const SELECTION_LIMITS := {"malts": 3, "hops": 2, "adjuncts": 2}
 const FLAVOR_AXES := ["bitterness", "sweetness", "roastiness", "fruitiness", "funkiness"]
 
+const WATER_PROFILE_PATHS := [
+	"res://data/water/soft.tres",
+	"res://data/water/balanced.tres",
+	"res://data/water/malty.tres",
+	"res://data/water/hoppy.tres",
+	"res://data/water/juicy.tres",
+]
+
 @onready var malt_container: VBoxContainer = $CardPanel/MarginContainer/VBox/HBox/MaltPanel/VBox
 @onready var hop_container: VBoxContainer = $CardPanel/MarginContainer/VBox/HBox/HopPanel/VBox
 @onready var yeast_container: VBoxContainer = $CardPanel/MarginContainer/VBox/HBox/YeastPanel/VBox
@@ -59,6 +67,9 @@ const FLAVOR_AXES := ["bitterness", "sweetness", "roastiness", "fruitiness", "fu
 
 var _selected := {"malts": [], "hops": [], "yeast": null, "adjuncts": []}
 var _ingredients := {"malts": [], "hops": [], "yeast": [], "adjuncts": []}
+var _water_profiles: Array = []
+var _selected_water_profile = null  # WaterProfile or null (tap water)
+var _water_section: VBoxContainer = null
 
 func _ready() -> void:
 	_load_ingredients()
@@ -87,6 +98,7 @@ func _build_panels() -> void:
 	_build_category(yeast_container, "yeast", _ingredients["yeast"])
 	_build_category(adjunct_container, "adjuncts", _ingredients["adjuncts"])
 	_update_counter_badges()
+	_build_water_selector()
 
 func _build_category(container: VBoxContainer, slot: String, ingredients: Array) -> void:
 	for child in container.get_children():
@@ -212,6 +224,69 @@ func _combine_flavor_profiles(recipe: Dictionary) -> Dictionary:
 			totals[axis] /= float(count)
 	return totals
 
+func _build_water_selector() -> void:
+	# Remove old water section if it exists
+	if _water_section != null and is_instance_valid(_water_section):
+		_water_section.queue_free()
+		_water_section = null
+	# Only show water selector when Water Kit equipment is slotted
+	if not is_instance_valid(EquipmentManager) or not EquipmentManager.is_revealed("water_selector"):
+		return
+	# Load water profiles
+	_water_profiles.clear()
+	for path in WATER_PROFILE_PATHS:
+		var wp = load(path)
+		if wp:
+			_water_profiles.append(wp)
+	if _water_profiles.is_empty():
+		return
+	# Build the UI section
+	_water_section = VBoxContainer.new()
+	_water_section.name = "WaterSection"
+	var title_label := Label.new()
+	title_label.text = "WATER PROFILE"
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_water_section.add_child(title_label)
+	var desc_label := Label.new()
+	desc_label.text = "Select water chemistry (default: tap water)"
+	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc_label.add_theme_font_size_override("font_size", 12)
+	_water_section.add_child(desc_label)
+	# "Tap Water (default)" button
+	var tap_btn := Button.new()
+	tap_btn.text = "Tap Water (default)"
+	tap_btn.toggle_mode = true
+	tap_btn.button_pressed = (_selected_water_profile == null)
+	tap_btn.custom_minimum_size.y = 32
+	tap_btn.pressed.connect(_on_water_selected.bind(null, tap_btn))
+	_water_section.add_child(tap_btn)
+	# One button per water profile
+	for wp in _water_profiles:
+		var btn := Button.new()
+		btn.text = "%s — %s" % [wp.display_name, wp.mineral_description]
+		btn.toggle_mode = true
+		btn.button_pressed = (_selected_water_profile == wp)
+		btn.custom_minimum_size.y = 32
+		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn.pressed.connect(_on_water_selected.bind(wp, btn))
+		_water_section.add_child(btn)
+	# Insert before FooterRow in the VBox
+	var vbox: VBoxContainer = brew_button.get_parent().get_parent()
+	var footer_idx: int = vbox.get_children().find(brew_button.get_parent())
+	if footer_idx >= 0:
+		vbox.add_child(_water_section)
+		vbox.move_child(_water_section, footer_idx)
+
+func _on_water_selected(profile, btn: Button) -> void:
+	_selected_water_profile = profile
+	GameState.set_water_profile(profile)
+	# Radio-style: deselect all other water buttons
+	if _water_section != null:
+		for child in _water_section.get_children():
+			if child is Button and child != btn:
+				child.button_pressed = false
+	btn.button_pressed = true
+
 func _on_brew_pressed() -> void:
 	var recipe := _build_recipe_dict()
 	GameState.set_recipe(recipe)
@@ -221,6 +296,8 @@ func _on_brew_pressed() -> void:
 ## Reset selection state when panel reopens.
 func refresh() -> void:
 	_selected = {"malts": [], "hops": [], "yeast": null, "adjuncts": []}
+	_selected_water_profile = null
+	GameState.set_water_profile(null)
 	_build_panels()
 	brew_button.disabled = true
 	_update_summary()
