@@ -16,3 +16,4 @@ attenuation_pct = 0.83
 ideal_temp_min_c = 9.0
 ideal_temp_max_c = 15.0
 flocculation = "high"
+yeast_flavor_profile = {"below_8": {"clean": 0.8, "ester_fruit": 0.05}, "8_to_12": {"clean": 0.95, "ester_fruit": 0.05}, "above_14": {"clean": 0.3, "ester_fruit": 0.3, "fusel": 0.4}}
