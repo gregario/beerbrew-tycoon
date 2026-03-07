@@ -1,0 +1,25 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "ipa"
+style_name = "IPA"
+description = "Bold, hop-forward ale with assertive bitterness and aromatic hop character. Dry hopping is essential."
+ideal_flavor_ratio = 0.5
+base_price = 280.0
+base_demand_weight = 1.2
+unlocked = false
+preferred_ingredients = {"pale_malt": 0.9, "maris_otter": 0.85, "crystal_60": 0.5, "cascade": 0.9, "centennial": 0.95, "citra": 0.95, "simcoe": 0.9, "us05_clean_ale": 0.9}
+ideal_flavor_profile = {"bitterness": 0.8, "sweetness": 0.15, "roastiness": 0.0, "fruitiness": 0.6, "funkiness": 0.0}
+ideal_mash_temp_min = 64.0
+ideal_mash_temp_max = 67.0
+ideal_boil_min = 60.0
+ideal_boil_max = 90.0
+family = "ales"
+water_affinity = {"soft": 0.5, "balanced": 0.6, "malty": 0.3, "hoppy": 0.95, "juicy": 0.8}
+hop_schedule_expectations = {"bittering": 0.3, "aroma": 0.4, "dry_hop": 0.3}
+yeast_temp_flavors = {"clean": 0.9, "ester_fruit": 0.4, "ester_banana": 0.0, "fusel": 0.0}
+acceptable_off_flavors = {}
+primary_lesson = "hop_scheduling"
