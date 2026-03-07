@@ -28,6 +28,10 @@ const LOCKED_STYLE_IDS: Array[String] = [
 	"lager", "wheat_beer", "stout"
 ]
 
+const LOCKED_SPECIALTY_STYLE_IDS: Array[String] = [
+	"berliner_weisse", "lambic", "experimental_brew"
+]
+
 const INGREDIENT_DIRS: Array[String] = [
 	"res://data/ingredients/malts/",
 	"res://data/ingredients/hops/",
@@ -58,6 +62,7 @@ const RESEARCH_PATHS: Array[String] = [
 	"res://data/research/styles/dark_styles.tres",
 	"res://data/research/styles/ipa_mastery.tres",
 	"res://data/research/styles/belgian_arts.tres",
+	"res://data/research/techniques/wild_fermentation.tres",
 ]
 
 
@@ -154,6 +159,7 @@ func load_state(data: Dictionary) -> void:
 	# Re-lock all ingredients and styles first
 	_reset_ingredient_locks()
 	_reset_style_locks()
+	_reset_specialty_style_locks()
 	# Re-apply all unlocked nodes
 	for node_id in saved_nodes:
 		unlocked_nodes.append(node_id)
@@ -169,6 +175,7 @@ func reset() -> void:
 	unlocked_equipment_tier = 2
 	_reset_ingredient_locks()
 	_reset_style_locks()
+	_reset_specialty_style_locks()
 	# Auto-unlock root nodes
 	for node_id in ROOT_NODE_IDS:
 		if node_id in _catalog:
@@ -191,6 +198,9 @@ func _apply_effect(effect: Dictionary) -> void:
 			var tier: int = effect.get("tier", 2)
 			if tier > unlocked_equipment_tier:
 				unlocked_equipment_tier = tier
+		"unlock_specialty_beers":
+			var ids: Array = effect.get("ids", [])
+			_unlock_specialty_styles(ids)
 		"brewing_bonus":
 			var bonus_dict: Dictionary = effect.get("bonuses", {})
 			for key in bonus_dict:
@@ -214,6 +224,24 @@ func _unlock_styles(ids: Array) -> void:
 			var res = load(file_path)
 			if res and "unlocked" in res:
 				res.unlocked = true
+
+
+func _unlock_specialty_styles(style_ids: Array) -> void:
+	for style_id in style_ids:
+		var path: String = STYLE_DIR + str(style_id) + ".tres"
+		if ResourceLoader.exists(path):
+			var style = load(path)
+			if style != null and style is BeerStyle:
+				style.unlocked = true
+
+
+func _reset_specialty_style_locks() -> void:
+	for style_id in LOCKED_SPECIALTY_STYLE_IDS:
+		var file_path: String = STYLE_DIR + str(style_id) + ".tres"
+		if ResourceLoader.exists(file_path):
+			var res = load(file_path)
+			if res and "unlocked" in res:
+				res.unlocked = false
 
 
 func _reset_ingredient_locks() -> void:

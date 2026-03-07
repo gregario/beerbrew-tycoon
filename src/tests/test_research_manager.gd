@@ -5,7 +5,7 @@ func before_each():
 	ResearchManager.reset()
 
 func test_catalog_loads_all_nodes():
-	assert_eq(ResearchManager.get_catalog_size(), 20)
+	assert_eq(ResearchManager.get_catalog_size(), 21)
 
 func test_root_nodes_start_unlocked():
 	assert_true(ResearchManager.is_unlocked("mash_basics"))
