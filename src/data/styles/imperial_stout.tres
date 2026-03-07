@@ -1,0 +1,25 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "imperial_stout"
+style_name = "Imperial Stout"
+description = "Massive, high-gravity dark ale. Intense roast, chocolate, and dark fruit. Demands precision and quality ingredients."
+ideal_flavor_ratio = 0.4
+base_price = 400.0
+base_demand_weight = 0.7
+unlocked = false
+preferred_ingredients = {"pale_malt": 0.7, "maris_otter": 0.9, "crystal_60": 0.7, "chocolate_malt": 0.95, "roasted_barley": 0.9, "east_kent_goldings": 0.8, "fuggle": 0.7, "s04_english_ale": 0.85, "us05_clean_ale": 0.7}
+ideal_flavor_profile = {"bitterness": 0.5, "sweetness": 0.5, "roastiness": 0.9, "fruitiness": 0.3, "funkiness": 0.0}
+ideal_mash_temp_min = 66.0
+ideal_mash_temp_max = 69.0
+ideal_boil_min = 75.0
+ideal_boil_max = 90.0
+family = "dark"
+water_affinity = {"soft": 0.3, "balanced": 0.5, "malty": 0.95, "hoppy": 0.3, "juicy": 0.3}
+hop_schedule_expectations = {"bittering": 0.85, "aroma": 0.1, "dry_hop": 0.05}
+yeast_temp_flavors = {"clean": 0.7, "ester_fruit": 0.5, "fusel": 0.1}
+acceptable_off_flavors = {"diacetyl": 0.15, "ester": 0.3}
+primary_lesson = "high_gravity_brewing"

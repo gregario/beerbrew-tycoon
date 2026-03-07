@@ -1,0 +1,25 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "porter"
+style_name = "Porter"
+description = "Dark, malty ale with moderate roast character. Chocolate and caramel notes with balanced bitterness."
+ideal_flavor_ratio = 0.45
+base_price = 240.0
+base_demand_weight = 0.9
+unlocked = false
+preferred_ingredients = {"pale_malt": 0.7, "maris_otter": 0.8, "crystal_60": 0.8, "chocolate_malt": 0.9, "roasted_barley": 0.6, "east_kent_goldings": 0.85, "fuggle": 0.9, "s04_english_ale": 0.9}
+ideal_flavor_profile = {"bitterness": 0.4, "sweetness": 0.4, "roastiness": 0.6, "fruitiness": 0.2, "funkiness": 0.0}
+ideal_mash_temp_min = 65.0
+ideal_mash_temp_max = 68.0
+ideal_boil_min = 60.0
+ideal_boil_max = 90.0
+family = "dark"
+water_affinity = {"soft": 0.4, "balanced": 0.7, "malty": 0.85, "hoppy": 0.4, "juicy": 0.3}
+hop_schedule_expectations = {"bittering": 0.8, "aroma": 0.15, "dry_hop": 0.05}
+yeast_temp_flavors = {"clean": 0.7, "ester_fruit": 0.4, "fusel": 0.0}
+acceptable_off_flavors = {"diacetyl": 0.2}
+primary_lesson = "malt_complexity"
