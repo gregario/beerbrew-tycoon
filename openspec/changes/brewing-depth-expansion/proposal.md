@@ -1,13 +1,13 @@
 ## Why
 
-The core brewing loop (3 sliders → quality score) is shallow compared to real brewing science. Brulosophy research shows ~70% of variables brewers obsess over don't matter, while ~30% (fermentation temp, water chemistry, yeast strain) matter enormously. This asymmetry is a perfect game mechanic: the player should discover what matters and what doesn't through experimentation, exactly like a real brewer. The current system treats all variables equally and misses the most impactful ones (water chemistry, hop scheduling, conditioning). Deepening the brew loop transforms the game from "brewery management sim with a minigame" into "the Brulosophy experience as a game."
+The core brewing loop (3 sliders → quality score) is shallow compared to real brewing science. Brewing science research shows ~70% of variables brewers obsess over don't matter, while ~30% (fermentation temp, water chemistry, yeast strain) matter enormously. This asymmetry is a perfect game mechanic: the player should discover what matters and what doesn't through experimentation, exactly like a real brewer. The current system treats all variables equally and misses the most impactful ones (water chemistry, hop scheduling, conditioning). Deepening the brew loop transforms the game from "brewery management sim with a minigame" into one where the player genuinely learns to brew through discovery.
 
 ## What Changes
 
 - Add **water chemistry** as a new brewing decision and scoring component. 5 water profiles (Soft/Balanced/Malty/Hoppy/Juicy) that match or clash with beer styles. Unlockable via research
 - Add **hop scheduling** — players allocate hops to Bittering/Aroma/Dry Hop slots instead of just selecting hops. New scoring component
 - Add **conditioning time** (0-4 weeks post-ferment). Off-flavors decay over time, fermenters are occupied. Quality vs throughput tradeoff (the GDT "when to ship" decision)
-- Implement **"close enough" zones** in scoring — mash temp ±2°C of ideal = no penalty, boil 45-90 min same for non-pilsner malts. Based on real Brulosophy findings
+- Implement **"close enough" zones** in scoring — mash temp ±2°C of ideal = no penalty, boil 45-90 min same for non-pilsner malts. Based on real brewing science findings
 - Add **yeast-temp interaction system** — different yeasts produce different flavor compounds based on ferment temp (wheat: warm=banana/cool=clove, saison wants heat, lager must be cold)
 - Expand **off-flavors to a spectrum** — diacetyl (butter), oxidation (cardboard), context-dependent esters/phenols. Severity scale (subtle → noticeable → dominant) instead of binary pass/fail
 - Implement **progressive process revelation** — equipment purchases reveal new brewing steps and information (thermometer shows numbers, water kit adds water step, hop timer adds schedule UI)
@@ -21,7 +21,7 @@ The core brewing loop (3 sliders → quality score) is shallow compared to real 
 - `water-chemistry`: Water profile selection, style matching, scoring integration. 5 profiles with mineral compositions that advantage/disadvantage specific styles
 - `hop-scheduling`: Hop allocation to Bittering/Aroma/Dry Hop timing slots. Scoring based on correct usage per style
 - `conditioning`: Post-ferment conditioning phase (0-4 weeks). Off-flavor decay over time, fermenter occupation, quality bonus
-- `brulosophy-scoring`: "Close enough" zones in mash/boil scoring. "Non-discovery" discovery system for efficiency shortcuts
+- `tolerance-scoring`: "Close enough" zones in mash/boil scoring. "Non-discovery" discovery system for efficiency shortcuts
 - `yeast-temp-interaction`: Flavor compound generation based on yeast strain × ferment temperature. Context-dependent off-flavor evaluation (ester = bad in lager, good in wheat)
 - `off-flavor-spectrum`: Expanded off-flavor system with severity scale, new failure modes (diacetyl, oxidation), and style-context evaluation
 - `progressive-revelation`: Equipment reveals brewing steps and information. Ties equipment purchases to UI element visibility

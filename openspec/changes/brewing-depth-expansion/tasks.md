@@ -22,7 +22,7 @@
 - [ ] 2.7 Add style family research nodes to ResearchManager catalog (lager_brewing, belgian_brewing, modern_techniques)
 - [ ] 2.8 Update StylePicker to group styles by family with headers and locked family display
 
-## 3. Brulosophy Scoring: Close Enough Zones
+## 3. Tolerance Scoring: Close Enough Zones
 
 - [ ] 3.1 Modify BrewingScience.calc_mash_score() to implement ±2°C flat zone (no penalty within zone)
 - [ ] 3.2 Modify BrewingScience.calc_boil_score() to implement 45-90 min flat zone for non-pilsner malts

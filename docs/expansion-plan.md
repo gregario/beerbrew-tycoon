@@ -2,7 +2,7 @@
 
 ## Vision
 
-Transform the game from "brewery management sim with brewing minigame" into "the Brulosophy experience as a game" — where the player genuinely learns to brew through discovery, not tutorials. The core loop becomes deeper and more visually satisfying, while business systems and character progression add replayability.
+Transform the game from "brewery management sim with brewing minigame" into a discovery-driven brewing experience — where the player genuinely learns to brew through experimentation, not tutorials. The core loop becomes deeper and more visually satisfying, while business systems and character progression add replayability.
 
 ## Four Expansion Pillars
 
@@ -44,7 +44,7 @@ Transform the 3-slider brewing phase into a deep, discovery-driven experience.
 - **Water Profile** selection (unlocked via research or starter character). Soft/Balanced/Malty/Hoppy/Juicy presets. Style-matching scoring component (~10% of quality)
 - **Hop Schedule** — allocate selected hops to Bittering (60min) / Aroma (5min) / Dry Hop slots. Same hop, different usage = very different result. Scoring component (~10%)
 - **Conditioning Time** — 0-4 weeks post-ferment. Off-flavors decay over time (diacetyl first, then others). Fermenter occupied during conditioning. The GDT "when to ship" decision: quality vs throughput vs rent
-- **"Close Enough" Zones** — Brulosophy scoring: mash temp ±2°C of ideal = no penalty. Boil 45-90 min = same for non-pilsner malts. Player discovers these through experimentation
+- **"Close Enough" Zones** — Tolerance scoring: mash temp ±2°C of ideal = no penalty. Boil 45-90 min = same for non-pilsner malts. Player discovers these through experimentation
 - **Yeast-Temp Interaction** — Wheat yeast: warm=banana, cool=clove. Saison: hotter=better (inverts all other yeast rules). Belgian: warm=spicy. Lager: must be cold. Temp controls which flavor compounds appear
 
 **Expanded Off-Flavors (spectrum, not binary):**
@@ -64,7 +64,7 @@ Transform the 3-slider brewing phase into a deep, discovery-driven experience.
 - +Conditioning Tank: conditioning time slider after ferment
 - Each equipment purchase literally teaches the player a new aspect of brewing
 
-**"Non-Discovery" Discoveries (the Brulosophy mechanic):**
+**"Non-Discovery" Discoveries (the tolerance mechanic):**
 - After enough brews with varied mash temps within ±2°C: "Your last two beers used 65°C and 67°C mashing — they taste identical!"
 - After short vs long boils with non-pilsner malt: "A 30-minute boil tastes the same as 90 minutes with this malt!"
 - Discovering what DOESN'T matter is as rewarding as discovering what does. Unlocks efficiency shortcuts
@@ -183,7 +183,7 @@ Phase 1 (Brewing Depth) is the clear starting point — it's where the research 
 ## Sources
 
 All recommendations synthesized from:
-- `research/brulosophy-to-game-loop.md` — Brulosophy findings → game mechanics mapping
+- `research/brulosophy-to-game-loop.md` — Brewing science findings → game mechanics mapping
 - `research/game-vs-reality-analysis.md` — Gap analysis with top 10 recommendations
 - `research/game-dev-tycoon-reference.md` — GDT systems adaptation (bubbles, phases, scaling)
 - `research/brewing-knowledge.md` — Real brewing science knowledge base

@@ -1,6 +1,6 @@
 ## Context
 
-BeerBrew Tycoon is a brewery management sim (Godot 4) with 6 completed post-MVP stages (701 tests). The core brewing loop uses 3 sliders (mash temp, boil time, ferment temp) producing a quality score via QualityCalculator. Extensive research (5 documents covering Brulosophy experiments, GDT mechanics, real brewery economics) reveals the brewing phase should be much deeper — water chemistry, hop scheduling, conditioning, and discovery of what does/doesn't matter are all missing.
+BeerBrew Tycoon is a brewery management sim (Godot 4) with 6 completed post-MVP stages (701 tests). The core brewing loop uses 3 sliders (mash temp, boil time, ferment temp) producing a quality score via QualityCalculator. Extensive research (5 documents covering brewing science experiments, GDT mechanics, real brewery economics) reveals the brewing phase should be much deeper — water chemistry, hop scheduling, conditioning, and discovery of what does/doesn't matter are all missing.
 
 Current architecture: autoload singletons (GameState, QualityCalculator, BrewingScience, FailureSystem, ResearchManager, EquipmentManager), Resource-based data (.tres files for styles, ingredients, equipment), programmatic UI overlays (CanvasLayer, layer=10).
 
@@ -8,7 +8,7 @@ Current architecture: autoload singletons (GameState, QualityCalculator, Brewing
 
 **Goals:**
 - Deepen the brewing loop with water chemistry, hop scheduling, and conditioning decisions
-- Implement Brulosophy-inspired scoring ("close enough" zones, yeast-temp interaction)
+- Implement tolerance-based scoring ("close enough" zones, yeast-temp interaction)
 - Expand off-flavors from binary to spectrum with context-dependent evaluation
 - Add progressive process revelation (equipment unlocks brewing steps/info)
 - Expand beer styles to 16 with family-based unlock progression
