@@ -19,3 +19,4 @@ boil_bonus = 0
 ferment_bonus = 0
 upgrades_to = ""
 upgrade_cost = 0
+reveals = ["temp_numbers"]
