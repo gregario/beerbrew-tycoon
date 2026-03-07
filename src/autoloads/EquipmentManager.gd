@@ -46,6 +46,10 @@ const EQUIPMENT_PATHS: Array[String] = [
 	"res://data/equipment/automation/automated_boil_system.tres",
 	"res://data/equipment/automation/fermentation_controller.tres",
 	"res://data/equipment/automation/full_automation_suite.tres",
+	"res://data/equipment/measurement/thermometer.tres",
+	"res://data/equipment/measurement/digital_thermometer.tres",
+	"res://data/equipment/measurement/ph_meter.tres",
+	"res://data/equipment/measurement/refractometer.tres",
 ]
 
 func _ready() -> void:

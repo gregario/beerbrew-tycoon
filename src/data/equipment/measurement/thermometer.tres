@@ -1,0 +1,22 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "thermometer"
+equipment_name = "Thermometer"
+description = "Basic analog thermometer. Now you can see actual temperatures during brewing."
+tier = 1
+category = 5
+cost = 30
+sanitation_bonus = 0
+temp_control_bonus = 0
+efficiency_bonus = 0.0
+batch_size_multiplier = 1.0
+mash_bonus = 0
+boil_bonus = 0
+ferment_bonus = 0
+upgrades_to = "digital_thermometer"
+upgrade_cost = 50
+reveals = ["temp_numbers"]

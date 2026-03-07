@@ -43,7 +43,8 @@ func test_equipment_default_values():
 
 func test_equipment_categories():
 	for cat in [Equipment.Category.BREWING, Equipment.Category.FERMENTATION,
-				Equipment.Category.PACKAGING, Equipment.Category.UTILITY]:
+				Equipment.Category.PACKAGING, Equipment.Category.UTILITY,
+				Equipment.Category.AUTOMATION, Equipment.Category.MEASUREMENT]:
 		var e := _make_equipment({"category": cat})
 		assert_eq(e.category, cat)
 
@@ -135,3 +136,46 @@ func test_three_vessel_reveals_hop_schedule():
 func test_ss_conical_reveals_conditioning():
 	var e = load("res://data/equipment/fermentation/ss_conical.tres") as Equipment
 	assert_true("conditioning_tank" in e.reveals, "SS Conical should reveal conditioning_tank")
+
+# --- Measurement equipment tests (Task 9) ---
+
+func test_measurement_category_exists():
+	var e := Equipment.new()
+	e.category = Equipment.Category.MEASUREMENT
+	assert_eq(e.category, Equipment.Category.MEASUREMENT)
+
+func test_thermometer_loads():
+	var e = load("res://data/equipment/measurement/thermometer.tres") as Equipment
+	assert_not_null(e)
+	assert_eq(e.equipment_id, "thermometer")
+	assert_eq(e.tier, 1)
+	assert_eq(e.cost, 30)
+	assert_eq(e.category, Equipment.Category.MEASUREMENT)
+	assert_true("temp_numbers" in e.reveals)
+
+func test_digital_thermometer_loads():
+	var e = load("res://data/equipment/measurement/digital_thermometer.tres") as Equipment
+	assert_not_null(e)
+	assert_eq(e.equipment_id, "digital_thermometer")
+	assert_eq(e.tier, 2)
+	assert_true("temp_numbers" in e.reveals)
+	assert_true("ferment_profile" in e.reveals)
+
+func test_ph_meter_loads():
+	var e = load("res://data/equipment/measurement/ph_meter.tres") as Equipment
+	assert_not_null(e)
+	assert_eq(e.equipment_id, "ph_meter")
+	assert_true("ph_meter" in e.reveals)
+
+func test_refractometer_loads():
+	var e = load("res://data/equipment/measurement/refractometer.tres") as Equipment
+	assert_not_null(e)
+	assert_eq(e.equipment_id, "refractometer")
+	assert_eq(e.tier, 3)
+	assert_true("gravity_readings" in e.reveals)
+
+func test_all_measurement_equipment_in_catalog():
+	var ids := ["thermometer", "digital_thermometer", "ph_meter", "refractometer"]
+	for id in ids:
+		var e = EquipmentManager.get_equipment(id)
+		assert_not_null(e, "%s should be in EquipmentManager catalog" % id)
