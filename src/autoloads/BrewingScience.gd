@@ -162,3 +162,36 @@ func detect_brew_attributes(
 		attributes.append(off_flavor)
 
 	return attributes
+
+
+## Calculates flavor compound output from yeast strain at a given fermentation temperature.
+## Returns Dictionary of compound_name → intensity (0.0-1.0).
+## Compounds: ester_banana, ester_fruit, phenol_clove, phenol_pepper, fusel, clean.
+func calc_yeast_flavors(ferment_temp_c: float, yeast: Yeast) -> Dictionary:
+	if yeast.yeast_flavor_profile.is_empty():
+		return {"clean": 1.0}
+
+	# Find the matching temperature range
+	for range_key in yeast.yeast_flavor_profile:
+		if _temp_matches_range(ferment_temp_c, range_key):
+			return yeast.yeast_flavor_profile[range_key]
+
+	# Fallback: return the last range (highest temp)
+	var keys = yeast.yeast_flavor_profile.keys()
+	return yeast.yeast_flavor_profile[keys[keys.size() - 1]]
+
+
+## Checks if a temperature falls within a named range like "below_18", "18_to_22", "above_22".
+func _temp_matches_range(temp: float, range_key: String) -> bool:
+	if range_key.begins_with("below_"):
+		var threshold := float(range_key.substr(6))
+		return temp < threshold
+	elif range_key.begins_with("above_"):
+		var threshold := float(range_key.substr(6))
+		return temp >= threshold
+	elif "_to_" in range_key:
+		var parts := range_key.split("_to_")
+		var low := float(parts[0])
+		var high := float(parts[1])
+		return temp >= low and temp < high
+	return false
