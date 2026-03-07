@@ -149,7 +149,7 @@ func set_recipe(recipe: Dictionary) -> void:
 # ---------------------------------------------------------------------------
 # Economy methods
 # ---------------------------------------------------------------------------
-static func get_recipe_cost(recipe: Dictionary) -> int:
+func get_recipe_cost(recipe: Dictionary) -> int:
 	var total := 0
 	for malt in recipe.get("malts", []):
 		total += malt.cost
@@ -160,6 +160,9 @@ static func get_recipe_cost(recipe: Dictionary) -> int:
 		total += yeast.cost
 	for adj in recipe.get("adjuncts", []):
 		total += adj.cost
+	# Apply path ingredient discount (e.g., Mass-Market 20% off)
+	if is_instance_valid(PathManager):
+		total = int(total * PathManager.get_ingredient_discount())
 	return total
 
 func deduct_ingredient_cost() -> bool:
@@ -254,6 +257,9 @@ func calculate_revenue(quality_score: float) -> float:
 	var batch_mult := 1.0
 	if is_instance_valid(EquipmentManager):
 		batch_mult = EquipmentManager.active_bonuses.get("batch_size", 1.0)
+	# Apply path batch multiplier (e.g., Mass-Market 2x)
+	if is_instance_valid(PathManager):
+		batch_mult *= PathManager.get_batch_multiplier()
 	return current_style.base_price * quality_mult * demand_multiplier * batch_mult
 
 # ---------------------------------------------------------------------------

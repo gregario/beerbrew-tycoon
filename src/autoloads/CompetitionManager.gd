@@ -92,6 +92,9 @@ func enter(style_id: String, quality: float) -> bool:
 	if not is_instance_valid(GameState):
 		return false
 	var fee: int = current_competition["entry_fee"]
+	# Apply path competition discount (e.g., Artisan 50% off)
+	if is_instance_valid(PathManager):
+		fee = int(fee * PathManager.get_competition_discount())
 	if GameState.balance < fee:
 		return false  # Can't afford
 	GameState.balance -= fee

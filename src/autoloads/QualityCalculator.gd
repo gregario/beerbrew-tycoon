@@ -74,6 +74,10 @@ func calculate_quality(
 		0.0, 100.0
 	)
 
+	# --- 7b. Path quality bonus (e.g., Artisan +20%) ---
+	if is_instance_valid(PathManager):
+		final_score = clampf(final_score * PathManager.get_quality_bonus(), 0.0, 100.0)
+
 	# --- 8. Detect flavor attributes for discovery system ---
 	var yeast_for_attrs: Yeast = recipe.get("yeast", null) as Yeast
 	var hops_for_attrs: Array = recipe.get("hops", [])

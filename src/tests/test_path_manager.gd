@@ -192,3 +192,66 @@ func test_path_manager_delegates_defaults_when_no_path():
 	assert_false(PathManager.check_win_condition())
 	assert_eq(PathManager.get_reputation(), 0)
 	assert_eq(PathManager.get_path_name(), "")
+
+# --- Integration: Quality Bonus ---
+
+func test_artisan_quality_bonus_applied():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	var style = BeerStyle.new()
+	style.style_name = "Test Lager"
+	style.style_id = "test_lager"
+	style.ideal_flavor_ratio = 0.5
+	style.base_price = 10.0
+	var recipe: Dictionary = {"malts": [], "hops": [], "yeast": null}
+	var sliders: Dictionary = {"mashing": 65.0, "boiling": 60.0, "fermenting": 20.0}
+	var result_artisan: Dictionary = QualityCalculator.calculate_quality(style, recipe, sliders, [])
+
+	PathManager.reset()
+	var result_none: Dictionary = QualityCalculator.calculate_quality(style, recipe, sliders, [])
+
+	# Artisan score should be 1.2x the no-path score (clamped to 100)
+	var expected: float = minf(result_none["final_score"] * 1.2, 100.0)
+	assert_almost_eq(result_artisan["final_score"], expected, 0.1)
+
+func test_mass_market_no_quality_bonus():
+	PathManager.reset()
+	PathManager.choose_path("mass_market")
+	var style = BeerStyle.new()
+	style.style_name = "Test Lager"
+	style.style_id = "test_lager"
+	style.ideal_flavor_ratio = 0.5
+	style.base_price = 10.0
+	var recipe: Dictionary = {"malts": [], "hops": [], "yeast": null}
+	var sliders: Dictionary = {"mashing": 65.0, "boiling": 60.0, "fermenting": 20.0}
+	var result: Dictionary = QualityCalculator.calculate_quality(style, recipe, sliders, [])
+
+	PathManager.reset()
+	var result_none: Dictionary = QualityCalculator.calculate_quality(style, recipe, sliders, [])
+	assert_almost_eq(result["final_score"], result_none["final_score"], 0.1)
+
+# --- Integration: Ingredient Discount ---
+
+func test_mass_market_ingredient_discount_applied():
+	PathManager.reset()
+	PathManager.choose_path("mass_market")
+	var base_cost: float = 100.0
+	var discounted: float = base_cost * PathManager.get_ingredient_discount()
+	assert_almost_eq(discounted, 80.0, 0.01)
+
+# --- Integration: Batch Multiplier ---
+
+func test_mass_market_batch_multiplier_in_revenue():
+	PathManager.reset()
+	PathManager.choose_path("mass_market")
+	assert_almost_eq(PathManager.get_batch_multiplier(), 2.0, 0.001)
+
+# --- Integration: Competition Discount ---
+
+func test_artisan_competition_fee_discount():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	assert_almost_eq(PathManager.get_competition_discount(), 0.5, 0.001)
+	var fee: int = 200
+	var discounted_fee: int = int(fee * PathManager.get_competition_discount())
+	assert_eq(discounted_fee, 100)
