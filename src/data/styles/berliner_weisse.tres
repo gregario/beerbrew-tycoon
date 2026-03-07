@@ -1,0 +1,23 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "berliner_weisse"
+style_name = "Berliner Weisse"
+description = "A tart, low-gravity German wheat beer with a refreshing sourness. Extended fermentation with wild cultures creates complex lactic character."
+ideal_flavor_ratio = 0.6
+base_price = 250.0
+base_demand_weight = 0.8
+unlocked = false
+is_specialty = true
+fermentation_turns = 3
+variance_modifier = 1.3
+specialty_category = "sour_wild"
+preferred_ingredients = {"wheat_malt": 0.9, "pilsner_malt": 0.85, "hallertau": 0.7, "belle_saison": 0.6, "wb06_wheat": 0.8}
+ideal_flavor_profile = {"bitterness": 0.1, "sweetness": 0.2, "roastiness": 0.0, "fruitiness": 0.4, "funkiness": 0.8}
+ideal_mash_temp_min = 62.0
+ideal_mash_temp_max = 65.0
+ideal_boil_min = 30.0
+ideal_boil_max = 60.0

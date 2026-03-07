@@ -1,0 +1,23 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "experimental_brew"
+style_name = "Experimental Brew"
+description = "An anything-goes style that rewards creativity. No strict guidelines — mix unusual ingredients and techniques for surprising results."
+ideal_flavor_ratio = 0.5
+base_price = 200.0
+base_demand_weight = 0.7
+unlocked = false
+is_specialty = true
+fermentation_turns = 1
+variance_modifier = 1.8
+specialty_category = "experimental"
+preferred_ingredients = {"pale_malt": 0.7, "wheat_malt": 0.7, "crystal_60": 0.7, "cascade": 0.7, "citra": 0.7, "us05_clean_ale": 0.7, "lactose": 0.7, "flaked_oats": 0.7}
+ideal_flavor_profile = {"bitterness": 0.3, "sweetness": 0.3, "roastiness": 0.2, "fruitiness": 0.3, "funkiness": 0.3}
+ideal_mash_temp_min = 62.0
+ideal_mash_temp_max = 68.0
+ideal_boil_min = 45.0
+ideal_boil_max = 90.0

@@ -21,6 +21,18 @@ extends Resource
 ## Whether this style is available to the player (false = locked behind research).
 @export var unlocked: bool = true
 
+## Whether this is a specialty beer (sour/wild/experimental) with extended mechanics.
+@export var is_specialty: bool = false
+
+## Number of turns required for fermentation (1 = standard, 3-5 = extended for specialty).
+@export var fermentation_turns: int = 1
+
+## Multiplier for quality variance (higher = more unpredictable outcomes).
+@export var variance_modifier: float = 1.0
+
+## Specialty sub-category: "sour_wild", "experimental", or "" for standard styles.
+@export var specialty_category: String = ""
+
 ## Ingredient compatibility. Key = ingredient_id, Value = 0.0–1.0.
 ## Missing ingredient defaults to 0.5 (neutral).
 @export var preferred_ingredients: Dictionary = {}
