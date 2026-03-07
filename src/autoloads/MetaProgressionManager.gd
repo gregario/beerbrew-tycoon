@@ -46,6 +46,46 @@ const MAX_MODIFIERS: int = 2
 const MAX_HISTORY: int = 10
 const META_SAVE_PATH: String = "user://meta.json"
 
+const ACHIEVEMENT_MODIFIER_MAP: Dictionary = {
+	"first_victory": "tough_market",
+	"budget_master": "budget_brewery",
+	"perfect_brew": "master_brewer",
+	"survivor": "lucky_break",
+	"diversified": "generous_market",
+	"scarcity_brewer": "ingredient_shortage",
+}
+
+const UNLOCK_CATALOG: Dictionary = {
+	"styles": [
+		{"id": "lager", "name": "Lager", "description": "Crisp, clean, light-bodied", "cost": 5},
+		{"id": "wheat_beer", "name": "Wheat Beer", "description": "Hazy, fruity esters", "cost": 5},
+		{"id": "stout", "name": "Stout", "description": "Roasted, coffee, dark", "cost": 8},
+		{"id": "berliner_weisse", "name": "Berliner Weisse", "description": "Sour, tart, refreshing", "cost": 10},
+		{"id": "lambic", "name": "Lambic", "description": "Wild fermented, complex", "cost": 10},
+	],
+	"blueprints": [
+		{"id": "mash_tun", "name": "Mash Tun", "description": "50% off research cost", "cost": 5},
+		{"id": "temp_chamber", "name": "Temperature Chamber", "description": "50% off research cost", "cost": 5},
+		{"id": "kegging_kit", "name": "Kegging Kit", "description": "50% off research cost", "cost": 5},
+		{"id": "three_vessel", "name": "Three-Vessel System", "description": "50% off research cost", "cost": 8},
+		{"id": "ss_conical", "name": "SS Conical Fermenter", "description": "50% off research cost", "cost": 8},
+	],
+	"ingredients": [
+		{"id": "crystal_60", "name": "Crystal 60", "description": "Caramel, toffee malt", "cost": 3},
+		{"id": "chocolate_malt", "name": "Chocolate Malt", "description": "Dark, rich flavor", "cost": 3},
+		{"id": "cascade", "name": "Cascade Hops", "description": "Floral, citrus American hop", "cost": 4},
+		{"id": "citra", "name": "Citra Hops", "description": "Tropical, grapefruit hop", "cost": 6},
+		{"id": "belle_saison", "name": "Belle Saison Yeast", "description": "Spicy, fruity esters", "cost": 5},
+		{"id": "kveik_voss", "name": "Kveik (Voss)", "description": "Fast, tropical fermentation", "cost": 5},
+	],
+	"perks": [
+		{"id": "nest_egg", "name": "Nest Egg", "description": "+5% starting cash ($525)", "cost": 8},
+		{"id": "quick_study", "name": "Quick Study", "description": "+1 base RP per brew", "cost": 10},
+		{"id": "landlords_friend", "name": "Landlord's Friend", "description": "-10% rent costs", "cost": 8},
+		{"id": "style_specialist", "name": "Style Specialist", "description": "+5% quality for one style family", "cost": 12},
+	],
+}
+
 # --- Points ---
 
 func add_points(amount: int) -> void:
@@ -142,6 +182,83 @@ func has_challenge_modifier() -> bool:
 		if mod_id in challenge_ids:
 			return true
 	return false
+
+# --- Run points & end_run ---
+
+func calculate_run_points(metrics: Dictionary) -> int:
+	var turns: int = mini(int(metrics.get("turns", 0)) / 5, 5)
+	var revenue: int = mini(int(float(metrics.get("revenue", 0.0)) / 2000.0), 5)
+	var quality: int = mini(int(float(metrics.get("best_quality", 0.0)) / 20.0), 5)
+	var medals: int = mini(int(metrics.get("medals", 0)), 5)
+	var win: int = 5 if metrics.get("won", false) else 0
+	var base: int = mini(turns + revenue + quality + medals + win, 25)
+	if has_challenge_modifier():
+		return mini(int(float(base) * 1.5), 25)
+	return base
+
+func end_run(metrics: Dictionary) -> int:
+	var points: int = calculate_run_points(metrics)
+	add_points(points)
+	update_achievement_progress(metrics)
+	check_achievements()
+	record_run({"points": points, "metrics": metrics})
+	return points
+
+# --- Achievement system ---
+
+func get_achievement_modifier_map() -> Dictionary:
+	return ACHIEVEMENT_MODIFIER_MAP.duplicate()
+
+func is_modifier_unlocked(modifier_id: String) -> bool:
+	for achievement_id in ACHIEVEMENT_MODIFIER_MAP:
+		if ACHIEVEMENT_MODIFIER_MAP[achievement_id] == modifier_id:
+			return is_achievement_completed(achievement_id)
+	return false
+
+func update_achievement_progress(metrics: Dictionary) -> void:
+	var q: float = float(metrics.get("best_quality", 0.0))
+	if q > float(achievement_progress["best_quality"]):
+		achievement_progress["best_quality"] = q
+	var t: int = int(metrics.get("turns", 0))
+	if t > int(achievement_progress["best_turns"]):
+		achievement_progress["best_turns"] = t
+	var es: int = int(metrics.get("equipment_spend", 999999))
+	if es < int(achievement_progress["min_equipment_spend"]):
+		achievement_progress["min_equipment_spend"] = es
+	var ch: int = int(metrics.get("channels_unlocked", 0))
+	if ch > int(achievement_progress["max_channels"]):
+		achievement_progress["max_channels"] = ch
+	var ui: int = int(metrics.get("unique_ingredients", 999))
+	if ui < int(achievement_progress["min_unique_ingredients"]):
+		achievement_progress["min_unique_ingredients"] = ui
+	# Track win state for conditional achievements
+	if metrics.get("won", false):
+		achievement_progress["has_won"] = true
+		achievement_progress["won_equipment_spend"] = es
+		achievement_progress["won_unique_ingredients"] = ui
+
+func check_achievements() -> void:
+	var has_won: bool = achievement_progress.get("has_won", false)
+	if has_won and not achievements["first_victory"]:
+		complete_achievement("first_victory")
+	if has_won and int(achievement_progress.get("won_equipment_spend", 999999)) < 1000 and not achievements["budget_master"]:
+		complete_achievement("budget_master")
+	if float(achievement_progress["best_quality"]) >= 95.0 and not achievements["perfect_brew"]:
+		complete_achievement("perfect_brew")
+	if int(achievement_progress["best_turns"]) >= 20 and not achievements["survivor"]:
+		complete_achievement("survivor")
+	if int(achievement_progress["max_channels"]) >= 4 and not achievements["diversified"]:
+		complete_achievement("diversified")
+	if has_won and int(achievement_progress.get("won_unique_ingredients", 999)) <= 10 and not achievements["scarcity_brewer"]:
+		complete_achievement("scarcity_brewer")
+
+# --- Unlock catalog ---
+
+func get_unlock_catalog() -> Dictionary:
+	return UNLOCK_CATALOG
+
+func has_blueprint_discount(equipment_id: String) -> bool:
+	return equipment_id in unlocked_blueprints
 
 # --- Run history ---
 
