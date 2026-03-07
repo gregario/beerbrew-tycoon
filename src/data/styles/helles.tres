@@ -1,0 +1,25 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "helles"
+style_name = "Helles"
+description = "Munich's golden lager. Subtle malt sweetness with restrained hop bitterness. Deceptively simple to brew well."
+ideal_flavor_ratio = 0.35
+base_price = 230.0
+base_demand_weight = 1.0
+unlocked = false
+preferred_ingredients = {"pilsner_malt": 0.9, "pale_malt": 0.8, "hallertau": 0.9, "saaz": 0.8, "w3470_lager": 0.9}
+ideal_flavor_profile = {"bitterness": 0.25, "sweetness": 0.4, "roastiness": 0.0, "fruitiness": 0.1, "funkiness": 0.0}
+ideal_mash_temp_min = 64.0
+ideal_mash_temp_max = 67.0
+ideal_boil_min = 60.0
+ideal_boil_max = 90.0
+family = "lager"
+water_affinity = {"soft": 0.9, "balanced": 0.7, "malty": 0.5, "hoppy": 0.5, "juicy": 0.4}
+hop_schedule_expectations = {"bittering": 0.7, "aroma": 0.25, "dry_hop": 0.05}
+yeast_temp_flavors = {"clean": 1.0, "ester_banana": 0.0, "ester_fruit": 0.0, "fusel": 0.0}
+acceptable_off_flavors = {}
+primary_lesson = "malt_subtlety"
