@@ -162,3 +162,52 @@ func test_catalog_loads_all_adjuncts():
 		assert_true(a is Adjunct, "%s should be an Adjunct" % path)
 	var lactose = load(paths[0]) as Adjunct
 	assert_false(lactose.fermentable, "Lactose should not be fermentable")
+
+func test_yeast_has_flavor_profile_property():
+	var y := Yeast.new()
+	y.yeast_flavor_profile = {
+		"below_16": {"clean": 0.9, "ester_fruit": 0.1},
+		"16_to_20": {"clean": 0.8, "ester_fruit": 0.2},
+		"above_20": {"clean": 0.5, "ester_fruit": 0.4, "fusel": 0.2},
+	}
+	assert_eq(y.yeast_flavor_profile.size(), 3)
+	assert_eq(y.yeast_flavor_profile["below_16"]["clean"], 0.9)
+
+func test_yeast_flavor_profile_default_empty():
+	var y := Yeast.new()
+	assert_eq(y.yeast_flavor_profile.size(), 0)
+
+func test_us05_has_yeast_flavor_profile():
+	var y = load("res://data/ingredients/yeast/us05_clean_ale.tres") as Yeast
+	assert_gt(y.yeast_flavor_profile.size(), 0, "US-05 should have flavor profile data")
+
+func test_wb06_has_banana_clove_crossover():
+	var y = load("res://data/ingredients/yeast/wb06_wheat.tres") as Yeast
+	var cool = y.yeast_flavor_profile.get("below_18", {})
+	var warm = y.yeast_flavor_profile.get("above_22", {})
+	assert_gt(cool.get("phenol_clove", 0.0), cool.get("ester_banana", 0.0), "Cool wheat yeast should favor clove")
+	assert_gt(warm.get("ester_banana", 0.0), warm.get("phenol_clove", 0.0), "Warm wheat yeast should favor banana")
+
+func test_belle_saison_loves_heat():
+	var y = load("res://data/ingredients/yeast/belle_saison.tres") as Yeast
+	var hot = y.yeast_flavor_profile.get("above_28", {})
+	assert_eq(hot.get("fusel", 0.0), 0.0, "Saison should NOT produce fusel at high temps")
+	assert_gt(hot.get("phenol_pepper", 0.0), 0.5, "Saison at high temp should produce pepper")
+
+func test_lager_yeast_needs_cold():
+	var y = load("res://data/ingredients/yeast/w3470_lager.tres") as Yeast
+	var warm = y.yeast_flavor_profile.get("above_14", {})
+	assert_gt(warm.get("fusel", 0.0), 0.0, "Lager yeast above 14C should produce fusel")
+
+func test_all_yeast_have_flavor_profiles():
+	var paths := [
+		"res://data/ingredients/yeast/us05_clean_ale.tres",
+		"res://data/ingredients/yeast/s04_english_ale.tres",
+		"res://data/ingredients/yeast/w3470_lager.tres",
+		"res://data/ingredients/yeast/wb06_wheat.tres",
+		"res://data/ingredients/yeast/belle_saison.tres",
+		"res://data/ingredients/yeast/kveik_voss.tres",
+	]
+	for path in paths:
+		var y = load(path) as Yeast
+		assert_gt(y.yeast_flavor_profile.size(), 0, "%s should have yeast_flavor_profile" % path)
