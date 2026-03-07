@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/WaterProfile.gd" id="1_wp"]
+
+[resource]
+script = ExtResource("1_wp")
+profile_id = "hoppy"
+display_name = "Hoppy Water"
+mineral_description = "High sulfate, low chloride — crisp, dry finish that amplifies hop bitterness"
+style_affinities = {"pale_ale": 0.95, "stout": 0.3, "lager": 0.4, "wheat_beer": 0.5, "ipa": 0.95, "porter": 0.4, "imperial_stout": 0.3, "hefeweizen": 0.4, "czech_pilsner": 0.5, "helles": 0.5, "marzen": 0.4, "saison": 0.6, "belgian_dubbel": 0.4, "neipa": 0.7, "berliner_weisse": 0.5, "lambic": 0.4}

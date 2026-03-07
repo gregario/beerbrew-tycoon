@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/WaterProfile.gd" id="1_wp"]
+
+[resource]
+script = ExtResource("1_wp")
+profile_id = "juicy"
+display_name = "Juicy Water"
+mineral_description = "High chloride, low sulfate — soft, round mouthfeel that enhances fruity hop character"
+style_affinities = {"pale_ale": 0.7, "stout": 0.3, "lager": 0.4, "wheat_beer": 0.6, "ipa": 0.8, "porter": 0.3, "imperial_stout": 0.3, "hefeweizen": 0.5, "czech_pilsner": 0.4, "helles": 0.4, "marzen": 0.4, "saison": 0.5, "belgian_dubbel": 0.4, "neipa": 0.95, "berliner_weisse": 0.6, "lambic": 0.5}

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/WaterProfile.gd" id="1_wp"]
+
+[resource]
+script = ExtResource("1_wp")
+profile_id = "malty"
+display_name = "Malty Water"
+mineral_description = "High carbonate, high chloride — rounds out malt sweetness, accentuates body"
+style_affinities = {"pale_ale": 0.5, "stout": 0.9, "lager": 0.5, "wheat_beer": 0.5, "ipa": 0.3, "porter": 0.85, "imperial_stout": 0.95, "hefeweizen": 0.5, "czech_pilsner": 0.3, "helles": 0.5, "marzen": 0.85, "saison": 0.5, "belgian_dubbel": 0.85, "neipa": 0.3, "berliner_weisse": 0.4, "lambic": 0.5}

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/WaterProfile.gd" id="1_wp"]
+
+[resource]
+script = ExtResource("1_wp")
+profile_id = "soft"
+display_name = "Soft Water"
+mineral_description = "Low mineral content — clean, delicate, lets subtle malt and hop character shine"
+style_affinities = {"pale_ale": 0.6, "stout": 0.4, "lager": 0.9, "wheat_beer": 0.7, "ipa": 0.5, "porter": 0.4, "imperial_stout": 0.3, "hefeweizen": 0.7, "czech_pilsner": 0.95, "helles": 0.9, "marzen": 0.6, "saison": 0.6, "belgian_dubbel": 0.5, "neipa": 0.7, "berliner_weisse": 0.7, "lambic": 0.6}

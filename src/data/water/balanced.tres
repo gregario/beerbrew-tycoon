@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/WaterProfile.gd" id="1_wp"]
+
+[resource]
+script = ExtResource("1_wp")
+profile_id = "balanced"
+display_name = "Balanced Water"
+mineral_description = "Moderate minerals — versatile, works with most styles without strong bias"
+style_affinities = {"pale_ale": 0.7, "stout": 0.6, "lager": 0.7, "wheat_beer": 0.8, "ipa": 0.6, "porter": 0.7, "imperial_stout": 0.5, "hefeweizen": 0.8, "czech_pilsner": 0.6, "helles": 0.7, "marzen": 0.7, "saison": 0.7, "belgian_dubbel": 0.7, "neipa": 0.6, "berliner_weisse": 0.7, "lambic": 0.7}
