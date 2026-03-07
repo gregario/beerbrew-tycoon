@@ -443,8 +443,8 @@ func _update_projections() -> void:
 		_price_label.text = "Your Price: $%.0f" % adjusted_price
 	if _price_pct_label:
 		var pct: int = int(_price_offset * 100.0)
-		var sign: String = "+" if pct >= 0 else ""
-		_price_pct_label.text = "(%s%d%%)" % [sign, pct]
+		var sign_str: String = "+" if pct >= 0 else ""
+		_price_pct_label.text = "(%s%d%%)" % [sign_str, pct]
 		if pct > 0:
 			_price_pct_label.add_theme_color_override("font_color", Color("#5EE8A4"))
 		elif pct < 0:

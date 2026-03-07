@@ -340,7 +340,7 @@ func _build_hop_schedule_selector() -> void:
 	# Set default allocations (all bittering)
 	_update_hop_allocations()
 
-func _on_hop_slot_selected(hop_id: String, slot: String, btn: Button) -> void:
+func _on_hop_slot_selected(hop_id: String, _slot: String, btn: Button) -> void:
 	# Radio-style: deselect other slots for this hop
 	if _hop_allocation_buttons.has(hop_id):
 		for s in _hop_allocation_buttons[hop_id]:

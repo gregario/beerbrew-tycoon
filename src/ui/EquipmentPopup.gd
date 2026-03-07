@@ -198,7 +198,6 @@ func _build_occupied_slot_content(slot_name: String, slot_id: String) -> void:
 
 	# Upgrade button (if upgrade path exists)
 	if equip.upgrades_to != "":
-		var target: Equipment = EquipmentManager.get_equipment(equip.upgrades_to)
 		var upgrade_btn := Button.new()
 		var can_afford: bool = GameState.balance >= equip.upgrade_cost
 		upgrade_btn.text = "Upgrade ($%d)" % equip.upgrade_cost

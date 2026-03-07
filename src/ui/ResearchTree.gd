@@ -419,17 +419,17 @@ func _on_card_input(event: InputEvent, node_id: String) -> void:
 
 	if ResearchManager.can_unlock(node_id):
 		# Confirmation to unlock
-		var dlg := ConfirmationDialog.new()
-		dlg.title = "Unlock Research"
-		dlg.dialog_text = "Unlock %s for %d RP?\n\n%s" % [n.node_name, n.rp_cost, n.description]
-		add_child(dlg)
-		dlg.popup_centered()
-		dlg.confirmed.connect(func():
+		var confirm_dlg := ConfirmationDialog.new()
+		confirm_dlg.title = "Unlock Research"
+		confirm_dlg.dialog_text = "Unlock %s for %d RP?\n\n%s" % [n.node_name, n.rp_cost, n.description]
+		add_child(confirm_dlg)
+		confirm_dlg.popup_centered()
+		confirm_dlg.confirmed.connect(func():
 			ResearchManager.unlock(node_id)
 			_refresh()
-			dlg.queue_free()
+			confirm_dlg.queue_free()
 		)
-		dlg.canceled.connect(func(): dlg.queue_free())
+		confirm_dlg.canceled.connect(func(): confirm_dlg.queue_free())
 		return
 
 	# Locked — show what's missing

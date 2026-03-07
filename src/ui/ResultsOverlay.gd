@@ -343,11 +343,11 @@ func _add_aged_beer_panel(aged_beer: Dictionary) -> void:
 
 	# Revenue
 	var revenue: float = quality * 2.0
-	var revenue_label := Label.new()
-	revenue_label.text = "Revenue: +$%.0f" % revenue
-	revenue_label.add_theme_font_size_override("font_size", 16)
-	revenue_label.add_theme_color_override("font_color", Color("#5EE8A4"))
-	vbox.add_child(revenue_label)
+	var aged_rev_label := Label.new()
+	aged_rev_label.text = "Revenue: +$%.0f" % revenue
+	aged_rev_label.add_theme_font_size_override("font_size", 16)
+	aged_rev_label.add_theme_color_override("font_color", Color("#5EE8A4"))
+	vbox.add_child(aged_rev_label)
 
 	panel.add_child(vbox)
 	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox

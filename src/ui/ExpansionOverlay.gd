@@ -3,7 +3,6 @@ extends CanvasLayer
 signal expansion_confirmed()
 signal closed()
 
-var _panel: PanelContainer
 var _balance_after_label: Label
 
 func _ready() -> void:

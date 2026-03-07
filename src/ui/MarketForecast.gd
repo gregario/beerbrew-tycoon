@@ -226,12 +226,6 @@ func _build_forecast_tab(parent: VBoxContainer) -> void:
 
 func _build_brand_recognition_section(parent: VBoxContainer) -> void:
 	var style_ids: Array = MarketManager.get_all_demand_weights().keys()
-	var has_any_brand: bool = false
-	for sid in style_ids:
-		if MarketManager.get_brand_recognition(sid) > 0.0:
-			has_any_brand = true
-			break
-
 	# Always show the section header, even if all zeros
 	var brand_title := Label.new()
 	brand_title.text = "BRAND RECOGNITION"

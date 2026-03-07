@@ -309,7 +309,7 @@ func set_brewing(active: bool) -> void:
 # Revenue calculation
 # ---------------------------------------------------------------------------
 ## quality_multiplier: maps score 0→0.5x, 50→1.0x, 100→2.0x (linear)
-static func quality_to_multiplier(quality_score: float) -> float:
+func quality_to_multiplier(quality_score: float) -> float:
 	return lerp(0.5, 2.0, quality_score / 100.0)
 
 func calculate_revenue(quality_score: float) -> float:

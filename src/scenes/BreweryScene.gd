@@ -480,7 +480,6 @@ func _build_cellar_panel() -> void:
 		name_label.add_theme_color_override("font_color", Color.WHITE)
 		row.add_child(name_label)
 
-		var total_turns: int = entry.get("turns_remaining", 1) + 1  # remaining + already elapsed
 		# We track turns_remaining so elapsed = original - remaining
 		# But we only have turns_remaining, so we estimate total from the style
 		var turns_remaining: int = entry.get("turns_remaining", 1)
