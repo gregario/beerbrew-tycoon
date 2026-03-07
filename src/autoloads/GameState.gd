@@ -122,6 +122,20 @@ func _on_results_continue() -> void:
 			elif placement == "none" and comp_result.get("player_quality", 0.0) > 0.0:
 				if is_instance_valid(ToastManager):
 					ToastManager.show_toast("Competition ended. Your entry didn't place.")
+			# Reputation for medals (Stage 5A — artisan path)
+			if is_instance_valid(PathManager) and PathManager.has_chosen_path():
+				var rep_gain: int = 0
+				match placement:
+					"gold":
+						rep_gain = 5
+					"silver":
+						rep_gain = 3
+					"bronze":
+						rep_gain = 1
+				if rep_gain > 0:
+					PathManager.add_reputation(rep_gain)
+					if is_instance_valid(ToastManager):
+						ToastManager.show_toast("Reputation +%d (now %d)" % [rep_gain, PathManager.get_reputation()])
 	if check_win_condition():
 		run_won = true
 		_set_state(State.GAME_OVER)
@@ -180,6 +194,8 @@ func add_revenue(amount: float) -> void:
 	# Win/loss detection happens in _on_results_continue, not here.
 
 func check_win_condition() -> bool:
+	if is_instance_valid(PathManager) and PathManager.has_chosen_path():
+		return PathManager.check_win_condition()
 	return balance >= WIN_TARGET
 
 func check_loss_condition() -> bool:
@@ -311,6 +327,11 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 
 	record_brew(result["final_score"])
 
+	# Reputation for high-quality brews (artisan path, quality > 80)
+	if is_instance_valid(PathManager) and PathManager.has_chosen_path():
+		if result["final_score"] > 80.0:
+			PathManager.add_reputation(1)
+
 	if is_instance_valid(BreweryExpansion):
 		BreweryExpansion.record_brew()
 		if BreweryExpansion.can_expand() and is_instance_valid(ToastManager):
@@ -330,6 +351,9 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 			ToastManager.show_toast("Contract fulfilled! %s: +$%d%s" % [
 				contract["client_name"], fulfillment["total"], bonus_text
 			])
+			# Reputation for contract fulfillment (artisan path)
+			if is_instance_valid(PathManager) and PathManager.has_chosen_path():
+				PathManager.add_reputation(2)
 
 	# Award research points
 	var rp_earned: int = 2 + int(result["final_score"] / 20.0)
@@ -456,6 +480,8 @@ func reset() -> void:
 		ContractManager.reset()
 	if is_instance_valid(CompetitionManager):
 		CompetitionManager.reset()
+	if is_instance_valid(PathManager):
+		PathManager.reset()
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.initialize_starting_equipment()
 	if is_instance_valid(MarketManager):

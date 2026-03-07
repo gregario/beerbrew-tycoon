@@ -255,3 +255,61 @@ func test_artisan_competition_fee_discount():
 	var fee: int = 200
 	var discounted_fee: int = int(fee * PathManager.get_competition_discount())
 	assert_eq(discounted_fee, 100)
+
+# --- Win Conditions ---
+
+func test_artisan_win_condition_not_met_initially():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	CompetitionManager.medals = {"gold": 0, "silver": 0, "bronze": 0}
+	assert_false(GameState.check_win_condition())
+
+func test_artisan_win_condition_met():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	CompetitionManager.medals = {"gold": 3, "silver": 1, "bronze": 1}
+	PathManager.add_reputation(100)
+	assert_true(GameState.check_win_condition())
+
+func test_artisan_win_needs_both_medals_and_reputation():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	CompetitionManager.medals = {"gold": 3, "silver": 1, "bronze": 1}
+	PathManager.add_reputation(50)
+	assert_false(GameState.check_win_condition())
+
+func test_mass_market_win_condition_not_met_initially():
+	PathManager.reset()
+	PathManager.choose_path("mass_market")
+	GameState.total_revenue = 0.0
+	assert_false(GameState.check_win_condition())
+
+func test_pre_fork_win_condition_unchanged():
+	PathManager.reset()
+	GameState.balance = 10000.0
+	assert_true(GameState.check_win_condition())
+
+func test_pre_fork_win_condition_below_target():
+	PathManager.reset()
+	GameState.balance = 9999.0
+	assert_false(GameState.check_win_condition())
+
+# --- Reputation Accumulation ---
+
+func test_reputation_gain_values():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	PathManager.add_reputation(5)
+	assert_eq(PathManager.get_reputation(), 5)
+	PathManager.add_reputation(3)
+	assert_eq(PathManager.get_reputation(), 8)
+	PathManager.add_reputation(1)
+	assert_eq(PathManager.get_reputation(), 9)
+
+func test_path_manager_reset_in_game_state_reset():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	PathManager.add_reputation(50)
+	GameState.reset()
+	assert_false(PathManager.has_chosen_path())
+	assert_eq(PathManager.get_reputation(), 0)
