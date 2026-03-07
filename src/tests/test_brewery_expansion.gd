@@ -257,3 +257,33 @@ func test_cannot_double_expand() -> void:
 	var result: bool = BreweryExpansion.expand()
 	assert_false(result)
 	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.MICROBREWERY)
+
+# --- Fork expansion ---
+func test_expand_to_artisan() -> void:
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	BreweryExpansion.expand_to_path(BreweryExpansion.Stage.ARTISAN)
+	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.ARTISAN)
+	assert_eq(BreweryExpansion.get_max_slots(), 7)
+	assert_almost_eq(BreweryExpansion.get_rent_amount(), 600.0, 0.01)
+
+func test_expand_to_mass_market() -> void:
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	BreweryExpansion.expand_to_path(BreweryExpansion.Stage.MASS_MARKET)
+	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.MASS_MARKET)
+	assert_eq(BreweryExpansion.get_max_slots(), 7)
+	assert_almost_eq(BreweryExpansion.get_rent_amount(), 800.0, 0.01)
+
+func test_cannot_expand_to_path_from_garage() -> void:
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.GARAGE
+	BreweryExpansion.expand_to_path(BreweryExpansion.Stage.ARTISAN)
+	assert_eq(BreweryExpansion.current_stage, BreweryExpansion.Stage.GARAGE)
+
+func test_fork_threshold_signal_emitted() -> void:
+	BreweryExpansion.reset()
+	PathManager.reset()
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	BreweryExpansion.beers_brewed = 24
+	GameState.balance = 15000.0
+	watch_signals(BreweryExpansion)
+	BreweryExpansion.record_brew()
+	assert_signal_emitted(BreweryExpansion, "fork_threshold_reached")

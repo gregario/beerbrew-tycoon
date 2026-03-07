@@ -45,6 +45,7 @@ var TIER_CAP_PER_STAGE: Dictionary = {
 # ---------------------------------------------------------------------------
 signal brewery_expanded(new_stage: int)
 signal threshold_reached()
+signal fork_threshold_reached()
 
 # ---------------------------------------------------------------------------
 # State
@@ -75,6 +76,19 @@ func expand() -> bool:
 	GameState.balance_changed.emit(GameState.balance)
 	current_stage = Stage.MICROBREWERY
 	brewery_expanded.emit(Stage.MICROBREWERY)
+	return true
+
+## Expand to a specific path stage (ARTISAN or MASS_MARKET).
+## Only valid from MICROBREWERY stage. No cost — fork is free.
+func expand_to_path(target_stage: Stage) -> bool:
+	if current_stage != Stage.MICROBREWERY:
+		return false
+	if target_stage != Stage.ARTISAN and target_stage != Stage.MASS_MARKET:
+		return false
+	current_stage = target_stage
+	if is_instance_valid(EquipmentManager):
+		EquipmentManager.resize_slots()
+	brewery_expanded.emit(target_stage)
 	return true
 
 # ---------------------------------------------------------------------------
@@ -111,6 +125,9 @@ func record_brew() -> void:
 	beers_brewed += 1
 	if current_stage == Stage.GARAGE and can_expand():
 		threshold_reached.emit()
+	elif current_stage == Stage.MICROBREWERY and is_instance_valid(PathManager):
+		if PathManager.can_choose_path():
+			fork_threshold_reached.emit()
 
 # ---------------------------------------------------------------------------
 # Persistence

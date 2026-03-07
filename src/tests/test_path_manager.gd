@@ -313,3 +313,20 @@ func test_path_manager_reset_in_game_state_reset():
 	GameState.reset()
 	assert_false(PathManager.has_chosen_path())
 	assert_eq(PathManager.get_reputation(), 0)
+
+# --- Fork Threshold ---
+
+func test_fork_threshold_can_choose_when_met():
+	PathManager.reset()
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	BreweryExpansion.beers_brewed = 25
+	GameState.balance = 15000.0
+	assert_true(PathManager.can_choose_path())
+
+func test_fork_threshold_cannot_choose_already_chosen():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	BreweryExpansion.beers_brewed = 25
+	GameState.balance = 15000.0
+	assert_false(PathManager.can_choose_path())
