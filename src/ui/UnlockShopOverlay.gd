@@ -22,6 +22,7 @@ const SUCCESS_COLOR: Color = Color("#5EE8A4")
 const MUTED_COLOR: Color = Color("#8A9BB1")
 const SURFACE_COLOR: Color = Color("#0B1220")
 const BG_BORDER_COLOR: Color = Color("#8A9BB1")
+const BTN_TEXT_COLOR: Color = Color(0.1, 0.1, 0.1)
 
 func _ready() -> void:
 	layer = 10
@@ -83,7 +84,7 @@ func _build_ui() -> void:
 	for i in range(TAB_NAMES.size()):
 		var tab_btn: Button = Button.new()
 		tab_btn.text = TAB_NAMES[i]
-		tab_btn.custom_minimum_size = Vector2(120, 36)
+		tab_btn.custom_minimum_size = Vector2(150, 44)
 		tab_btn.pressed.connect(_on_tab_pressed.bind(TAB_KEYS[i]))
 		_tab_buttons.append(tab_btn)
 		tab_bar.add_child(tab_btn)
@@ -108,14 +109,14 @@ func _build_ui() -> void:
 	# Done button
 	var done_btn: Button = Button.new()
 	done_btn.text = "Done"
-	done_btn.custom_minimum_size = Vector2(150, 40)
+	done_btn.custom_minimum_size = Vector2(240, 48)
 	done_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	var btn_style: StyleBoxFlat = StyleBoxFlat.new()
 	btn_style.bg_color = PRIMARY_COLOR
 	btn_style.set_corner_radius_all(4)
 	btn_style.set_content_margin_all(8)
 	done_btn.add_theme_stylebox_override("normal", btn_style)
-	done_btn.add_theme_color_override("font_color", Color(0.1, 0.1, 0.1))
+	done_btn.add_theme_color_override("font_color", BTN_TEXT_COLOR)
 	done_btn.pressed.connect(_on_done_pressed)
 	vbox.add_child(done_btn)
 
@@ -144,7 +145,7 @@ func _update_tab_styles() -> void:
 		style.set_content_margin_all(8)
 		if TAB_KEYS[i] == _current_tab:
 			style.bg_color = PRIMARY_COLOR
-			btn.add_theme_color_override("font_color", Color(0.1, 0.1, 0.1))
+			btn.add_theme_color_override("font_color", BTN_TEXT_COLOR)
 		else:
 			style.bg_color = SURFACE_COLOR
 			style.border_color = MUTED_COLOR
@@ -173,7 +174,7 @@ func _build_item_card(item: Dictionary) -> PanelContainer:
 	card_style.border_color = MUTED_COLOR
 	card_style.set_border_width_all(1)
 	card_style.set_corner_radius_all(4)
-	card_style.set_content_margin_all(12)
+	card_style.set_content_margin_all(16)
 	card.add_theme_stylebox_override("panel", card_style)
 
 	var vbox: VBoxContainer = VBoxContainer.new()
@@ -223,14 +224,14 @@ func _build_item_card(item: Dictionary) -> PanelContainer:
 	if not is_unlocked:
 		var unlock_btn: Button = Button.new()
 		unlock_btn.text = "Unlock"
-		unlock_btn.custom_minimum_size = Vector2(100, 32)
+		unlock_btn.custom_minimum_size = Vector2(150, 44)
 		unlock_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		var btn_style: StyleBoxFlat = StyleBoxFlat.new()
 		btn_style.set_corner_radius_all(4)
-		btn_style.set_content_margin_all(6)
+		btn_style.set_content_margin_all(8)
 		if cost <= _meta.available_points:
 			btn_style.bg_color = PRIMARY_COLOR
-			unlock_btn.add_theme_color_override("font_color", Color(0.1, 0.1, 0.1))
+			unlock_btn.add_theme_color_override("font_color", BTN_TEXT_COLOR)
 		else:
 			btn_style.bg_color = MUTED_COLOR
 			unlock_btn.disabled = true

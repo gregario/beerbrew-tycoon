@@ -16,6 +16,7 @@ const ACCENT_COLOR: Color = Color("#FFC857")
 const MUTED_COLOR: Color = Color("#8A9BB1")
 const SURFACE_COLOR: Color = Color("#0B1220")
 const BG_BORDER_COLOR: Color = Color("#8A9BB1")
+const BTN_TEXT_COLOR: Color = Color(0.1, 0.1, 0.1)
 
 func _ready() -> void:
 	layer = 10
@@ -94,14 +95,14 @@ func _build_ui() -> void:
 	# Continue button
 	_continue_btn = Button.new()
 	_continue_btn.text = "Continue to Unlocks"
-	_continue_btn.custom_minimum_size = Vector2(250, 40)
+	_continue_btn.custom_minimum_size = Vector2(240, 48)
 	_continue_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	var btn_style: StyleBoxFlat = StyleBoxFlat.new()
 	btn_style.bg_color = META_COLOR
 	btn_style.set_corner_radius_all(4)
 	btn_style.set_content_margin_all(8)
 	_continue_btn.add_theme_stylebox_override("normal", btn_style)
-	_continue_btn.add_theme_color_override("font_color", Color(0.1, 0.1, 0.1))
+	_continue_btn.add_theme_color_override("font_color", BTN_TEXT_COLOR)
 	_continue_btn.pressed.connect(_on_continue_pressed)
 	vbox.add_child(_continue_btn)
 

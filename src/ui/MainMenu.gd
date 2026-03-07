@@ -18,6 +18,7 @@ const SURFACE_COLOR: Color = Color("#0B1220")
 const BG_COLOR: Color = Color("#0F1724")
 const DANGER_COLOR: Color = Color("#FF7B7B")
 const PRIMARY_COLOR: Color = Color("#5AA9FF")
+const BTN_TEXT_COLOR: Color = Color(0.1, 0.1, 0.1)
 
 func _ready() -> void:
 	layer = 10
@@ -63,7 +64,7 @@ func _build_ui() -> void:
 	btn_column.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 
 	# New Run button (primary CTA)
-	var new_run_btn: Button = _make_button("New Run", ACCENT_COLOR, Color(0.1, 0.1, 0.1))
+	var new_run_btn: Button = _make_button("New Run", ACCENT_COLOR, BTN_TEXT_COLOR)
 	new_run_btn.pressed.connect(func() -> void: new_run_pressed.emit())
 	btn_column.add_child(new_run_btn)
 

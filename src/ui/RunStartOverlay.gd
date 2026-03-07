@@ -26,6 +26,7 @@ const MUTED_COLOR: Color = Color("#8A9BB1")
 const SURFACE_COLOR: Color = Color("#0B1220")
 const BG_BORDER_COLOR: Color = Color("#8A9BB1")
 const DANGER_COLOR: Color = Color("#FF7B7B")
+const BTN_TEXT_COLOR: Color = Color(0.1, 0.1, 0.1)
 
 const MAX_PERKS: int = 3
 const MAX_MODIFIERS: int = 2
@@ -171,7 +172,7 @@ func _build_ui() -> void:
 	btn_style.set_corner_radius_all(4)
 	btn_style.set_content_margin_all(8)
 	_start_btn.add_theme_stylebox_override("normal", btn_style)
-	_start_btn.add_theme_color_override("font_color", Color(0.1, 0.1, 0.1))
+	_start_btn.add_theme_color_override("font_color", BTN_TEXT_COLOR)
 	_start_btn.pressed.connect(_on_start_pressed)
 	vbox.add_child(_start_btn)
 
