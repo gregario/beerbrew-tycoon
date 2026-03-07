@@ -99,3 +99,96 @@ func test_mass_market_serialize_roundtrip():
 func test_mass_market_win_description():
 	var path = MassMarketPath.new()
 	assert_true(path.get_win_description().length() > 0)
+
+# --- PathManager ---
+
+func test_path_manager_starts_with_no_path():
+	PathManager.reset()
+	assert_false(PathManager.has_chosen_path())
+	assert_eq(PathManager.get_path_name(), "")
+
+func test_path_manager_choose_artisan():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	assert_true(PathManager.has_chosen_path())
+	assert_eq(PathManager.get_path_name(), "Artisan Brewery")
+	assert_almost_eq(PathManager.get_quality_bonus(), 1.2, 0.001)
+
+func test_path_manager_choose_mass_market():
+	PathManager.reset()
+	PathManager.choose_path("mass_market")
+	assert_true(PathManager.has_chosen_path())
+	assert_eq(PathManager.get_path_name(), "Mass-Market Brewery")
+	assert_almost_eq(PathManager.get_batch_multiplier(), 2.0, 0.001)
+
+func test_path_manager_cannot_choose_twice():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	PathManager.choose_path("mass_market")
+	# Should still be artisan — second call ignored
+	assert_eq(PathManager.get_path_name(), "Artisan Brewery")
+
+func test_path_manager_can_choose_path_threshold():
+	PathManager.reset()
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	BreweryExpansion.beers_brewed = 25
+	GameState.balance = 15000.0
+	assert_true(PathManager.can_choose_path())
+
+func test_path_manager_cannot_choose_below_threshold():
+	PathManager.reset()
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.MICROBREWERY
+	BreweryExpansion.beers_brewed = 24
+	GameState.balance = 15000.0
+	assert_false(PathManager.can_choose_path())
+
+func test_path_manager_cannot_choose_wrong_stage():
+	PathManager.reset()
+	BreweryExpansion.current_stage = BreweryExpansion.Stage.GARAGE
+	BreweryExpansion.beers_brewed = 25
+	GameState.balance = 15000.0
+	assert_false(PathManager.can_choose_path())
+
+func test_path_manager_save_load_artisan():
+	PathManager.reset()
+	PathManager.choose_path("artisan")
+	PathManager.add_reputation(42)
+	var data: Dictionary = PathManager.save_state()
+	PathManager.reset()
+	assert_false(PathManager.has_chosen_path())
+	PathManager.load_state(data)
+	assert_true(PathManager.has_chosen_path())
+	assert_eq(PathManager.get_path_name(), "Artisan Brewery")
+	assert_eq(PathManager.get_reputation(), 42)
+
+func test_path_manager_save_load_mass_market():
+	PathManager.reset()
+	PathManager.choose_path("mass_market")
+	var data: Dictionary = PathManager.save_state()
+	PathManager.reset()
+	PathManager.load_state(data)
+	assert_eq(PathManager.get_path_name(), "Mass-Market Brewery")
+
+func test_path_manager_save_load_no_path():
+	PathManager.reset()
+	var data: Dictionary = PathManager.save_state()
+	assert_eq(data["path_type"], "")
+	PathManager.load_state(data)
+	assert_false(PathManager.has_chosen_path())
+
+func test_path_manager_reset():
+	PathManager.choose_path("artisan")
+	PathManager.add_reputation(50)
+	PathManager.reset()
+	assert_false(PathManager.has_chosen_path())
+	assert_eq(PathManager.get_reputation(), 0)
+
+func test_path_manager_delegates_defaults_when_no_path():
+	PathManager.reset()
+	assert_almost_eq(PathManager.get_quality_bonus(), 1.0, 0.001)
+	assert_almost_eq(PathManager.get_batch_multiplier(), 1.0, 0.001)
+	assert_almost_eq(PathManager.get_ingredient_discount(), 1.0, 0.001)
+	assert_almost_eq(PathManager.get_competition_discount(), 1.0, 0.001)
+	assert_false(PathManager.check_win_condition())
+	assert_eq(PathManager.get_reputation(), 0)
+	assert_eq(PathManager.get_path_name(), "")

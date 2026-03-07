@@ -36,6 +36,7 @@ StaffManager="*res://autoloads/StaffManager.gd"
 BreweryExpansion="*res://autoloads/BreweryExpansion.gd"
 ContractManager="*res://autoloads/ContractManager.gd"
 CompetitionManager="*res://autoloads/CompetitionManager.gd"
+PathManager="*res://autoloads/PathManager.gd"
 
 [display]
 
