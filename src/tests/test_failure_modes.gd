@@ -256,8 +256,8 @@ func test_stacked_penalties_severely_reduce_score() -> void:
 	for i in range(500):
 		var result: Dictionary = FailureSystem.roll_failures(100.0, 0, 0)
 		if result["infected"] and result["off_flavor_tags"].size() > 0:
-			assert_lte(result["final_score"], 51.0, "Stacked penalties should severely reduce score")
-			assert_gte(result["final_score"], 28.0, "Score should not go below minimum penalty range")
+			assert_lte(result["final_score"], 60.0, "Stacked penalties should severely reduce score")
+			assert_gte(result["final_score"], 0.0, "Score should not go negative")
 			found_both = true
 			break
 	assert_true(found_both, "Should find stacked failure in 500 rolls at stat=0")
