@@ -1,0 +1,25 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "neipa"
+style_name = "NEIPA"
+description = "New England IPA. Hazy, juicy, tropical fruit bomb. Massive dry hopping with biotransformation during fermentation."
+ideal_flavor_ratio = 0.6
+base_price = 320.0
+base_demand_weight = 1.1
+unlocked = false
+preferred_ingredients = {"pale_malt": 0.8, "wheat_malt": 0.8, "flaked_oats": 0.9, "citra": 0.95, "simcoe": 0.9, "us05_clean_ale": 0.8, "kveik_voss": 0.7}
+ideal_flavor_profile = {"bitterness": 0.3, "sweetness": 0.3, "roastiness": 0.0, "fruitiness": 0.9, "funkiness": 0.0}
+ideal_mash_temp_min = 65.0
+ideal_mash_temp_max = 68.0
+ideal_boil_min = 45.0
+ideal_boil_max = 60.0
+family = "modern"
+water_affinity = {"soft": 0.7, "balanced": 0.6, "malty": 0.3, "hoppy": 0.7, "juicy": 0.95}
+hop_schedule_expectations = {"bittering": 0.15, "aroma": 0.35, "dry_hop": 0.5}
+yeast_temp_flavors = {"clean": 0.7, "ester_fruit": 0.6, "ester_banana": 0.0, "fusel": 0.0}
+acceptable_off_flavors = {"ester": 0.4}
+primary_lesson = "dry_hopping"
