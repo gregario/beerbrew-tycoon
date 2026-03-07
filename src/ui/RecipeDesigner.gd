@@ -70,6 +70,8 @@ var _ingredients := {"malts": [], "hops": [], "yeast": [], "adjuncts": []}
 var _water_profiles: Array = []
 var _selected_water_profile = null  # WaterProfile or null (tap water)
 var _water_section: VBoxContainer = null
+var _hop_schedule_section: VBoxContainer = null
+var _hop_allocation_buttons: Dictionary = {}  # hop_id -> {slot_name: Button}
 
 func _ready() -> void:
 	_load_ingredients()
@@ -99,6 +101,7 @@ func _build_panels() -> void:
 	_build_category(adjunct_container, "adjuncts", _ingredients["adjuncts"])
 	_update_counter_badges()
 	_build_water_selector()
+	_build_hop_schedule_selector()
 
 func _build_category(container: VBoxContainer, slot: String, ingredients: Array) -> void:
 	for child in container.get_children():
@@ -141,6 +144,9 @@ func _on_ingredient_pressed(slot: String, ing: Resource, btn: Button) -> void:
 	_update_counter_badges()
 	_update_summary()
 	_check_brew_enabled()
+	# Rebuild hop schedule when hops change
+	if slot == "hops":
+		_build_hop_schedule_selector()
 
 func _deselect_siblings(btn: Button) -> void:
 	var parent := btn.get_parent()
@@ -277,6 +283,85 @@ func _build_water_selector() -> void:
 		vbox.add_child(_water_section)
 		vbox.move_child(_water_section, footer_idx)
 
+const HOP_SLOTS := ["bittering", "flavor", "aroma", "dry_hop"]
+
+func _build_hop_schedule_selector() -> void:
+	# Remove old hop schedule section if it exists
+	if _hop_schedule_section != null and is_instance_valid(_hop_schedule_section):
+		_hop_schedule_section.queue_free()
+		_hop_schedule_section = null
+	_hop_allocation_buttons.clear()
+	# Only show when hop_schedule equipment is revealed AND hops are selected
+	if not is_instance_valid(EquipmentManager) or not EquipmentManager.is_revealed("hop_schedule"):
+		GameState.set_hop_allocations({})
+		return
+	var selected_hops: Array = _selected["hops"]
+	if selected_hops.is_empty():
+		GameState.set_hop_allocations({})
+		return
+	# Build the UI section
+	_hop_schedule_section = VBoxContainer.new()
+	_hop_schedule_section.name = "HopScheduleSection"
+	var title_label := Label.new()
+	title_label.text = "HOP SCHEDULE"
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_hop_schedule_section.add_child(title_label)
+	var desc_label := Label.new()
+	desc_label.text = "Assign each hop to a timing slot"
+	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc_label.add_theme_font_size_override("font_size", 12)
+	_hop_schedule_section.add_child(desc_label)
+	# For each selected hop, show a row with 4 radio buttons
+	for hop in selected_hops:
+		var hop_id: String = hop.ingredient_id
+		var row := HBoxContainer.new()
+		row.name = "HopRow_%s" % hop_id
+		var hop_label := Label.new()
+		hop_label.text = hop.ingredient_name + ":"
+		hop_label.custom_minimum_size.x = 100
+		row.add_child(hop_label)
+		_hop_allocation_buttons[hop_id] = {}
+		for slot in HOP_SLOTS:
+			var btn := Button.new()
+			btn.text = slot.capitalize().replace("_", " ")
+			btn.toggle_mode = true
+			btn.button_pressed = (slot == "bittering")  # Default to bittering
+			btn.custom_minimum_size.y = 28
+			btn.pressed.connect(_on_hop_slot_selected.bind(hop_id, slot, btn))
+			row.add_child(btn)
+			_hop_allocation_buttons[hop_id][slot] = btn
+		_hop_schedule_section.add_child(row)
+	# Insert before FooterRow in the VBox
+	var vbox: VBoxContainer = brew_button.get_parent().get_parent()
+	var footer_idx: int = vbox.get_children().find(brew_button.get_parent())
+	if footer_idx >= 0:
+		vbox.add_child(_hop_schedule_section)
+		vbox.move_child(_hop_schedule_section, footer_idx)
+	# Set default allocations (all bittering)
+	_update_hop_allocations()
+
+func _on_hop_slot_selected(hop_id: String, slot: String, btn: Button) -> void:
+	# Radio-style: deselect other slots for this hop
+	if _hop_allocation_buttons.has(hop_id):
+		for s in _hop_allocation_buttons[hop_id]:
+			var other_btn: Button = _hop_allocation_buttons[hop_id][s]
+			if other_btn != btn:
+				other_btn.button_pressed = false
+	btn.button_pressed = true
+	_update_hop_allocations()
+
+func _update_hop_allocations() -> void:
+	var allocations: Dictionary = {}
+	for hop_id in _hop_allocation_buttons:
+		for slot in _hop_allocation_buttons[hop_id]:
+			var btn: Button = _hop_allocation_buttons[hop_id][slot]
+			if btn.button_pressed:
+				allocations[hop_id] = slot
+				break
+		if not allocations.has(hop_id):
+			allocations[hop_id] = "bittering"  # Fallback default
+	GameState.set_hop_allocations(allocations)
+
 func _on_water_selected(profile, btn: Button) -> void:
 	_selected_water_profile = profile
 	GameState.set_water_profile(profile)
@@ -298,6 +383,7 @@ func refresh() -> void:
 	_selected = {"malts": [], "hops": [], "yeast": null, "adjuncts": []}
 	_selected_water_profile = null
 	GameState.set_water_profile(null)
+	GameState.set_hop_allocations({})
 	_build_panels()
 	brew_button.disabled = true
 	_update_summary()

@@ -44,6 +44,7 @@ var current_recipe: Dictionary = {}  # {malts: Array, hops: Array, yeast: Yeast,
 var recipe_history: Array = []       # Array of {style_id, malt_ids, hop_ids, yeast_id, adjunct_ids}
 var last_brew_result: Dictionary = {}
 var current_water_profile = null  # WaterProfile resource, null = tap water
+var current_hop_allocations: Dictionary = {}  # Maps hop_id -> slot string (bittering/flavor/aroma/dry_hop)
 
 # Taste skill
 var general_taste: int = 0
@@ -191,6 +192,9 @@ func set_recipe(recipe: Dictionary) -> void:
 func set_water_profile(profile) -> void:
 	current_water_profile = profile
 
+func set_hop_allocations(allocations: Dictionary) -> void:
+	current_hop_allocations = allocations
+
 # ---------------------------------------------------------------------------
 # Economy methods
 # ---------------------------------------------------------------------------
@@ -330,7 +334,8 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 		current_recipe,
 		sliders,
 		recipe_history,
-		current_water_profile
+		current_water_profile,
+		current_hop_allocations
 	)
 
 	# QA checkpoint toasts (Stage 1C)
@@ -566,6 +571,7 @@ func reset() -> void:
 	recipe_history = []
 	last_brew_result = {}
 	current_water_profile = null
+	current_hop_allocations = {}
 	total_revenue = 0.0
 	best_quality = 0.0
 	is_brewing = false
