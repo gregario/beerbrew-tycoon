@@ -71,26 +71,40 @@ func apply_noise(value: float, brew_seed: int) -> float:
 
 
 ## Scores mash temp against style's ideal range. Returns 0.0-1.0.
+## ±2°C tolerance zone around ideal range scores 1.0. Penalty ramps beyond.
 func calc_mash_score(mash_temp_c: float, style: BeerStyle) -> float:
-	if mash_temp_c >= style.ideal_mash_temp_min and mash_temp_c <= style.ideal_mash_temp_max:
+	var zone_min: float = style.ideal_mash_temp_min - 2.0
+	var zone_max: float = style.ideal_mash_temp_max + 2.0
+	if mash_temp_c >= zone_min and mash_temp_c <= zone_max:
 		return 1.0
 	var distance: float = 0.0
-	if mash_temp_c < style.ideal_mash_temp_min:
-		distance = style.ideal_mash_temp_min - mash_temp_c
+	if mash_temp_c < zone_min:
+		distance = zone_min - mash_temp_c
 	else:
-		distance = mash_temp_c - style.ideal_mash_temp_max
-	return maxf(0.0, 1.0 - (distance / 7.0))
+		distance = mash_temp_c - zone_max
+	return maxf(0.0, 1.0 - (distance / 5.0))
 
 
 ## Scores boil duration against style's ideal range. Returns 0.0-1.0.
-func calc_boil_score(boil_min: float, style: BeerStyle) -> float:
-	if boil_min >= style.ideal_boil_min and boil_min <= style.ideal_boil_max:
+## Non-pilsner malts get a 45-90 min flat zone. High DMS malts use style range.
+func calc_boil_score(boil_min: float, style: BeerStyle, has_high_dms_malt: bool = false) -> float:
+	var zone_min: float
+	var zone_max: float
+	if has_high_dms_malt:
+		# Pilsner malt needs longer boils — use style's ideal range
+		zone_min = style.ideal_boil_min
+		zone_max = style.ideal_boil_max
+	else:
+		# Non-pilsner: 45-90 min all score equally
+		zone_min = 45.0
+		zone_max = 90.0
+	if boil_min >= zone_min and boil_min <= zone_max:
 		return 1.0
 	var distance: float = 0.0
-	if boil_min < style.ideal_boil_min:
-		distance = style.ideal_boil_min - boil_min
+	if boil_min < zone_min:
+		distance = zone_min - boil_min
 	else:
-		distance = boil_min - style.ideal_boil_max
+		distance = boil_min - zone_max
 	return maxf(0.0, 1.0 - (distance / 60.0))
 
 

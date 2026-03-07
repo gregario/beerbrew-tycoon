@@ -131,8 +131,9 @@ func test_mash_score_outside_range():
 	var style := BeerStyle.new()
 	style.ideal_mash_temp_min = 66.0
 	style.ideal_mash_temp_max = 68.0
+	# 62°C is 2°C below flat zone edge (64°C), so score = 1.0 - 2/5 = 0.6
 	var score: float = BrewingScience.calc_mash_score(62.0, style)
-	assert_lt(score, 0.6, "Temp far outside ideal should score low")
+	assert_lt(score, 0.7, "Temp outside flat zone should score below 0.7")
 
 # ---------------------------------------------------------------------------
 # Boil duration scoring
@@ -149,8 +150,9 @@ func test_boil_score_outside_range():
 	var style := BeerStyle.new()
 	style.ideal_boil_min = 60.0
 	style.ideal_boil_max = 90.0
+	# 30 min is 15 min below flat zone (45 min), so score = 1.0 - 15/60 = 0.75
 	var score: float = BrewingScience.calc_boil_score(30.0, style)
-	assert_lt(score, 0.6, "Duration far outside ideal should score low")
+	assert_lt(score, 0.8, "Duration outside flat zone should score below 0.8")
 
 # ---------------------------------------------------------------------------
 # Integration: full brew flow with brewing science
