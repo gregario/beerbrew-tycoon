@@ -144,7 +144,9 @@ func _on_results_continue() -> void:
 			last_brew_result["completed_aged_beers"] = completed_aged
 			for aged_beer in completed_aged:
 				var aged_quality: float = aged_beer.get("final_quality", 50.0)
-				var aged_revenue: float = aged_quality * 2.0  # Premium pricing for aged beers
+				# Aged beers bypass the SELL flow — they auto-sell at a premium
+				# (quality × 2.0) as a simplification. Future: route through channels.
+				var aged_revenue: float = aged_quality * 2.0
 				add_revenue(aged_revenue)
 				if is_instance_valid(ToastManager):
 					ToastManager.show_toast("Aged %s ready! Quality: %d — Revenue: +$%d" % [

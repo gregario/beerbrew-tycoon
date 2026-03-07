@@ -447,6 +447,12 @@ func _get_bonus_text(equip: Equipment) -> String:
 		parts.append("Eff +%.0f%%" % (equip.efficiency_bonus * 100))
 	if equip.batch_size_multiplier != 1.0:
 		parts.append("Batch x%.1f" % equip.batch_size_multiplier)
+	if equip.mash_bonus != 0:
+		parts.append("Mash +%d" % equip.mash_bonus)
+	if equip.boil_bonus != 0:
+		parts.append("Boil +%d" % equip.boil_bonus)
+	if equip.ferment_bonus != 0:
+		parts.append("Ferment +%d" % equip.ferment_bonus)
 	return " | ".join(parts)
 
 func _on_dim_input(event: InputEvent) -> void:

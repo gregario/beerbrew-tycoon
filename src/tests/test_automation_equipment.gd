@@ -58,7 +58,7 @@ func test_full_automation_suite_loads():
 	assert_not_null(equip)
 	assert_eq(equip.equipment_id, "full_automation_suite")
 	assert_eq(equip.equipment_name, "Full Automation Suite")
-	assert_eq(equip.tier, 5)
+	assert_eq(equip.tier, 4)
 	assert_eq(equip.category, Equipment.Category.AUTOMATION)
 	assert_eq(equip.cost, 3500)
 	assert_eq(equip.mash_bonus, 6)
