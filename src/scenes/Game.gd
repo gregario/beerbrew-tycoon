@@ -306,8 +306,49 @@ func _on_fork_path_selected(path_type: String) -> void:
 	else:
 		target_stage = BreweryExpansion.Stage.MASS_MARKET
 	BreweryExpansion.expand_to_path(target_stage)
+	_swap_brewery_scene(path_type)
 	if is_instance_valid(ToastManager):
 		ToastManager.show_toast("You've chosen the %s path!" % PathManager.get_path_name())
 
-func _on_path_chosen(_path_type: String) -> void:
-	pass  # Additional reactions to path choice can go here
+func _on_path_chosen(path_type: String) -> void:
+	# Swap brewery scene when path is restored from save
+	if path_type != "" and not brewery_scene is preload("res://scenes/ArtisanBreweryScene.gd") and not brewery_scene is preload("res://scenes/MassMarketBreweryScene.gd"):
+		_swap_brewery_scene(path_type)
+
+func _swap_brewery_scene(path_type: String) -> void:
+	var scene_path: String
+	if path_type == "artisan":
+		scene_path = "res://scenes/ArtisanBreweryScene.tscn"
+	else:
+		scene_path = "res://scenes/MassMarketBreweryScene.tscn"
+
+	# Disconnect signals from old brewery scene
+	if brewery_scene.slot_clicked.is_connected(_on_slot_clicked):
+		brewery_scene.slot_clicked.disconnect(_on_slot_clicked)
+	if brewery_scene.start_brewing_pressed.is_connected(_on_start_brewing):
+		brewery_scene.start_brewing_pressed.disconnect(_on_start_brewing)
+	if brewery_scene.research_requested.is_connected(_on_research_requested):
+		brewery_scene.research_requested.disconnect(_on_research_requested)
+	if brewery_scene.staff_requested.is_connected(_on_staff_requested):
+		brewery_scene.staff_requested.disconnect(_on_staff_requested)
+
+	# Remember position in tree and remove old scene
+	var idx := brewery_scene.get_index()
+	remove_child(brewery_scene)
+	brewery_scene.queue_free()
+
+	# Instantiate new path-specific scene
+	var new_scene: Node2D = load(scene_path).instantiate()
+	new_scene.name = "BreweryScene"
+	add_child(new_scene)
+	move_child(new_scene, idx)
+	brewery_scene = new_scene
+
+	# Reconnect signals
+	brewery_scene.slot_clicked.connect(_on_slot_clicked)
+	brewery_scene.start_brewing_pressed.connect(_on_start_brewing)
+	brewery_scene.research_requested.connect(_on_research_requested)
+	brewery_scene.staff_requested.connect(_on_staff_requested)
+
+	# Refresh the new scene's slots to match current equipment state
+	brewery_scene.set_equipment_mode(true)
