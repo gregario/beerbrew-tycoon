@@ -21,7 +21,7 @@ func get_competition_discount() -> float:
 func add_reputation(amount: int) -> void:
 	reputation += amount
 
-func check_win_condition(game_state) -> bool:
+func check_win_condition(_game_state) -> bool:
 	if not is_instance_valid(CompetitionManager):
 		return false
 	var total_medals: int = (CompetitionManager.medals["gold"]

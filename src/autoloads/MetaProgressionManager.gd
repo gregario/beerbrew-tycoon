@@ -191,7 +191,7 @@ func has_challenge_modifier() -> bool:
 # --- Run points & end_run ---
 
 func calculate_run_points(metrics: Dictionary) -> int:
-	var turns: int = mini(int(metrics.get("turns", 0)) / 5, 5)
+	var turns: int = mini(int(int(metrics.get("turns", 0)) / 5.0), 5)
 	var revenue: int = mini(int(float(metrics.get("revenue", 0.0)) / 2000.0), 5)
 	var quality: int = mini(int(float(metrics.get("best_quality", 0.0)) / 20.0), 5)
 	var medals: int = mini(int(metrics.get("medals", 0)), 5)

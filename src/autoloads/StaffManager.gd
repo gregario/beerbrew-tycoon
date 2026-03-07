@@ -70,7 +70,7 @@ func generate_candidates(count: int) -> void:
 			break
 		var creativity: int = randi_range(25, 75)
 		var precision: int = randi_range(25, 75)
-		var salary: int = 40 + (creativity + precision) / 4
+		var salary: int = 40 + int((creativity + precision) / 4.0)
 		var staff_id: String = "staff_%d" % _next_id
 		_next_id += 1
 		var staff_dict: Dictionary = {
