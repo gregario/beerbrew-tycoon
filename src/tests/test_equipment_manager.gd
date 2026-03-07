@@ -272,6 +272,31 @@ func test_upgrade_cheaper_than_direct_buy():
 
 # --- Full integration test ---
 
+func test_is_revealed_with_no_equipment():
+	EquipmentManager.reset()
+	assert_false(EquipmentManager.is_revealed("temp_numbers"))
+
+func test_is_revealed_with_equipped_thermometer():
+	EquipmentManager.reset()
+	EquipmentManager.owned_equipment = ["thermometer"]
+	EquipmentManager.station_slots[0] = "thermometer"
+	assert_true(EquipmentManager.is_revealed("temp_numbers"))
+
+func test_is_revealed_only_checks_slotted():
+	EquipmentManager.reset()
+	EquipmentManager.owned_equipment = ["thermometer"]
+	# Owned but NOT slotted
+	assert_false(EquipmentManager.is_revealed("temp_numbers"), "Reveals should only come from slotted equipment")
+
+func test_is_revealed_aggregates_multiple():
+	EquipmentManager.reset()
+	EquipmentManager.owned_equipment = ["thermometer", "water_kit"]
+	EquipmentManager.station_slots[0] = "thermometer"
+	EquipmentManager.station_slots[1] = "water_kit"
+	assert_true(EquipmentManager.is_revealed("temp_numbers"))
+	assert_true(EquipmentManager.is_revealed("water_selector"))
+	assert_false(EquipmentManager.is_revealed("hop_schedule"))
+
 func test_full_equipment_workflow():
 	GameState.reset()
 
