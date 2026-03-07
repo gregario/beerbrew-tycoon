@@ -150,6 +150,12 @@ func _on_results_continue() -> void:
 					ToastManager.show_toast("Aged %s ready! Quality: %d — Revenue: +$%d" % [
 						aged_beer.get("style_name", "Beer"), int(aged_quality), int(aged_revenue)
 					])
+	# Brand decay tick (Stage 5B)
+	if is_instance_valid(MarketManager):
+		var brewed_style_id: String = ""
+		if current_style != null:
+			brewed_style_id = current_style.style_id
+		MarketManager.tick_brand_decay(brewed_style_id)
 	if check_win_condition():
 		run_won = true
 		_set_state(State.GAME_OVER)
@@ -478,6 +484,11 @@ func execute_sell(allocations: Array, price_offset: float) -> Dictionary:
 	last_brew_result["revenue_breakdown"] = breakdown
 	last_brew_result["price_offset"] = price_offset
 	MarketManager.record_brew(current_style.style_id)
+	# Brand recognition gain for each channel with sales (Stage 5B)
+	if is_instance_valid(MarketManager):
+		for allocation in allocations:
+			if allocation.get("units", 0) > 0:
+				MarketManager.add_brand_recognition(current_style.style_id, allocation["channel_id"])
 	return {"total": total, "breakdown": breakdown}
 
 # ---------------------------------------------------------------------------

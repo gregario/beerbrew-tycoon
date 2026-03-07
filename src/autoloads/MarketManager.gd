@@ -28,6 +28,18 @@ const RESEARCH_COST: int = 100
 const VOLUME_MOD_MIN: float = 0.3
 const VOLUME_MOD_MAX: float = 1.5
 
+# -- Brand recognition constants --
+const BRAND_BASE_GAIN: float = 5.0
+const BRAND_DECAY_PER_TURN: float = 2.0
+const BRAND_MAX: float = 100.0
+const BRAND_DEMAND_SCALE: float = 0.5
+const BRAND_CHANNEL_MULTIPLIERS: Dictionary = {
+	"retail": 1.5,
+	"local_bars": 1.0,
+	"taproom": 0.5,
+	"events": 0.3,
+}
+
 # -- Distribution channels --
 const CHANNELS: Array = [
 	{"id": "taproom", "name": "Taproom", "margin": 1.0, "volume_pct": 0.3, "unlock_type": "always"},
@@ -58,6 +70,7 @@ var _next_trend_in: int = 0
 var _saturation: Dictionary = {}  # {style_id: float}
 var _price_offset: float = 0.0
 var research_purchased: bool = false
+var brand_recognition: Dictionary = {}  # style_id -> float
 
 func register_styles(style_ids: Array) -> void:
 	_style_ids = style_ids.duplicate()
@@ -72,6 +85,7 @@ func initialize() -> void:
 	_saturation = {}
 	_price_offset = 0.0
 	research_purchased = false
+	brand_recognition = {}
 
 func tick() -> void:
 	research_purchased = false
@@ -139,7 +153,29 @@ func get_demand_multiplier(style_id: String) -> float:
 	base += get_seasonal_modifier(style_id)
 	base += get_trend_bonus(style_id)
 	base -= get_saturation_penalty(style_id)
+	var brand_mult: float = get_brand_demand_multiplier(style_id)
+	base *= brand_mult
 	return clampf(base, DEMAND_MIN, DEMAND_MAX)
+
+# -- Brand recognition --
+
+func get_brand_recognition(style_id: String) -> float:
+	return brand_recognition.get(style_id, 0.0)
+
+func add_brand_recognition(style_id: String, channel_id: String) -> void:
+	var multiplier: float = BRAND_CHANNEL_MULTIPLIERS.get(channel_id, 0.5)
+	var gain: float = BRAND_BASE_GAIN * multiplier
+	var current: float = brand_recognition.get(style_id, 0.0)
+	brand_recognition[style_id] = minf(current + gain, BRAND_MAX)
+
+func tick_brand_decay(brewed_style_id: String) -> void:
+	for style_id in brand_recognition.keys():
+		if style_id != brewed_style_id:
+			brand_recognition[style_id] = maxf(brand_recognition[style_id] - BRAND_DECAY_PER_TURN, 0.0)
+
+func get_brand_demand_multiplier(style_id: String) -> float:
+	var recognition: float = get_brand_recognition(style_id)
+	return 1.0 + (recognition / BRAND_MAX) * BRAND_DEMAND_SCALE
 
 # -- Backward compatibility (MarketSystem API) --
 func get_demand_weight(style_id: String) -> float:
@@ -244,6 +280,7 @@ func save_data() -> Dictionary:
 		"saturation": _saturation.duplicate(),
 		"price_offset": _price_offset,
 		"research_purchased": research_purchased,
+		"brand_recognition": brand_recognition.duplicate(),
 	}
 
 func load_data(data: Dictionary) -> void:
@@ -256,6 +293,7 @@ func load_data(data: Dictionary) -> void:
 	_saturation = data.get("saturation", {}).duplicate()
 	_price_offset = data.get("price_offset", 0.0)
 	research_purchased = data.get("research_purchased", false)
+	brand_recognition = data.get("brand_recognition", {}).duplicate()
 
 func reset() -> void:
 	initialize()
