@@ -38,6 +38,7 @@ ContractManager="*res://autoloads/ContractManager.gd"
 CompetitionManager="*res://autoloads/CompetitionManager.gd"
 PathManager="*res://autoloads/PathManager.gd"
 SpecialtyBeerManager="*res://autoloads/SpecialtyBeerManager.gd"
+MetaProgressionManager="*res://autoloads/MetaProgressionManager.gd"
 
 [display]
 
