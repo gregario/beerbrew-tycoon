@@ -1,0 +1,25 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "saison"
+style_name = "Saison"
+description = "Belgian farmhouse ale. Bone-dry, peppery, and complex. Unlike other styles, saison yeast thrives at high temperatures."
+ideal_flavor_ratio = 0.55
+base_price = 300.0
+base_demand_weight = 0.8
+unlocked = false
+preferred_ingredients = {"pilsner_malt": 0.9, "wheat_malt": 0.7, "pale_malt": 0.6, "saaz": 0.8, "hallertau": 0.7, "belle_saison": 0.95}
+ideal_flavor_profile = {"bitterness": 0.35, "sweetness": 0.1, "roastiness": 0.0, "fruitiness": 0.5, "funkiness": 0.4}
+ideal_mash_temp_min = 63.0
+ideal_mash_temp_max = 66.0
+ideal_boil_min = 60.0
+ideal_boil_max = 90.0
+family = "belgian"
+water_affinity = {"soft": 0.6, "balanced": 0.7, "malty": 0.5, "hoppy": 0.6, "juicy": 0.5}
+hop_schedule_expectations = {"bittering": 0.5, "aroma": 0.35, "dry_hop": 0.15}
+yeast_temp_flavors = {"phenol_pepper": 0.9, "ester_fruit": 0.7, "clean": 0.1, "fusel": 0.0}
+acceptable_off_flavors = {"phenol_pepper": 0.8, "ester": 0.5}
+primary_lesson = "high_temp_fermentation"

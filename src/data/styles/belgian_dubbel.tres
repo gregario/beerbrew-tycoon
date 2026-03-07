@@ -1,0 +1,25 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "belgian_dubbel"
+style_name = "Belgian Dubbel"
+description = "Rich, malty Belgian ale. Dark fruit, caramel, and spice from specialized yeast. Complex yet approachable."
+ideal_flavor_ratio = 0.5
+base_price = 350.0
+base_demand_weight = 0.8
+unlocked = false
+preferred_ingredients = {"pilsner_malt": 0.8, "munich_malt": 0.7, "crystal_60": 0.8, "brewing_sugar": 0.7, "hallertau": 0.8, "east_kent_goldings": 0.7, "belle_saison": 0.7}
+ideal_flavor_profile = {"bitterness": 0.25, "sweetness": 0.55, "roastiness": 0.15, "fruitiness": 0.6, "funkiness": 0.1}
+ideal_mash_temp_min = 65.0
+ideal_mash_temp_max = 68.0
+ideal_boil_min = 60.0
+ideal_boil_max = 90.0
+family = "belgian"
+water_affinity = {"soft": 0.5, "balanced": 0.7, "malty": 0.85, "hoppy": 0.4, "juicy": 0.4}
+hop_schedule_expectations = {"bittering": 0.7, "aroma": 0.25, "dry_hop": 0.05}
+yeast_temp_flavors = {"ester_fruit": 0.8, "phenol_pepper": 0.4, "clean": 0.2, "fusel": 0.1}
+acceptable_off_flavors = {"ester": 0.6, "phenol": 0.3, "diacetyl": 0.1}
+primary_lesson = "belgian_yeast_character"
