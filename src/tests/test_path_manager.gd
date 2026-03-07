@@ -330,3 +330,9 @@ func test_fork_threshold_cannot_choose_already_chosen():
 	BreweryExpansion.beers_brewed = 25
 	GameState.balance = 15000.0
 	assert_false(PathManager.can_choose_path())
+
+# --- ForkChoiceOverlay ---
+
+func test_fork_choice_overlay_loads():
+	var script = load("res://ui/ForkChoiceOverlay.gd")
+	assert_not_null(script, "ForkChoiceOverlay script loads")
