@@ -243,6 +243,9 @@ func load_state(data: Dictionary) -> void:
 # ---------------------------------------------------------------------------
 # Reset
 # ---------------------------------------------------------------------------
+func get_total_medals() -> int:
+	return medals.get("gold", 0) + medals.get("silver", 0) + medals.get("bronze", 0)
+
 func reset() -> void:
 	current_competition = null
 	player_entry = null

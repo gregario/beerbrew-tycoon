@@ -2,6 +2,8 @@ extends Control
 
 ## GameOverScreen — end-of-run screen for both win and loss states.
 
+signal new_run_requested
+
 @onready var title_label: Label = $CardPanel/MarginContainer/VBox/TitleLabel
 @onready var message_label: Label = $CardPanel/MarginContainer/VBox/MessageLabel
 @onready var turns_value: Label = $CardPanel/MarginContainer/VBox/StatsGrid/TurnsValueLabel
@@ -32,7 +34,7 @@ func populate() -> void:
 	balance_value.text = "$%d" % GameState.balance
 
 func _on_new_run_pressed() -> void:
-	GameState.reset()
+	new_run_requested.emit()
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()

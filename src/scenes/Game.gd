@@ -25,6 +25,11 @@ var research_tree: CanvasLayer = null
 var staff_screen: CanvasLayer = null
 var _sell_overlay: CanvasLayer = null
 var _fork_overlay: CanvasLayer = null
+var _run_summary: CanvasLayer = null
+var _unlock_shop: CanvasLayer = null
+var _run_start: CanvasLayer = null
+var _main_menu: CanvasLayer = null
+var _achievements: CanvasLayer = null
 
 func _ready() -> void:
 	# Register styles with the market manager before any demand init
@@ -78,6 +83,9 @@ func _ready() -> void:
 	research_tree.closed.connect(_on_research_tree_closed)
 	brewery_scene.staff_requested.connect(_on_staff_requested)
 	staff_screen.closed.connect(_on_staff_screen_closed)
+
+	# Meta-progression flow: GameOver → RunSummary → UnlockShop → RunStart → reset()
+	game_over_screen.new_run_requested.connect(_on_new_run_requested)
 
 	# Fork choice overlay (Stage 5A)
 	if is_instance_valid(BreweryExpansion):
@@ -352,3 +360,68 @@ func _swap_brewery_scene(path_type: String) -> void:
 
 	# Refresh the new scene's slots to match current equipment state
 	brewery_scene.set_equipment_mode(true)
+
+# ---------------------------------------------------------------------------
+# Meta-progression flow: GameOver → RunSummary → UnlockShop → RunStart → reset()
+# ---------------------------------------------------------------------------
+
+func _on_new_run_requested() -> void:
+	_hide_all_overlays()
+	var metrics: Dictionary = _gather_run_metrics()
+	var points: int = MetaProgressionManager.end_run(metrics)
+	_show_run_summary(metrics, points)
+
+func _gather_run_metrics() -> Dictionary:
+	var medals: int = 0
+	if is_instance_valid(CompetitionManager):
+		medals = CompetitionManager.get_total_medals()
+	var channels: int = 0
+	if is_instance_valid(MarketManager):
+		channels = MarketManager.get_unlocked_channels().size()
+	return {
+		"turns": GameState.turn_counter,
+		"revenue": GameState.total_revenue,
+		"best_quality": GameState.best_quality,
+		"medals": medals,
+		"won": GameState.run_won,
+		"equipment_spend": GameState.equipment_spend,
+		"channels_unlocked": channels,
+		"unique_ingredients": GameState.unique_ingredients_used,
+		"path": PathManager.get_path_type() if is_instance_valid(PathManager) else "",
+	}
+
+func _show_run_summary(metrics: Dictionary, points: int) -> void:
+	if _run_summary == null:
+		_run_summary = preload("res://ui/RunSummaryOverlay.gd").new()
+		add_child(_run_summary)
+		_managed_overlays.append(_run_summary)
+		_run_summary.continue_pressed.connect(_on_run_summary_continue)
+	_run_summary.show_summary(metrics, points)
+
+func _on_run_summary_continue() -> void:
+	_hide_all_overlays()
+	_show_meta_unlock_shop()
+
+func _show_meta_unlock_shop() -> void:
+	if _unlock_shop == null:
+		_unlock_shop = preload("res://ui/UnlockShopOverlay.gd").new()
+		add_child(_unlock_shop)
+		_managed_overlays.append(_unlock_shop)
+		_unlock_shop.done_pressed.connect(_on_unlock_shop_done)
+	_unlock_shop.show_shop(MetaProgressionManager)
+
+func _on_unlock_shop_done() -> void:
+	_hide_all_overlays()
+	_show_run_start()
+
+func _show_run_start() -> void:
+	if _run_start == null:
+		_run_start = preload("res://ui/RunStartOverlay.gd").new()
+		add_child(_run_start)
+		_managed_overlays.append(_run_start)
+		_run_start.run_started.connect(_on_run_start_confirmed)
+	_run_start.show_setup(MetaProgressionManager)
+
+func _on_run_start_confirmed() -> void:
+	_hide_all_overlays()
+	GameState.reset()
