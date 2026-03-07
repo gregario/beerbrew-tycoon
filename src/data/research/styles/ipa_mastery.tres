@@ -6,7 +6,7 @@
 script = ExtResource("1_research")
 node_id = "ipa_mastery"
 node_name = "IPA Mastery"
-description = "Hop-forward brewing for India Pale Ales. (Style coming in a future update.)"
+description = "Hop-forward brewing for India Pale Ales."
 category = 3
 rp_cost = 25
 prerequisites = ["american_hops", "ale_fundamentals"]

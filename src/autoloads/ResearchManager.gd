@@ -31,7 +31,9 @@ const LOCKED_INGREDIENT_IDS: Array[String] = [
 ]
 
 const LOCKED_STYLE_IDS: Array[String] = [
-	"lager", "wheat_beer", "stout"
+	"lager", "wheat_beer", "stout", "ipa", "porter", "imperial_stout",
+	"hefeweizen", "czech_pilsner", "helles", "marzen", "saison",
+	"belgian_dubbel", "neipa"
 ]
 
 const LOCKED_SPECIALTY_STYLE_IDS: Array[String] = [
@@ -68,6 +70,7 @@ const RESEARCH_PATHS: Array[String] = [
 	"res://data/research/styles/dark_styles.tres",
 	"res://data/research/styles/ipa_mastery.tres",
 	"res://data/research/styles/belgian_arts.tres",
+	"res://data/research/styles/modern_techniques.tres",
 	"res://data/research/techniques/wild_fermentation.tres",
 ]
 

@@ -10,4 +10,4 @@ description = "Cold fermentation techniques for clean, crisp lagers."
 category = 3
 rp_cost = 15
 prerequisites = ["ale_fundamentals"]
-unlock_effect = {"type": "unlock_style", "ids": ["lager"]}
+unlock_effect = {"type": "unlock_style", "ids": ["lager", "czech_pilsner", "helles", "marzen"]}

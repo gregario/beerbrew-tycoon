@@ -10,4 +10,4 @@ description = "German and Belgian wheat beer brewing methods."
 category = 3
 rp_cost = 15
 prerequisites = ["ale_fundamentals"]
-unlock_effect = {"type": "unlock_style", "ids": ["wheat_beer"]}
+unlock_effect = {"type": "unlock_style", "ids": ["wheat_beer", "hefeweizen"]}

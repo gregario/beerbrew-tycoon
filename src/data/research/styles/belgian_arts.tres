@@ -6,8 +6,8 @@
 script = ExtResource("1_research")
 node_id = "belgian_arts"
 node_name = "Belgian Arts"
-description = "Complex Belgian brewing traditions. (Style coming in a future update.)"
+description = "Complex Belgian brewing traditions — saisons, dubbels, and abbey ales."
 category = 3
 rp_cost = 30
 prerequisites = ["specialist_yeast", "wheat_traditions"]
-unlock_effect = {"type": "unlock_style", "ids": ["belgian"]}
+unlock_effect = {"type": "unlock_style", "ids": ["saison", "belgian_dubbel"]}

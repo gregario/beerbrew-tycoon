@@ -96,3 +96,38 @@ func test_all_nine_new_styles_exist():
 		assert_not_null(s, "%s.tres should exist" % id)
 		assert_ne(s.family, "", "%s should have a family" % id)
 		assert_false(s.unlocked, "%s should be locked" % id)
+
+func test_lager_research_unlocks_all_lagers():
+	var node = load("res://data/research/styles/lager_brewing.tres") as ResearchNode
+	var ids = node.unlock_effect.get("ids", [])
+	assert_true("czech_pilsner" in ids, "lager_brewing should unlock czech_pilsner")
+	assert_true("helles" in ids, "lager_brewing should unlock helles")
+	assert_true("marzen" in ids, "lager_brewing should unlock marzen")
+
+func test_dark_research_unlocks_porter_imperial():
+	var node = load("res://data/research/styles/dark_styles.tres") as ResearchNode
+	var ids = node.unlock_effect.get("ids", [])
+	assert_true("porter" in ids, "dark_styles should unlock porter")
+	assert_true("imperial_stout" in ids, "dark_styles should unlock imperial_stout")
+
+func test_wheat_research_unlocks_hefeweizen():
+	var node = load("res://data/research/styles/wheat_traditions.tres") as ResearchNode
+	var ids = node.unlock_effect.get("ids", [])
+	assert_true("hefeweizen" in ids, "wheat_traditions should unlock hefeweizen")
+
+func test_belgian_research_unlocks_saison_dubbel():
+	var node = load("res://data/research/styles/belgian_arts.tres") as ResearchNode
+	var ids = node.unlock_effect.get("ids", [])
+	assert_true("saison" in ids, "belgian_arts should unlock saison")
+	assert_true("belgian_dubbel" in ids, "belgian_arts should unlock belgian_dubbel")
+
+func test_modern_techniques_node_exists():
+	var node = load("res://data/research/styles/modern_techniques.tres") as ResearchNode
+	assert_not_null(node)
+	assert_eq(node.node_id, "modern_techniques")
+	var ids = node.unlock_effect.get("ids", [])
+	assert_true("neipa" in ids)
+
+func test_modern_techniques_in_catalog():
+	var node = ResearchManager.get_node_by_id("modern_techniques")
+	assert_not_null(node, "modern_techniques should be in ResearchManager catalog")

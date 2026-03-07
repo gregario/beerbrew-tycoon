@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_rn"]
+
+[resource]
+script = ExtResource("1_rn")
+node_id = "modern_techniques"
+node_name = "Modern Techniques"
+description = "Contemporary brewing methods. Biotransformation dry hopping, hazy IPAs, and juice-forward flavors."
+category = 3
+rp_cost = 25
+prerequisites = ["american_hops", "dry_hopping"]
+unlock_effect = {"type": "unlock_style", "ids": ["neipa"]}

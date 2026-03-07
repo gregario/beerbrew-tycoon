@@ -10,4 +10,4 @@ description = "Roasty, complex dark beers — stouts, porters, and schwarzbier."
 category = 3
 rp_cost = 20
 prerequisites = ["specialty_malts"]
-unlock_effect = {"type": "unlock_style", "ids": ["stout"]}
+unlock_effect = {"type": "unlock_style", "ids": ["stout", "porter", "imperial_stout"]}
