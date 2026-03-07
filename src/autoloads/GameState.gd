@@ -136,6 +136,20 @@ func _on_results_continue() -> void:
 					PathManager.add_reputation(rep_gain)
 					if is_instance_valid(ToastManager):
 						ToastManager.show_toast("Reputation +%d (now %d)" % [rep_gain, PathManager.get_reputation()])
+	# Specialty beer aging tick (Stage 5B)
+	if is_instance_valid(SpecialtyBeerManager):
+		SpecialtyBeerManager.tick_aging()
+		var completed_aged: Array = SpecialtyBeerManager.get_completed_beers()
+		if completed_aged.size() > 0:
+			last_brew_result["completed_aged_beers"] = completed_aged
+			for aged_beer in completed_aged:
+				var aged_quality: float = aged_beer.get("final_quality", 50.0)
+				var aged_revenue: float = aged_quality * 2.0  # Premium pricing for aged beers
+				add_revenue(aged_revenue)
+				if is_instance_valid(ToastManager):
+					ToastManager.show_toast("Aged %s ready! Quality: %d — Revenue: +$%d" % [
+						aged_beer.get("style_name", "Beer"), int(aged_quality), int(aged_revenue)
+					])
 	if check_win_condition():
 		run_won = true
 		_set_state(State.GAME_OVER)
@@ -404,6 +418,23 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 		if is_instance_valid(ToastManager):
 			ToastManager.show_toast("%s seems to come from %s." % [attr_name, link_detail])
 
+	# Specialty beer aging (Stage 5B)
+	if is_instance_valid(SpecialtyBeerManager) and current_style != null:
+		if current_style.is_specialty and current_style.fermentation_turns > 1:
+			var aging_entry: Dictionary = {
+				"style_id": current_style.style_id,
+				"style_name": current_style.style_name,
+				"recipe": current_recipe.duplicate(true),
+				"quality_base": result["final_score"],
+				"turns_remaining": current_style.fermentation_turns,
+				"variance_seed": randi(),
+			}
+			SpecialtyBeerManager.queue_beer(aging_entry)
+			result["is_aging"] = true
+			result["aging_turns"] = current_style.fermentation_turns
+			if is_instance_valid(ToastManager):
+				ToastManager.show_toast("%s sent to age for %d turns!" % [current_style.style_name, current_style.fermentation_turns])
+
 	last_brew_result = result
 
 	set_brewing(false)
@@ -482,6 +513,8 @@ func reset() -> void:
 		CompetitionManager.reset()
 	if is_instance_valid(PathManager):
 		PathManager.reset()
+	if is_instance_valid(SpecialtyBeerManager):
+		SpecialtyBeerManager.reset()
 	if is_instance_valid(EquipmentManager):
 		EquipmentManager.initialize_starting_equipment()
 	if is_instance_valid(MarketManager):
