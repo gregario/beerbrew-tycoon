@@ -43,7 +43,7 @@ const SPECIALTY_STYLE_PATHS := [
 	"res://data/styles/experimental_brew.tres",
 ]
 
-@onready var style_buttons_container: VBoxContainer = $CardPanel/MarginContainer/VBox/StyleButtons
+@onready var style_buttons_container: VBoxContainer = $CardPanel/MarginContainer/VBox/Scroll/StyleButtons
 @onready var next_button: Button = $CardPanel/MarginContainer/VBox/FooterRow/NextButton
 @onready var title_label: Label = $CardPanel/MarginContainer/VBox/HeaderRow/Title
 @onready var balance_label: Label = $CardPanel/MarginContainer/VBox/HeaderRow/BalanceLabel

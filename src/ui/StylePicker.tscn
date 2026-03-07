@@ -18,9 +18,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -450.0
-offset_top = -275.0
+offset_top = -350.0
 offset_right = 450.0
-offset_bottom = 275.0
+offset_bottom = 350.0
 
 [node name="MarginContainer" type="MarginContainer" parent="CardPanel"]
 anchor_right = 1.0
@@ -53,7 +53,12 @@ horizontal_alignment = 2
 
 [node name="HSeparator" type="HSeparator" parent="CardPanel/MarginContainer/VBox"]
 
-[node name="StyleButtons" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="CardPanel/MarginContainer/VBox"]
+size_flags_vertical = 3
+mouse_filter = 1
+
+[node name="StyleButtons" type="VBoxContainer" parent="CardPanel/MarginContainer/VBox/Scroll"]
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
