@@ -36,23 +36,35 @@ func get_completed_beers() -> Array:
 	return result
 
 # ---------------------------------------------------------------------------
+# Experimental brew mutation
+# ---------------------------------------------------------------------------
+
+func generate_mutation(ingredients: Array, seed_val: int) -> Dictionary:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_val
+	var idx: int = rng.randi_range(0, ingredients.size() - 1)
+	var ingredient: Dictionary = ingredients[idx]
+	var orig_flavor: float = ingredient.get("flavor_points", 0.0)
+	var orig_technique: float = ingredient.get("technique_points", 0.0)
+	var flavor_mult: float = rng.randf_range(0.5, 1.5)
+	var technique_mult: float = rng.randf_range(0.5, 1.5)
+	return {
+		"mutated_index": idx,
+		"ingredient_id": ingredient.get("ingredient_id", ""),
+		"original_flavor": orig_flavor,
+		"original_technique": orig_technique,
+		"mutated_flavor": orig_flavor * flavor_mult,
+		"mutated_technique": orig_technique * technique_mult,
+	}
+
+# ---------------------------------------------------------------------------
 # Quality resolution
 # ---------------------------------------------------------------------------
 
 func _resolve_quality(entry: Dictionary) -> float:
 	var base: float = entry.get("quality_base", 50.0)
 	var seed_val: int = entry.get("variance_seed", 0)
-
-	# Seeded variance ±15
-	var rng := RandomNumberGenerator.new()
-	rng.seed = seed_val
-	var variance: float = rng.randf_range(-15.0, 15.0)
-
-	# Ceiling boost for aged beers
-	var ceiling_boost: float = 10.0
-
-	var final_val: float = base + ceiling_boost + variance
-	return clampf(final_val, 0.0, 100.0)
+	return QualityCalculator.apply_specialty_variance(base, seed_val)
 
 # ---------------------------------------------------------------------------
 # Persistence

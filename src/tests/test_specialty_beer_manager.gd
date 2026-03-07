@@ -158,7 +158,67 @@ func test_ceiling_boost_adds_to_quality() -> void:
 	assert_gte(completed[0]["final_quality"], 0.0)
 	assert_lte(completed[0]["final_quality"], 100.0)
 
+# --- generate_mutation ---
+
+func test_generate_mutation_returns_valid_dictionary() -> void:
+	var ingredients: Array = [_make_ingredient("pale_malt", 5.0, 3.0)]
+	var result: Dictionary = SpecialtyBeerManager.generate_mutation(ingredients, 42)
+	assert_true(result.has("mutated_index"))
+	assert_true(result.has("ingredient_id"))
+	assert_true(result.has("original_flavor"))
+	assert_true(result.has("original_technique"))
+	assert_true(result.has("mutated_flavor"))
+	assert_true(result.has("mutated_technique"))
+
+func test_generate_mutation_values_within_range() -> void:
+	var ingredients: Array = [_make_ingredient("cascade_hop", 8.0, 4.0)]
+	# Run with multiple seeds to increase confidence
+	for s in [1, 42, 100, 9999, 77777]:
+		var result: Dictionary = SpecialtyBeerManager.generate_mutation(ingredients, s)
+		assert_gte(result["mutated_flavor"], 8.0 * 0.5 - 0.001)
+		assert_lte(result["mutated_flavor"], 8.0 * 1.5 + 0.001)
+		assert_gte(result["mutated_technique"], 4.0 * 0.5 - 0.001)
+		assert_lte(result["mutated_technique"], 4.0 * 1.5 + 0.001)
+
+func test_generate_mutation_deterministic() -> void:
+	var ingredients: Array = [
+		_make_ingredient("pale_malt", 5.0, 3.0),
+		_make_ingredient("cascade_hop", 8.0, 4.0),
+	]
+	var result_a: Dictionary = SpecialtyBeerManager.generate_mutation(ingredients, 42)
+	var result_b: Dictionary = SpecialtyBeerManager.generate_mutation(ingredients, 42)
+	assert_eq(result_a["mutated_index"], result_b["mutated_index"])
+	assert_almost_eq(result_a["mutated_flavor"], result_b["mutated_flavor"], 0.001)
+	assert_almost_eq(result_a["mutated_technique"], result_b["mutated_technique"], 0.001)
+
+func test_generate_mutation_single_ingredient() -> void:
+	var ingredients: Array = [_make_ingredient("wheat_malt", 6.0, 2.0)]
+	var result: Dictionary = SpecialtyBeerManager.generate_mutation(ingredients, 7)
+	assert_eq(result["mutated_index"], 0)
+	assert_eq(result["ingredient_id"], "wheat_malt")
+	assert_almost_eq(result["original_flavor"], 6.0, 0.001)
+	assert_almost_eq(result["original_technique"], 2.0, 0.001)
+
+func test_generate_mutation_multi_ingredient() -> void:
+	var ingredients: Array = [
+		_make_ingredient("pale_malt", 5.0, 3.0),
+		_make_ingredient("cascade_hop", 8.0, 4.0),
+		_make_ingredient("us05_yeast", 3.0, 7.0),
+	]
+	var result: Dictionary = SpecialtyBeerManager.generate_mutation(ingredients, 42)
+	var idx: int = result["mutated_index"]
+	assert_gte(idx, 0)
+	assert_lt(idx, ingredients.size())
+	assert_eq(result["ingredient_id"], ingredients[idx]["ingredient_id"])
+
 # --- Helper ---
+
+func _make_ingredient(id: String, flavor: float, technique: float) -> Dictionary:
+	return {
+		"ingredient_id": id,
+		"flavor_points": flavor,
+		"technique_points": technique,
+	}
 
 func _make_entry(turns: int, seed_val: int = 12345) -> Dictionary:
 	return {

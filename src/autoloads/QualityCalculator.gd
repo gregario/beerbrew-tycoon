@@ -18,6 +18,10 @@ const WEIGHT_NOVELTY: float = 0.10
 const WEIGHT_BASE: float = 0.10
 const WEIGHT_SCIENCE: float = 0.20
 
+# Specialty beer variance
+const SPECIALTY_VARIANCE: float = 15.0
+const SPECIALTY_CEILING_BOOST: float = 10.0
+
 # Novelty config (also in specs)
 const NOVELTY_PENALTY_PER_REPEAT: float = 0.15
 const NOVELTY_FLOOR: float = 0.4
@@ -276,6 +280,14 @@ func _compute_science_score(style: BeerStyle, recipe: Dictionary, sliders: Dicti
 		var yeast_result: Dictionary = BrewingScience.calc_yeast_accuracy(ferment_temp, yeast)
 		yeast_score = yeast_result["quality_bonus"]
 	return (mash_score * 33.0 + boil_score * 33.0 + yeast_score * 34.0)
+
+## Apply specialty beer variance: seeded ±15 variance + 10-point ceiling boost.
+## Returns clamped 0–100.
+func apply_specialty_variance(base_score: float, seed_val: int) -> float:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_val
+	var variance: float = rng.randf_range(-SPECIALTY_VARIANCE, SPECIALTY_VARIANCE)
+	return clampf(base_score + variance + SPECIALTY_CEILING_BOOST, 0.0, 100.0)
 
 ## Compute just the raw points for a preview (used by BrewingPhases UI).
 func preview_points(sliders: Dictionary) -> Dictionary:
