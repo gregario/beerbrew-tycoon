@@ -14,6 +14,10 @@ func _make_equipment(overrides: Dictionary = {}) -> Equipment:
 	e.batch_size_multiplier = overrides.get("batch_size_multiplier", 1.0)
 	e.upgrades_to = overrides.get("upgrades_to", "")
 	e.upgrade_cost = overrides.get("upgrade_cost", 0)
+	var rev_array: Array[String] = []
+	for item in overrides.get("reveals", []):
+		rev_array.append(item)
+	e.reveals = rev_array
 	return e
 
 func test_equipment_resource_properties():
@@ -104,3 +108,30 @@ func test_tier1_items_are_free():
 		var equip = load(path) as Equipment
 		if equip.tier == 1:
 			assert_eq(equip.cost, 0, "Tier 1 item %s should be free" % equip.equipment_id)
+
+# --- Reveals tests (Task 7) ---
+
+func test_equipment_has_reveals_property():
+	var e := Equipment.new()
+	e.reveals = ["temp_numbers", "ferment_profile"]
+	assert_eq(e.reveals.size(), 2)
+	assert_true("temp_numbers" in e.reveals)
+
+func test_equipment_reveals_default_empty():
+	var e := Equipment.new()
+	assert_eq(e.reveals.size(), 0)
+
+func test_make_equipment_with_reveals():
+	var e := _make_equipment({"reveals": ["water_selector"]})
+	assert_eq(e.reveals.size(), 1)
+	assert_eq(e.reveals[0], "water_selector")
+
+# --- Reveals catalog tests (Task 8) ---
+
+func test_three_vessel_reveals_hop_schedule():
+	var e = load("res://data/equipment/brewing/three_vessel.tres") as Equipment
+	assert_true("hop_schedule" in e.reveals, "Three-vessel should reveal hop_schedule")
+
+func test_ss_conical_reveals_conditioning():
+	var e = load("res://data/equipment/fermentation/ss_conical.tres") as Equipment
+	assert_true("conditioning_tank" in e.reveals, "SS Conical should reveal conditioning_tank")

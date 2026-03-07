@@ -20,3 +20,7 @@ enum Category { BREWING, FERMENTATION, PACKAGING, UTILITY, AUTOMATION }
 @export var ferment_bonus: int = 0
 @export var upgrades_to: String = ""
 @export var upgrade_cost: int = 0
+## Feature IDs this equipment reveals in the UI when equipped.
+## Valid IDs: temp_numbers, water_selector, hop_schedule, dry_hop_rack,
+## ferment_profile, conditioning_tank, ph_meter, gravity_readings.
+@export var reveals: Array[String] = []
