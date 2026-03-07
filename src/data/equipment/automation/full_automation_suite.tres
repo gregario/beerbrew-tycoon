@@ -1,0 +1,21 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "full_automation_suite"
+equipment_name = "Full Automation Suite"
+description = "Complete brewery automation covering mash, boil, and fermentation."
+tier = 5
+category = 4
+cost = 3500
+sanitation_bonus = 0
+temp_control_bonus = 0
+efficiency_bonus = 0.0
+batch_size_multiplier = 1.0
+mash_bonus = 6
+boil_bonus = 6
+ferment_bonus = 6
+upgrades_to = ""
+upgrade_cost = 0

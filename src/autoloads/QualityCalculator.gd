@@ -139,13 +139,33 @@ func _compute_points(sliders: Dictionary) -> Dictionary:
 		if is_instance_valid(ResearchManager):
 			eff_bonus += ResearchManager.bonuses.get("efficiency_bonus", 0.0)
 		technique *= (1.0 + eff_bonus)
-	# Staff bonuses — flat flavor/technique addition per phase
-	if is_instance_valid(StaffManager):
-		for phase_name in ["mashing", "boiling", "fermenting"]:
-			var staff_bonus: Dictionary = StaffManager.get_phase_bonus(phase_name)
-			flavor += staff_bonus.get("flavor", 0.0)
-			technique += staff_bonus.get("technique", 0.0)
+	# Staff + automation bonuses — use whichever is larger per phase
+	for phase_name in ["mashing", "boiling", "fermenting"]:
+		var staff_bonus: Dictionary = {"flavor": 0.0, "technique": 0.0}
+		if is_instance_valid(StaffManager):
+			staff_bonus = StaffManager.get_phase_bonus(phase_name)
+		var auto_bonus: int = 0
+		if is_instance_valid(EquipmentManager):
+			match phase_name:
+				"mashing":
+					auto_bonus = EquipmentManager.get_automation_mash_bonus()
+				"boiling":
+					auto_bonus = EquipmentManager.get_automation_boil_bonus()
+				"fermenting":
+					auto_bonus = EquipmentManager.get_automation_ferment_bonus()
+		var effective: Dictionary = get_effective_phase_bonus(staff_bonus, auto_bonus)
+		flavor += effective["flavor"]
+		technique += effective["technique"]
 	return {"flavor": flavor, "technique": technique}
+
+## Returns the effective phase bonus: staff or automation, whichever is larger.
+## If automation exceeds staff total (flavor+technique), split automation evenly.
+func get_effective_phase_bonus(staff_bonus: Dictionary, automation_bonus: int) -> Dictionary:
+	var staff_total: float = staff_bonus.get("flavor", 0.0) + staff_bonus.get("technique", 0.0)
+	if float(automation_bonus) > staff_total:
+		var half: float = float(automation_bonus) / 2.0
+		return {"flavor": half, "technique": half}
+	return staff_bonus
 
 ## Compare player's flavor ratio to style's ideal.
 ## Returns 0–100: 100 at perfect match, 0 at or beyond RATIO_TOLERANCE deviation.

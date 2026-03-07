@@ -42,6 +42,10 @@ const EQUIPMENT_PATHS: Array[String] = [
 	"res://data/equipment/utility/cleaning_bucket.tres",
 	"res://data/equipment/utility/star_san_kit.tres",
 	"res://data/equipment/utility/cip_pump.tres",
+	"res://data/equipment/automation/auto_mash_controller.tres",
+	"res://data/equipment/automation/automated_boil_system.tres",
+	"res://data/equipment/automation/fermentation_controller.tres",
+	"res://data/equipment/automation/full_automation_suite.tres",
 ]
 
 func _ready() -> void:
@@ -170,6 +174,37 @@ func recalculate_bonuses() -> void:
 	GameState.sanitation_quality = BASE_SANITATION + san
 	GameState.temp_control_quality = BASE_TEMP_CONTROL + temp
 	bonuses_updated.emit(active_bonuses)
+
+# --- Automation bonus aggregation ---
+func get_automation_mash_bonus() -> int:
+	var total: int = 0
+	for slot_id in station_slots:
+		if slot_id == "":
+			continue
+		var equip: Equipment = get_equipment(slot_id)
+		if equip != null and equip.category == Equipment.Category.AUTOMATION:
+			total += equip.mash_bonus
+	return total
+
+func get_automation_boil_bonus() -> int:
+	var total: int = 0
+	for slot_id in station_slots:
+		if slot_id == "":
+			continue
+		var equip: Equipment = get_equipment(slot_id)
+		if equip != null and equip.category == Equipment.Category.AUTOMATION:
+			total += equip.boil_bonus
+	return total
+
+func get_automation_ferment_bonus() -> int:
+	var total: int = 0
+	for slot_id in station_slots:
+		if slot_id == "":
+			continue
+		var equip: Equipment = get_equipment(slot_id)
+		if equip != null and equip.category == Equipment.Category.AUTOMATION:
+			total += equip.ferment_bonus
+	return total
 
 # --- Initialization ---
 func initialize_starting_equipment() -> void:

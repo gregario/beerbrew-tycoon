@@ -3,7 +3,7 @@ extends Resource
 
 ## Equipment resource — represents a piece of brewery equipment.
 
-enum Category { BREWING, FERMENTATION, PACKAGING, UTILITY }
+enum Category { BREWING, FERMENTATION, PACKAGING, UTILITY, AUTOMATION }
 
 @export var equipment_id: String = ""
 @export var equipment_name: String = ""
@@ -15,5 +15,8 @@ enum Category { BREWING, FERMENTATION, PACKAGING, UTILITY }
 @export var temp_control_bonus: int = 0
 @export var efficiency_bonus: float = 0.0
 @export var batch_size_multiplier: float = 1.0
+@export var mash_bonus: int = 0
+@export var boil_bonus: int = 0
+@export var ferment_bonus: int = 0
 @export var upgrades_to: String = ""
 @export var upgrade_cost: int = 0
