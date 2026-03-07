@@ -179,3 +179,15 @@ func test_all_measurement_equipment_in_catalog():
 	for id in ids:
 		var e = EquipmentManager.get_equipment(id)
 		assert_not_null(e, "%s should be in EquipmentManager catalog" % id)
+
+func test_water_kit_loads():
+	var e = load("res://data/equipment/measurement/water_kit.tres") as Equipment
+	assert_not_null(e)
+	assert_eq(e.equipment_id, "water_kit")
+	assert_eq(e.cost, 100)
+	assert_eq(e.tier, 2)
+	assert_true("water_selector" in e.reveals)
+
+func test_water_kit_in_catalog():
+	var e = EquipmentManager.get_equipment("water_kit")
+	assert_not_null(e, "water_kit should be in EquipmentManager catalog")

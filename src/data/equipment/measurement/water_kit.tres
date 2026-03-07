@@ -1,0 +1,22 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Equipment.gd" id="1_equip"]
+
+[resource]
+script = ExtResource("1_equip")
+equipment_id = "water_kit"
+equipment_name = "Water Treatment Kit"
+description = "Mineral additions and testing strips. Choose your water profile to match each beer style."
+tier = 2
+category = 5
+cost = 100
+sanitation_bonus = 0
+temp_control_bonus = 0
+efficiency_bonus = 0.0
+batch_size_multiplier = 1.0
+mash_bonus = 0
+boil_bonus = 0
+ferment_bonus = 0
+upgrades_to = ""
+upgrade_cost = 0
+reveals = ["water_selector"]

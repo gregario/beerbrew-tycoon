@@ -50,6 +50,7 @@ const EQUIPMENT_PATHS: Array[String] = [
 	"res://data/equipment/measurement/digital_thermometer.tres",
 	"res://data/equipment/measurement/ph_meter.tres",
 	"res://data/equipment/measurement/refractometer.tres",
+	"res://data/equipment/measurement/water_kit.tres",
 ]
 
 func _ready() -> void:
@@ -178,6 +179,16 @@ func recalculate_bonuses() -> void:
 	GameState.sanitation_quality = BASE_SANITATION + san
 	GameState.temp_control_quality = BASE_TEMP_CONTROL + temp
 	bonuses_updated.emit(active_bonuses)
+
+## Returns true if any slotted equipment reveals the given feature_id.
+func is_revealed(feature_id: String) -> bool:
+	for slot_id in station_slots:
+		if slot_id == "":
+			continue
+		var equip: Equipment = get_equipment(slot_id)
+		if equip != null and feature_id in equip.reveals:
+			return true
+	return false
 
 # --- Automation bonus aggregation ---
 func get_automation_mash_bonus() -> int:
