@@ -196,13 +196,20 @@ func test_result_has_all_expected_keys():
 	var sliders := {"mashing": 65.5, "boiling": 60.0, "fermenting": 20.0}
 	var result := QualityCalculator.calculate_quality(style, recipe, sliders, [])
 	assert_has(result, "final_score")
+	assert_has(result, "style_match")
 	assert_has(result, "ratio_score")
 	assert_has(result, "ingredient_score")
+	assert_has(result, "fermentation_score")
+	assert_has(result, "science_score")
+	assert_has(result, "water_score")
+	assert_has(result, "hop_schedule_score")
 	assert_has(result, "novelty_score")
+	assert_has(result, "conditioning_score")
 	assert_has(result, "base_score")
 	assert_has(result, "total_flavor_points")
 	assert_has(result, "total_technique_points")
 	assert_has(result, "novelty_modifier")
+	assert_has(result, "brew_attributes")
 
 func test_final_score_within_valid_range():
 	var style := _make_style("test", 0.5)

@@ -11,12 +11,14 @@ const PHASE_PROFILES := {
 	"fermenting": [0.7, 0.3],  # Flavor-heavy: yeast character, complexity
 }
 
-# Score component weights (must sum to 1.0)
-const WEIGHT_RATIO: float = 0.40
-const WEIGHT_INGREDIENTS: float = 0.20
+# Score component weights — 7 components (must sum to 1.0)
+const WEIGHT_STYLE: float = 0.25
+const WEIGHT_FERMENTATION: float = 0.25
+const WEIGHT_SCIENCE: float = 0.15
+const WEIGHT_WATER: float = 0.10
+const WEIGHT_HOP_SCHEDULE: float = 0.10
 const WEIGHT_NOVELTY: float = 0.10
-const WEIGHT_BASE: float = 0.10
-const WEIGHT_SCIENCE: float = 0.20
+const WEIGHT_CONDITIONING: float = 0.05
 
 # Specialty beer variance
 const SPECIALTY_VARIANCE: float = 15.0
@@ -30,19 +32,29 @@ const NOVELTY_FLOOR: float = 0.4
 const RATIO_TOLERANCE: float = 0.35
 
 ## Main entry point. Returns a Dictionary with:
-##   "final_score":         float 0–100
-##   "ratio_score":         float 0–100 (component before weighting)
-##   "ingredient_score":    float 0–100
-##   "novelty_score":       float 0–100 (novelty_modifier * 100)
-##   "base_score":          float 0–100
-##   "total_flavor_points": float
+##   "final_score":           float 0–100
+##   "style_match":           float 0–100 (ratio*0.5 + ingredient*0.5)
+##   "ratio_score":           float 0–100 (backward compat)
+##   "ingredient_score":      float 0–100 (backward compat)
+##   "fermentation_score":    float 0–100
+##   "science_score":         float 0–100
+##   "water_score":           float 0–100
+##   "hop_schedule_score":    float 0–100
+##   "novelty_score":         float 0–100 (novelty_modifier * 100)
+##   "conditioning_score":    float 0–100
+##   "base_score":            float 0–100 (backward compat)
+##   "total_flavor_points":   float
 ##   "total_technique_points": float
-##   "novelty_modifier":    float 0.4–1.0
+##   "novelty_modifier":      float 0.4–1.0
+##   "brew_attributes":       Array[String]
 func calculate_quality(
 		style: BeerStyle,
 		recipe: Dictionary,
 		sliders: Dictionary,
-		history: Array
+		history: Array,
+		water_profile = null,
+		hop_allocations: Dictionary = {},
+		conditioning_weeks: int = 0
 ) -> Dictionary:
 	# --- 1. Compute raw points from phase sliders ---
 	var points := _compute_points(sliders)
@@ -50,39 +62,50 @@ func calculate_quality(
 	var total_technique: float = points["technique"]
 	var total_points: float = total_flavor + total_technique
 
-	# --- 2. Ratio match score ---
+	# --- 2. Style Match (25%) = ratio*0.5 + ingredient*0.5 ---
 	var ratio_score := _compute_ratio_score(style, total_flavor, total_technique)
-
-	# --- 3. Ingredient compatibility score ---
 	var ingredient_score := _compute_ingredient_score(style, recipe)
+	var style_match: float = ratio_score * 0.5 + ingredient_score * 0.5
 
-	# --- 4. Novelty modifier and score ---
+	# --- 3. Fermentation (25%) ---
+	var fermentation_score := _compute_fermentation_score(style, recipe, sliders)
+
+	# --- 4. Science (15%) — mash + boil only ---
+	var science_score: float = _compute_science_score(style, recipe, sliders)
+
+	# --- 5. Water (10%) ---
+	var water_score := _compute_water_score(style, water_profile)
+
+	# --- 6. Hop Schedule (10%) ---
+	var hop_schedule_score := _compute_hop_schedule_score(style, hop_allocations)
+
+	# --- 7. Novelty (10%) ---
 	var novelty_modifier := _compute_novelty_modifier(style, recipe, history)
 	var novelty_score: float = novelty_modifier * 100.0
 
-	# --- 5. Base effort score ---
-	# Max possible points at 100/100/100: sum of phase weights * 100 each
-	# mashing max: 30 + 70 = 100, boiling: 50 + 50 = 100, fermenting: 70 + 30 = 100 → total 300
+	# --- 8. Conditioning (5%) ---
+	var conditioning_score := _compute_conditioning_score(conditioning_weeks)
+
+	# --- 9. Base effort score (backward compat, not weighted) ---
 	var base_score: float = clampf((total_points / 300.0) * 100.0, 0.0, 100.0)
 
-	# --- 6. Brewing science score ---
-	var science_score: float = _compute_science_score(style, recipe, sliders)
-
-	# --- 7. Weighted final score ---
+	# --- 10. Weighted final score ---
 	var final_score: float = clampf(
-		ratio_score * WEIGHT_RATIO +
-		ingredient_score * WEIGHT_INGREDIENTS +
+		style_match * WEIGHT_STYLE +
+		fermentation_score * WEIGHT_FERMENTATION +
+		science_score * WEIGHT_SCIENCE +
+		water_score * WEIGHT_WATER +
+		hop_schedule_score * WEIGHT_HOP_SCHEDULE +
 		novelty_score * WEIGHT_NOVELTY +
-		base_score * WEIGHT_BASE +
-		science_score * WEIGHT_SCIENCE,
+		conditioning_score * WEIGHT_CONDITIONING,
 		0.0, 100.0
 	)
 
-	# --- 7b. Path quality bonus (e.g., Artisan +20%) ---
+	# --- 10b. Path quality bonus (e.g., Artisan +20%) ---
 	if is_instance_valid(PathManager):
 		final_score = clampf(final_score * PathManager.get_quality_bonus(), 0.0, 100.0)
 
-	# --- 8. Detect flavor attributes for discovery system ---
+	# --- 11. Detect flavor attributes for discovery system ---
 	var yeast_for_attrs: Yeast = recipe.get("yeast", null) as Yeast
 	var hops_for_attrs: Array = recipe.get("hops", [])
 	var brew_attributes: Array[String] = []
@@ -97,11 +120,16 @@ func calculate_quality(
 
 	return {
 		"final_score": final_score,
+		"style_match": style_match,
 		"ratio_score": ratio_score,
 		"ingredient_score": ingredient_score,
-		"novelty_score": novelty_score,
-		"base_score": base_score,
+		"fermentation_score": fermentation_score,
 		"science_score": science_score,
+		"water_score": water_score,
+		"hop_schedule_score": hop_schedule_score,
+		"novelty_score": novelty_score,
+		"conditioning_score": conditioning_score,
+		"base_score": base_score,
 		"total_flavor_points": total_flavor,
 		"total_technique_points": total_technique,
 		"novelty_modifier": novelty_modifier,
@@ -283,23 +311,94 @@ func _compute_novelty_modifier(
 
 	return maxf(1.0 - (repeat_count * NOVELTY_PENALTY_PER_REPEAT), NOVELTY_FLOOR)
 
-## Compute brewing science score from mash temp, boil duration, and ferment temp.
+## Compute fermentation score from yeast-temp accuracy, flavor compounds, and stability.
 ## Returns 0–100.
-func _compute_science_score(style: BeerStyle, recipe: Dictionary, sliders: Dictionary) -> float:
+func _compute_fermentation_score(style: BeerStyle, recipe: Dictionary, sliders: Dictionary) -> float:
+	var ferment_temp: float = sliders.get("fermenting", 20.0)
+	var yeast: Yeast = recipe.get("yeast", null) as Yeast
+
+	# Sub-component 1: yeast-temp accuracy (40%)
+	var accuracy: float = 0.5
+	if yeast != null:
+		var yeast_result: Dictionary = BrewingScience.calc_yeast_accuracy(ferment_temp, yeast)
+		accuracy = yeast_result["quality_bonus"]
+
+	# Sub-component 2: flavor compound desirability (40%)
+	var flavor_desirability: float = 0.7  # default if no yeast or no style data
+	if yeast != null and not style.yeast_temp_flavors.is_empty():
+		var compounds: Dictionary = BrewingScience.calc_yeast_flavors(ferment_temp, yeast)
+		flavor_desirability = _score_flavor_compounds(compounds, style)
+
+	# Sub-component 3: temperature stability (20%)
+	var stability: float = 0.6
+	if is_instance_valid(EquipmentManager):
+		var ferment_control: float = EquipmentManager.active_bonuses.get("ferment_temp_control", 0.0)
+		if ferment_control > 0:
+			stability = 1.0
+
+	return (accuracy * 0.4 + flavor_desirability * 0.4 + stability * 0.2) * 100.0
+
+## Scores how well the yeast-temp flavor compounds match what the style expects.
+## Returns 0.0–1.0.
+func _score_flavor_compounds(compounds: Dictionary, style: BeerStyle) -> float:
+	var desired: Dictionary = style.yeast_temp_flavors
+	if desired.is_empty():
+		return 0.7
+	var total: float = 0.0
+	var count: int = 0
+	for compound_name in desired:
+		var desired_intensity: float = desired[compound_name]
+		var actual_intensity: float = compounds.get(compound_name, 0.0)
+		total += 1.0 - absf(desired_intensity - actual_intensity)
+		count += 1
+	if count == 0:
+		return 0.7
+	return total / float(count)
+
+## Compute brewing science score from mash temp and boil duration.
+## Yeast accuracy is now handled by the fermentation component.
+## Returns 0–100.
+func _compute_science_score(style: BeerStyle, _recipe: Dictionary, sliders: Dictionary) -> float:
 	var mash_temp: float = sliders.get("mashing", 65.0)
 	var boil_duration: float = sliders.get("boiling", 60.0)
-	var ferment_temp: float = sliders.get("fermenting", 20.0)
 	var mash_score: float = BrewingScience.calc_mash_score(mash_temp, style)
 	# Apply research mash bonus
 	if is_instance_valid(ResearchManager):
 		mash_score = minf(mash_score + ResearchManager.bonuses.get("mash_score_bonus", 0.0), 1.0)
 	var boil_score: float = BrewingScience.calc_boil_score(boil_duration, style)
-	var yeast: Yeast = recipe.get("yeast", null) as Yeast
-	var yeast_score: float = 0.5
-	if yeast != null:
-		var yeast_result: Dictionary = BrewingScience.calc_yeast_accuracy(ferment_temp, yeast)
-		yeast_score = yeast_result["quality_bonus"]
-	return (mash_score * 33.0 + boil_score * 33.0 + yeast_score * 34.0)
+	return (mash_score * 50.0 + boil_score * 50.0)
+
+## Compute water chemistry score. Stub: uses WaterProfile affinity or default 60.
+## Returns 0–100.
+func _compute_water_score(style: BeerStyle, water_profile) -> float:
+	if water_profile == null or not water_profile is WaterProfile:
+		return 0.6 * 100.0  # Default tap water = 60/100
+	var affinity: float = water_profile.get_affinity(style.style_id)
+	return affinity * 100.0
+
+## Compute hop schedule score. Stub: matches allocations to style expectations.
+## Returns 0–100.
+func _compute_hop_schedule_score(style: BeerStyle, hop_allocations: Dictionary) -> float:
+	if hop_allocations.is_empty():
+		return 0.5 * 100.0  # Default: no allocations = 50/100
+	var expectations: Dictionary = style.hop_schedule_expectations
+	if expectations.is_empty():
+		return 0.7 * 100.0
+	var matches: int = 0
+	var total: int = 0
+	for hop_id in hop_allocations:
+		var slot: String = hop_allocations[hop_id] if hop_allocations[hop_id] is String else ""
+		total += 1
+		if expectations.has(slot):
+			matches += 1
+	if total == 0:
+		return 0.5 * 100.0
+	return (float(matches) / float(total)) * 100.0
+
+## Compute conditioning score. 25 points per week, max 100.
+## Returns 0–100.
+func _compute_conditioning_score(conditioning_weeks: int) -> float:
+	return clampf(float(conditioning_weeks) * 25.0, 0.0, 100.0)
 
 ## Apply specialty beer variance: seeded ±15 variance + 10-point ceiling boost.
 ## Returns clamped 0–100.
