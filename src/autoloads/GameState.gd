@@ -592,4 +592,11 @@ func reset() -> void:
 		EquipmentManager.initialize_starting_equipment()
 	if is_instance_valid(MarketManager):
 		MarketManager.initialize()
+	# Apply meta-progression style unlocks (after ResearchManager.reset() re-locks everything)
+	if is_instance_valid(MetaProgressionManager):
+		var meta_styles: Array = []
+		for style_id in MetaProgressionManager.unlocked_styles:
+			meta_styles.append(style_id)
+		if meta_styles.size() > 0:
+			ResearchManager._unlock_styles(meta_styles)
 	_set_state(State.EQUIPMENT_MANAGE)

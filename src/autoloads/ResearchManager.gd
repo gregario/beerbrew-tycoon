@@ -17,6 +17,12 @@ const ROOT_NODE_IDS: Array[String] = [
 	"mash_basics", "hop_timing", "homebrew_upgrades", "ale_fundamentals"
 ]
 
+# Research nodes that have blueprint discounts available via meta-progression
+const BLUEPRINT_RESEARCH_MAP: Dictionary = {
+	"semi_pro_equipment": ["mash_tun", "temp_chamber", "kegging_kit"],
+	"pro_equipment": ["three_vessel", "ss_conical"],
+}
+
 const LOCKED_INGREDIENT_IDS: Array[String] = [
 	"crystal_60", "chocolate_malt", "roasted_barley",
 	"cascade", "centennial", "citra", "simcoe",
@@ -89,13 +95,25 @@ func is_unlocked(node_id: String) -> bool:
 	return node_id in unlocked_nodes
 
 
+func _get_effective_rp_cost(node_id: String) -> int:
+	var node_res: Resource = _catalog.get(node_id)
+	if node_res == null:
+		return 0
+	var base_cost: int = node_res.rp_cost
+	if is_instance_valid(MetaProgressionManager) and BLUEPRINT_RESEARCH_MAP.has(node_id):
+		for blueprint_id in BLUEPRINT_RESEARCH_MAP[node_id]:
+			if MetaProgressionManager.has_blueprint_discount(blueprint_id):
+				return int(base_cost * 0.5)
+	return base_cost
+
+
 func can_unlock(node_id: String) -> bool:
 	if is_unlocked(node_id):
 		return false
 	var node_res: ResearchNode = get_node_by_id(node_id)
 	if node_res == null:
 		return false
-	if research_points < node_res.rp_cost:
+	if research_points < _get_effective_rp_cost(node_id):
 		return false
 	for prereq in node_res.prerequisites:
 		if not is_unlocked(prereq):
@@ -106,9 +124,10 @@ func can_unlock(node_id: String) -> bool:
 func unlock(node_id: String) -> bool:
 	if not can_unlock(node_id):
 		return false
-	var node_res: ResearchNode = get_node_by_id(node_id)
-	research_points -= node_res.rp_cost
+	var effective_cost: int = _get_effective_rp_cost(node_id)
+	research_points -= effective_cost
 	unlocked_nodes.append(node_id)
+	var node_res: ResearchNode = get_node_by_id(node_id)
 	_apply_effect(node_res.unlock_effect)
 	research_unlocked.emit(node_id)
 	rp_changed.emit(research_points)

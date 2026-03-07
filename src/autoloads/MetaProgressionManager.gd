@@ -46,6 +46,11 @@ const MAX_MODIFIERS: int = 2
 const MAX_HISTORY: int = 10
 const META_SAVE_PATH: String = "user://meta.json"
 
+
+func _ready() -> void:
+	load_from_disk()
+
+
 const ACHIEVEMENT_MODIFIER_MAP: Dictionary = {
 	"first_victory": "tough_market",
 	"budget_master": "budget_brewery",
