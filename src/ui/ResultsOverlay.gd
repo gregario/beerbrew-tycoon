@@ -117,6 +117,23 @@ func populate() -> void:
 	if fulfillment.get("fulfilled", false):
 		_add_contract_fulfillment_panel(fulfillment)
 
+	# Aging notification (Stage 5B)
+	var is_aging: bool = result.get("is_aging", false)
+	if is_aging:
+		var aging_turns: int = result.get("aging_turns", 1)
+		var style_name: String = style.style_name if style else "Beer"
+		_add_aging_panel(style_name, aging_turns)
+
+	# Completed aged beers (Stage 5B)
+	var completed_aged: Array = result.get("completed_aged_beers", [])
+	for aged_beer in completed_aged:
+		_add_aged_beer_panel(aged_beer)
+
+	# Mutation panel (Stage 5B — experimental brews)
+	var mutation_data: Variant = result.get("mutation", null)
+	if mutation_data != null and mutation_data is Dictionary:
+		_add_mutation_panel(mutation_data)
+
 func _update_stars(score: float) -> void:
 	for child in stars_row.get_children():
 		child.queue_free()
@@ -243,6 +260,144 @@ func _add_contract_fulfillment_panel(fulfillment: Dictionary) -> void:
 	panel.add_child(vbox)
 
 	# Add to scroll vbox, after score panel
+	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox
+	scroll_vbox.add_child(panel)
+
+
+# ---------------------------------------------------------------------------
+# Aging / Specialty panels (Stage 5B)
+# ---------------------------------------------------------------------------
+
+func _add_aging_panel(style_name: String, turns: int) -> void:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("#FFC857", 0.1)
+	style.border_color = Color("#FFC857", 0.4)
+	style.border_width_left = 4
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(16)
+	panel.add_theme_stylebox_override("panel", style)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+
+	var title := Label.new()
+	title.text = "AGING IN CELLAR"
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color("#FFC857"))
+	vbox.add_child(title)
+
+	var desc := Label.new()
+	desc.text = "Your %s is now aging! Results in %d turns." % [style_name, turns]
+	desc.add_theme_font_size_override("font_size", 16)
+	desc.add_theme_color_override("font_color", Color.WHITE)
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(desc)
+
+	panel.add_child(vbox)
+	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox
+	scroll_vbox.add_child(panel)
+
+
+func _add_aged_beer_panel(aged_beer: Dictionary) -> void:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("#5EE8A4", 0.1)
+	style.border_color = Color("#5EE8A4", 0.4)
+	style.border_width_left = 4
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(16)
+	panel.add_theme_stylebox_override("panel", style)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+
+	var title := Label.new()
+	title.text = "AGED BEER READY!"
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color("#5EE8A4"))
+	vbox.add_child(title)
+
+	var name_label := Label.new()
+	name_label.text = aged_beer.get("style_name", "Beer")
+	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.add_theme_color_override("font_color", Color.WHITE)
+	vbox.add_child(name_label)
+
+	# Quality with stars
+	var quality: float = aged_beer.get("final_quality", 0.0)
+	var quality_label := Label.new()
+	var star_count: int = int(round(quality / 20.0))
+	var stars_text: String = ""
+	for i in range(star_count):
+		stars_text += "*"
+	quality_label.text = "Quality: %.0f %s" % [quality, stars_text]
+	quality_label.add_theme_font_size_override("font_size", 16)
+	quality_label.add_theme_color_override("font_color", Color("#FFC857"))
+	vbox.add_child(quality_label)
+
+	# Revenue
+	var revenue: float = quality * 2.0
+	var revenue_label := Label.new()
+	revenue_label.text = "Revenue: +$%.0f" % revenue
+	revenue_label.add_theme_font_size_override("font_size", 16)
+	revenue_label.add_theme_color_override("font_color", Color("#5EE8A4"))
+	vbox.add_child(revenue_label)
+
+	panel.add_child(vbox)
+	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox
+	scroll_vbox.add_child(panel)
+
+
+func _add_mutation_panel(mutation: Dictionary) -> void:
+	var panel := PanelContainer.new()
+	var pstyle := StyleBoxFlat.new()
+	pstyle.bg_color = Color("#FFC857", 0.1)
+	pstyle.border_color = Color("#FFC857", 0.4)
+	pstyle.border_width_left = 4
+	pstyle.set_corner_radius_all(4)
+	pstyle.set_content_margin_all(16)
+	panel.add_theme_stylebox_override("panel", pstyle)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+
+	var ingredient_id: String = mutation.get("ingredient_id", "Unknown")
+	var title := Label.new()
+	title.text = "%s mutated!" % ingredient_id.capitalize().replace("_", " ")
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color("#FFC857"))
+	vbox.add_child(title)
+
+	# Flavor delta
+	var orig_flavor: float = mutation.get("original_flavor", 0.0)
+	var new_flavor: float = mutation.get("mutated_flavor", 0.0)
+	var flavor_delta: float = new_flavor - orig_flavor
+	var flavor_label := Label.new()
+	flavor_label.text = "Flavor: %.1f -> %.1f (%+.1f)" % [orig_flavor, new_flavor, flavor_delta]
+	flavor_label.add_theme_font_size_override("font_size", 16)
+	flavor_label.add_theme_color_override("font_color", Color("#5EE8A4") if flavor_delta >= 0 else Color("#FF7B7B"))
+	vbox.add_child(flavor_label)
+
+	# Technique delta
+	var orig_tech: float = mutation.get("original_technique", 0.0)
+	var new_tech: float = mutation.get("mutated_technique", 0.0)
+	var tech_delta: float = new_tech - orig_tech
+	var tech_label := Label.new()
+	tech_label.text = "Technique: %.1f -> %.1f (%+.1f)" % [orig_tech, new_tech, tech_delta]
+	tech_label.add_theme_font_size_override("font_size", 16)
+	tech_label.add_theme_color_override("font_color", Color("#5EE8A4") if tech_delta >= 0 else Color("#FF7B7B"))
+	vbox.add_child(tech_label)
+
+	# Flavor text
+	var flavor_text := Label.new()
+	flavor_text.text = "The experimental fermentation produced unexpected results..."
+	flavor_text.add_theme_font_size_override("font_size", 14)
+	flavor_text.add_theme_color_override("font_color", Color("#8A9BB1"))
+	flavor_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(flavor_text)
+
+	panel.add_child(vbox)
 	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox
 	scroll_vbox.add_child(panel)
 

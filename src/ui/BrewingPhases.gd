@@ -113,20 +113,53 @@ func _create_staff_labels() -> void:
 
 
 func _update_staff_labels() -> void:
-	if not is_instance_valid(StaffManager):
-		return
 	for phase in ["mashing", "boiling", "fermenting"]:
 		var label: Label = _staff_labels.get(phase, null)
 		if label == null:
 			continue
-		var staff: Dictionary = StaffManager.get_staff_assigned_to(phase)
-		if staff.is_empty():
+
+		var staff_bonus: int = 0
+		var auto_bonus: int = 0
+		var has_staff: bool = false
+		var has_auto: bool = false
+
+		# Staff bonus
+		if is_instance_valid(StaffManager):
+			var staff: Dictionary = StaffManager.get_staff_assigned_to(phase)
+			if not staff.is_empty():
+				has_staff = true
+				var bonus: Dictionary = StaffManager.get_phase_bonus(phase)
+				staff_bonus = int(bonus.get("flavor", 0.0)) + int(bonus.get("technique", 0.0))
+
+		# Automation bonus
+		if is_instance_valid(EquipmentManager):
+			match phase:
+				"mashing":
+					auto_bonus = EquipmentManager.get_automation_mash_bonus()
+				"boiling":
+					auto_bonus = EquipmentManager.get_automation_boil_bonus()
+				"fermenting":
+					auto_bonus = EquipmentManager.get_automation_ferment_bonus()
+			if auto_bonus > 0:
+				has_auto = true
+
+		# Display logic: three states
+		if has_staff and has_auto:
+			var staff_active: bool = staff_bonus >= auto_bonus
+			var staff_part: String = "Staff +%d" % staff_bonus
+			var auto_part: String = "Auto +%d" % auto_bonus
+			if staff_active:
+				label.text = "Bonus: %s (active) | %s" % [staff_part, auto_part]
+			else:
+				label.text = "Bonus: %s | %s (active)" % [staff_part, auto_part]
+			# Use RichTextLabel-like coloring via bbcode isn't available, so set based on dominant
+			label.add_theme_color_override("font_color", Color.WHITE)
+		elif has_staff:
+			label.text = "Bonus: Staff +%d" % staff_bonus
+			label.add_theme_color_override("font_color", Color.WHITE)
+		elif has_auto:
+			label.text = "Bonus: Auto +%d" % auto_bonus
+			label.add_theme_color_override("font_color", Color.WHITE)
+		else:
 			label.text = "(no staff assigned)"
 			label.add_theme_color_override("font_color", Color("#8A9BB1"))
-		else:
-			var bonus: Dictionary = StaffManager.get_phase_bonus(phase)
-			var flavor: int = int(bonus.get("flavor", 0.0))
-			var technique: int = int(bonus.get("technique", 0.0))
-			var staff_name: String = staff.get("staff_name", "Staff")
-			label.text = "%s: +%d flavor, +%d technique" % [staff_name, flavor, technique]
-			label.add_theme_color_override("font_color", Color("#5EE8A4"))

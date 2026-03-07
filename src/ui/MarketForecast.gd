@@ -157,6 +157,9 @@ func _switch_tab(idx: int) -> void:
 # ---------------------------------------------------------------------------
 
 func _build_forecast_tab(parent: VBoxContainer) -> void:
+	# Brand Recognition section (Stage 5B)
+	_build_brand_recognition_section(parent)
+
 	# Trend info
 	var trend_row := HBoxContainer.new()
 	trend_row.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -219,6 +222,74 @@ func _build_forecast_tab(parent: VBoxContainer) -> void:
 
 	for sid in style_ids:
 		_build_demand_row(parent, sid)
+
+
+func _build_brand_recognition_section(parent: VBoxContainer) -> void:
+	var style_ids: Array = MarketManager.get_all_demand_weights().keys()
+	var has_any_brand: bool = false
+	for sid in style_ids:
+		if MarketManager.get_brand_recognition(sid) > 0.0:
+			has_any_brand = true
+			break
+
+	# Always show the section header, even if all zeros
+	var brand_title := Label.new()
+	brand_title.text = "BRAND RECOGNITION"
+	brand_title.add_theme_font_size_override("font_size", 20)
+	brand_title.add_theme_color_override("font_color", Color("#FFC857"))
+	parent.add_child(brand_title)
+
+	for sid in style_ids:
+		var recognition: float = MarketManager.get_brand_recognition(sid)
+		var demand_bonus: float = (recognition / MarketManager.BRAND_MAX) * MarketManager.BRAND_DEMAND_SCALE * 100.0
+
+		var row := HBoxContainer.new()
+		row.mouse_filter = Control.MOUSE_FILTER_PASS
+		row.add_theme_constant_override("separation", 12)
+
+		var name_label := Label.new()
+		name_label.text = sid.capitalize()
+		name_label.custom_minimum_size = Vector2(100, 0)
+		name_label.add_theme_font_size_override("font_size", 16)
+		name_label.add_theme_color_override("font_color", Color.WHITE)
+		row.add_child(name_label)
+
+		var bar := ProgressBar.new()
+		bar.min_value = 0.0
+		bar.max_value = 100.0
+		bar.value = recognition
+		bar.custom_minimum_size = Vector2(200, 20)
+		bar.show_percentage = false
+		var bar_bg := StyleBoxFlat.new()
+		bar_bg.bg_color = Color("#0F1724")
+		bar_bg.set_corner_radius_all(2)
+		bar.add_theme_stylebox_override("background", bar_bg)
+		var bar_fill := StyleBoxFlat.new()
+		bar_fill.bg_color = Color("#5AA9FF")
+		bar_fill.set_corner_radius_all(2)
+		bar.add_theme_stylebox_override("fill", bar_fill)
+		row.add_child(bar)
+
+		var val_label := Label.new()
+		val_label.text = "%.0f" % recognition
+		val_label.add_theme_font_size_override("font_size", 16)
+		val_label.add_theme_color_override("font_color", Color.WHITE)
+		val_label.custom_minimum_size = Vector2(40, 0)
+		row.add_child(val_label)
+
+		var demand_label := Label.new()
+		if demand_bonus > 0.0:
+			demand_label.text = "+%.0f%% demand" % demand_bonus
+			demand_label.add_theme_color_override("font_color", Color("#5EE8A4"))
+		else:
+			demand_label.text = "+0% demand"
+			demand_label.add_theme_color_override("font_color", Color("#8A9BB1"))
+		demand_label.add_theme_font_size_override("font_size", 16)
+		row.add_child(demand_label)
+
+		parent.add_child(row)
+
+	parent.add_child(HSeparator.new())
 
 
 func _build_seasonal_table(parent: VBoxContainer) -> void:

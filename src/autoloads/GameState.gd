@@ -424,6 +424,28 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 		if is_instance_valid(ToastManager):
 			ToastManager.show_toast("%s seems to come from %s." % [attr_name, link_detail])
 
+	# Experimental brew mutation (Stage 5B)
+	if is_instance_valid(SpecialtyBeerManager) and current_style != null:
+		if current_style.specialty_category == "experimental":
+			var ingredient_data: Array = []
+			var malts_arr: Array = current_recipe.get("malts", [])
+			var hops_arr: Array = current_recipe.get("hops", [])
+			for m in malts_arr:
+				ingredient_data.append({
+					"ingredient_id": m.ingredient_id if m else "",
+					"flavor_points": m.flavor_points if m else 0.0,
+					"technique_points": m.technique_points if m else 0.0,
+				})
+			for h in hops_arr:
+				ingredient_data.append({
+					"ingredient_id": h.ingredient_id if h else "",
+					"flavor_points": h.flavor_points if h else 0.0,
+					"technique_points": h.technique_points if h else 0.0,
+				})
+			if ingredient_data.size() > 0:
+				var mutation_data: Dictionary = SpecialtyBeerManager.generate_mutation(ingredient_data, randi())
+				result["mutation"] = mutation_data
+
 	# Specialty beer aging (Stage 5B)
 	if is_instance_valid(SpecialtyBeerManager) and current_style != null:
 		if current_style.is_specialty and current_style.fermentation_turns > 1:

@@ -5,8 +5,8 @@ extends CanvasLayer
 
 signal closed()
 
-const CATEGORY_LABELS: Array[String] = ["All", "Brewing", "Fermentation", "Packaging", "Utility"]
-const CATEGORY_MAP: Dictionary = {
+var CATEGORY_LABELS: Array[String] = ["All", "Brewing", "Fermentation", "Packaging", "Utility"]
+var CATEGORY_MAP: Dictionary = {
 	0: -1,  # All
 	1: Equipment.Category.BREWING,
 	2: Equipment.Category.FERMENTATION,
@@ -33,6 +33,7 @@ func _ready() -> void:
 
 ## Open the shop and refresh the catalog.
 func show_shop() -> void:
+	_rebuild_category_tabs()
 	_selected_category = 0
 	_refresh_tabs()
 	_refresh_items()
@@ -135,6 +136,37 @@ func _build_ui() -> void:
 	_item_scroll.add_child(_item_list)
 
 	main_vbox.add_child(_item_scroll)
+
+# ---------------------------------------------------------------------------
+# Dynamic category tabs (adds AUTOMATION for mass_market path)
+# ---------------------------------------------------------------------------
+
+func _rebuild_category_tabs() -> void:
+	var show_automation: bool = is_instance_valid(PathManager) and PathManager.get_path_type() == "mass_market"
+	CATEGORY_LABELS = ["All", "Brewing", "Fermentation", "Packaging", "Utility"]
+	CATEGORY_MAP = {
+		0: -1,
+		1: Equipment.Category.BREWING,
+		2: Equipment.Category.FERMENTATION,
+		3: Equipment.Category.PACKAGING,
+		4: Equipment.Category.UTILITY,
+	}
+	if show_automation:
+		CATEGORY_LABELS.append("Automation")
+		CATEGORY_MAP[5] = Equipment.Category.AUTOMATION
+	# Rebuild tab buttons
+	for child in _tab_container.get_children():
+		child.queue_free()
+	_tab_buttons.clear()
+	for i in range(CATEGORY_LABELS.size()):
+		var tab_btn := Button.new()
+		tab_btn.text = CATEGORY_LABELS[i]
+		tab_btn.custom_minimum_size = Vector2(100, 36)
+		tab_btn.add_theme_font_size_override("font_size", 16)
+		var idx := i
+		tab_btn.pressed.connect(func(): _on_tab_selected(idx))
+		_tab_container.add_child(tab_btn)
+		_tab_buttons.append(tab_btn)
 
 # ---------------------------------------------------------------------------
 # Tab handling

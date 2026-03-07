@@ -11,6 +11,12 @@ const STYLE_PATHS := [
 	"res://data/styles/stout.tres",
 ]
 
+const SPECIALTY_STYLE_PATHS := [
+	"res://data/styles/lambic.tres",
+	"res://data/styles/berliner_weisse.tres",
+	"res://data/styles/experimental_brew.tres",
+]
+
 @onready var style_buttons_container: VBoxContainer = $CardPanel/MarginContainer/VBox/StyleButtons
 @onready var next_button: Button = $CardPanel/MarginContainer/VBox/FooterRow/NextButton
 @onready var title_label: Label = $CardPanel/MarginContainer/VBox/HeaderRow/Title
@@ -57,6 +63,10 @@ func _build_ui() -> void:
 		style_buttons_container.add_child(btn)
 		_style_buttons.append(btn)
 
+	# Specialty styles section (artisan + wild_fermentation research)
+	if _should_show_specialty():
+		_build_specialty_section()
+
 func _on_style_button_pressed(style: BeerStyle, btn: Button) -> void:
 	if not style.unlocked:
 		return
@@ -90,3 +100,62 @@ func refresh() -> void:
 	next_button.disabled = true
 	_build_ui()
 	_refresh_balance()
+
+# ---------------------------------------------------------------------------
+# Specialty Styles Section
+# ---------------------------------------------------------------------------
+
+func _should_show_specialty() -> bool:
+	if not is_instance_valid(PathManager):
+		return false
+	if PathManager.get_path_type() != "artisan":
+		return false
+	if not is_instance_valid(ResearchManager):
+		return false
+	return ResearchManager.is_unlocked("wild_fermentation")
+
+func _build_specialty_section() -> void:
+	# Section header separator
+	var sep := HSeparator.new()
+	sep.add_theme_constant_override("separation", 8)
+	style_buttons_container.add_child(sep)
+
+	var header := Label.new()
+	header.text = "SPECIALTY STYLES"
+	header.add_theme_font_size_override("font_size", 20)
+	header.add_theme_color_override("font_color", Color("#FFC857"))
+	style_buttons_container.add_child(header)
+
+	var specialty_styles: Array = []
+	for path in SPECIALTY_STYLE_PATHS:
+		var res = load(path) as BeerStyle
+		if res:
+			specialty_styles.append(res)
+
+	for style in specialty_styles:
+		var btn := Button.new()
+		var info_parts: Array[String] = [style.style_name]
+		if style.specialty_category != "":
+			info_parts.append("[%s]" % style.specialty_category.capitalize().replace("_", " "))
+		if style.fermentation_turns > 1:
+			info_parts.append("Ages: %d turns" % style.fermentation_turns)
+		btn.text = " | ".join(info_parts)
+		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn.custom_minimum_size.y = 60
+
+		# Accent border style for specialty cards
+		var btn_style := StyleBoxFlat.new()
+		btn_style.bg_color = Color("#0B1220", 0.8)
+		btn_style.border_color = Color("#FFC857", 0.5)
+		btn_style.set_border_width_all(2)
+		btn_style.set_corner_radius_all(6)
+		btn_style.content_margin_left = 12
+		btn_style.content_margin_right = 12
+		btn_style.content_margin_top = 8
+		btn_style.content_margin_bottom = 8
+		btn.add_theme_stylebox_override("normal", btn_style)
+		btn.add_theme_color_override("font_color", Color("#FFC857"))
+
+		btn.pressed.connect(_on_style_button_pressed.bind(style, btn))
+		style_buttons_container.add_child(btn)
+		_style_buttons.append(btn)

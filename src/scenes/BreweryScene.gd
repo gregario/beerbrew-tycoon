@@ -43,6 +43,7 @@ var _contract_board: CanvasLayer = null
 var _competition_screen: CanvasLayer = null
 var _expansion_overlay: CanvasLayer = null
 var _market_forecast: CanvasLayer = null
+var _cellar_panel: PanelContainer = null
 
 func _ready() -> void:
 	set_brewing(false)
@@ -203,6 +204,9 @@ func _build_equipment_ui() -> void:
 		btn.pressed.connect(func(): slot_clicked.emit(idx))
 		_equipment_ui.add_child(btn)
 		_slot_buttons.append(btn)
+
+	# Cellar panel (aging beers — Stage 5B)
+	_build_cellar_panel()
 
 	# Hub buttons container — anchored to bottom center via a Control wrapper
 	var hub_anchor := Control.new()
@@ -424,3 +428,98 @@ func _on_market_pressed() -> void:
 
 func _on_market_forecast_closed() -> void:
 	pass
+
+# ---------------------------------------------------------------------------
+# Cellar panel — shows aging specialty beers (Stage 5B)
+# ---------------------------------------------------------------------------
+
+func _build_cellar_panel() -> void:
+	if not is_instance_valid(SpecialtyBeerManager):
+		return
+	var queue: Array = SpecialtyBeerManager.get_aging_queue()
+	if queue.is_empty():
+		return
+
+	_cellar_panel = PanelContainer.new()
+	_cellar_panel.name = "CellarPanel"
+	_cellar_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color("#0B1220", 0.9)
+	panel_style.border_color = Color("#FFC857", 0.4)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(6)
+	panel_style.content_margin_left = 16
+	panel_style.content_margin_right = 16
+	panel_style.content_margin_top = 12
+	panel_style.content_margin_bottom = 12
+	_cellar_panel.add_theme_stylebox_override("panel", panel_style)
+	# Position above hub buttons, below expansion banner
+	_cellar_panel.position = Vector2(200, 520)
+	_cellar_panel.size = Vector2(880, 0)  # Auto-height
+
+	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
+	vbox.add_theme_constant_override("separation", 6)
+	_cellar_panel.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "CELLAR — Aging Beers"
+	title.add_theme_font_size_override("font_size", 18)
+	title.add_theme_color_override("font_color", Color("#FFC857"))
+	vbox.add_child(title)
+
+	for entry in queue:
+		var row := HBoxContainer.new()
+		row.mouse_filter = Control.MOUSE_FILTER_PASS
+		row.add_theme_constant_override("separation", 12)
+
+		var name_label := Label.new()
+		name_label.text = entry.get("style_name", "Beer")
+		name_label.custom_minimum_size = Vector2(160, 0)
+		name_label.add_theme_font_size_override("font_size", 16)
+		name_label.add_theme_color_override("font_color", Color.WHITE)
+		row.add_child(name_label)
+
+		var total_turns: int = entry.get("turns_remaining", 1) + 1  # remaining + already elapsed
+		# We track turns_remaining so elapsed = original - remaining
+		# But we only have turns_remaining, so we estimate total from the style
+		var turns_remaining: int = entry.get("turns_remaining", 1)
+		var original_total: int = turns_remaining  # Best estimate without storing original
+		# Check if the original recipe had fermentation_turns
+		var style_id: String = entry.get("style_id", "")
+		for path in [
+			"res://data/styles/lambic.tres",
+			"res://data/styles/berliner_weisse.tres",
+			"res://data/styles/experimental_brew.tres",
+		]:
+			var style_res = load(path) as BeerStyle
+			if style_res and style_res.style_id == style_id:
+				original_total = style_res.fermentation_turns
+				break
+		var elapsed: int = original_total - turns_remaining
+
+		var bar := ProgressBar.new()
+		bar.min_value = 0
+		bar.max_value = original_total
+		bar.value = elapsed
+		bar.custom_minimum_size = Vector2(200, 20)
+		bar.show_percentage = false
+		var bar_bg := StyleBoxFlat.new()
+		bar_bg.bg_color = Color("#0F1724")
+		bar_bg.set_corner_radius_all(2)
+		bar.add_theme_stylebox_override("background", bar_bg)
+		var bar_fill := StyleBoxFlat.new()
+		bar_fill.bg_color = Color("#FFC857")
+		bar_fill.set_corner_radius_all(2)
+		bar.add_theme_stylebox_override("fill", bar_fill)
+		row.add_child(bar)
+
+		var turns_label := Label.new()
+		turns_label.text = "%d/%d turns" % [elapsed, original_total]
+		turns_label.add_theme_font_size_override("font_size", 16)
+		turns_label.add_theme_color_override("font_color", Color("#8A9BB1"))
+		row.add_child(turns_label)
+
+		vbox.add_child(row)
+
+	_equipment_ui.add_child(_cellar_panel)
