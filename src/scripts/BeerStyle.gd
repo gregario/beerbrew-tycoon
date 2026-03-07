@@ -54,5 +54,23 @@ extends Resource
 @export var ideal_boil_min: float = 50.0
 @export var ideal_boil_max: float = 70.0
 
+## Style family grouping: ales, dark, wheat, lager, belgian, modern, specialty.
+@export var family: String = ""
+
+## Water profile affinities. Key = profile_id (soft/balanced/malty/hoppy/juicy), Value = 0.0-1.0.
+@export var water_affinity: Dictionary = {}
+
+## Expected hop timing allocation. Keys: bittering, aroma, dry_hop. Values: 0.0-1.0 weights.
+@export var hop_schedule_expectations: Dictionary = {}
+
+## Desired yeast flavor compounds. Key = compound type, Value = desirability 0.0-1.0.
+@export var yeast_temp_flavors: Dictionary = {}
+
+## Off-flavor types acceptable in this style. Key = off-flavor type, Value = threshold 0.0-1.0.
+@export var acceptable_off_flavors: Dictionary = {}
+
+## What brewing concept this style primarily teaches (for discovery system).
+@export var primary_lesson: String = ""
+
 func get_ingredient_compatibility(ingredient_id: String) -> float:
 	return preferred_ingredients.get(ingredient_id, 0.5)
