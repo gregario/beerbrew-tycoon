@@ -342,7 +342,7 @@ func _on_fork_path_selected(path_type: String) -> void:
 
 func _on_path_chosen(path_type: String) -> void:
 	# Swap brewery scene when path is restored from save
-	if path_type != "" and not brewery_scene is preload("res://scenes/ArtisanBreweryScene.gd") and not brewery_scene is preload("res://scenes/MassMarketBreweryScene.gd"):
+	if path_type != "" and not brewery_scene.get_script() in [preload("res://scenes/ArtisanBreweryScene.gd"), preload("res://scenes/MassMarketBreweryScene.gd")]:
 		_swap_brewery_scene(path_type)
 
 func _swap_brewery_scene(path_type: String) -> void:
