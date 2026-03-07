@@ -1,0 +1,25 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/BeerStyle.gd" id="1_beer_style"]
+
+[resource]
+script = ExtResource("1_beer_style")
+style_id = "hefeweizen"
+style_name = "Hefeweizen"
+description = "Classic Bavarian wheat beer. Banana and clove character from yeast, not ingredients. Temperature controls the balance."
+ideal_flavor_ratio = 0.6
+base_price = 220.0
+base_demand_weight = 1.0
+unlocked = false
+preferred_ingredients = {"wheat_malt": 0.95, "pilsner_malt": 0.8, "pale_malt": 0.6, "hallertau": 0.9, "saaz": 0.7, "wb06_wheat": 0.95}
+ideal_flavor_profile = {"bitterness": 0.15, "sweetness": 0.35, "roastiness": 0.0, "fruitiness": 0.7, "funkiness": 0.1}
+ideal_mash_temp_min = 64.0
+ideal_mash_temp_max = 67.0
+ideal_boil_min = 60.0
+ideal_boil_max = 75.0
+family = "wheat"
+water_affinity = {"soft": 0.7, "balanced": 0.8, "malty": 0.5, "hoppy": 0.4, "juicy": 0.5}
+hop_schedule_expectations = {"bittering": 0.7, "aroma": 0.25, "dry_hop": 0.05}
+yeast_temp_flavors = {"ester_banana": 0.8, "phenol_clove": 0.7, "clean": 0.2, "fusel": 0.0}
+acceptable_off_flavors = {"ester_banana": 0.8, "ester": 0.6, "phenol": 0.5}
+primary_lesson = "yeast_temp_interaction"
