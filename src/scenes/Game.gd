@@ -24,6 +24,7 @@ var equipment_shop: CanvasLayer = null
 var research_tree: CanvasLayer = null
 var staff_screen: CanvasLayer = null
 var _sell_overlay: CanvasLayer = null
+var _fork_overlay: CanvasLayer = null
 
 func _ready() -> void:
 	# Register styles with the market manager before any demand init
@@ -77,6 +78,12 @@ func _ready() -> void:
 	research_tree.closed.connect(_on_research_tree_closed)
 	brewery_scene.staff_requested.connect(_on_staff_requested)
 	staff_screen.closed.connect(_on_staff_screen_closed)
+
+	# Fork choice overlay (Stage 5A)
+	if is_instance_valid(BreweryExpansion):
+		BreweryExpansion.fork_threshold_reached.connect(_on_fork_threshold_reached)
+	if is_instance_valid(PathManager):
+		PathManager.path_chosen.connect(_on_path_chosen)
 
 	# Connect market toast signals
 	MarketManager.trend_started.connect(_on_trend_started)
@@ -274,3 +281,33 @@ func _on_season_changed(season_name: String) -> void:
 func _get_style_display_name(style_id: String) -> String:
 	# Fallback: convert style_id to display name
 	return style_id.replace("_", " ").capitalize()
+
+# ---------------------------------------------------------------------------
+# Fork choice handlers (Stage 5A)
+# ---------------------------------------------------------------------------
+
+func _on_fork_threshold_reached() -> void:
+	_show_fork_overlay()
+
+func _show_fork_overlay() -> void:
+	_close_all_managed_overlays()
+	if _fork_overlay == null:
+		_fork_overlay = preload("res://ui/ForkChoiceOverlay.gd").new()
+		add_child(_fork_overlay)
+		_managed_overlays.append(_fork_overlay)
+		_fork_overlay.path_selected.connect(_on_fork_path_selected)
+	_fork_overlay.show_overlay()
+
+func _on_fork_path_selected(path_type: String) -> void:
+	PathManager.choose_path(path_type)
+	var target_stage: BreweryExpansion.Stage
+	if path_type == "artisan":
+		target_stage = BreweryExpansion.Stage.ARTISAN
+	else:
+		target_stage = BreweryExpansion.Stage.MASS_MARKET
+	BreweryExpansion.expand_to_path(target_stage)
+	if is_instance_valid(ToastManager):
+		ToastManager.show_toast("You've chosen the %s path!" % PathManager.get_path_name())
+
+func _on_path_chosen(_path_type: String) -> void:
+	pass  # Additional reactions to path choice can go here

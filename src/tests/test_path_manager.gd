@@ -336,3 +336,13 @@ func test_fork_threshold_cannot_choose_already_chosen():
 func test_fork_choice_overlay_loads():
 	var script = load("res://ui/ForkChoiceOverlay.gd")
 	assert_not_null(script, "ForkChoiceOverlay script loads")
+
+# --- Scene Scripts ---
+
+func test_artisan_brewery_scene_loads():
+	var script = load("res://scenes/ArtisanBreweryScene.gd")
+	assert_not_null(script, "ArtisanBreweryScene script loads")
+
+func test_mass_market_brewery_scene_loads():
+	var script = load("res://scenes/MassMarketBreweryScene.gd")
+	assert_not_null(script, "MassMarketBreweryScene script loads")
