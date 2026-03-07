@@ -72,6 +72,15 @@ const RESEARCH_PATHS: Array[String] = [
 	"res://data/research/styles/belgian_arts.tres",
 	"res://data/research/styles/modern_techniques.tres",
 	"res://data/research/techniques/wild_fermentation.tres",
+	"res://data/research/techniques/water_basics.tres",
+	"res://data/research/techniques/mineral_adjustment.tres",
+	"res://data/research/techniques/ph_management.tres",
+	"res://data/research/techniques/advanced_water.tres",
+	"res://data/research/techniques/biotransformation.tres",
+	"res://data/research/techniques/hop_blending.tres",
+	"res://data/research/techniques/yeast_health.tres",
+	"res://data/research/techniques/temp_profiling.tres",
+	"res://data/research/techniques/diacetyl_rest.tres",
 ]
 
 

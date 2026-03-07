@@ -27,6 +27,16 @@ const ATTRIBUTE_NAMES: Dictionary = {
 	"fruity_esters": "Fruity Esters",
 	"fusel_alcohols": "Fusel Alcohols",
 	"stalled_ferment": "Stalled Fermentation",
+	# Water-related discoveries (11.3)
+	"water_match": "Good Water Match",
+	"water_mismatch": "Poor Water Match",
+	# Yeast-temp discoveries (11.4)
+	"banana_esters": "Banana Esters",
+	"clove_phenols": "Clove Phenols",
+	"saison_spice": "Saison Spice",
+	# Hop schedule discoveries (11.5)
+	"late_hop_aroma": "Enhanced Hop Aroma",
+	"dry_hop_character": "Dry Hop Character",
 }
 
 const ATTRIBUTE_LINKS: Dictionary = {
@@ -47,7 +57,60 @@ const ATTRIBUTE_LINKS: Dictionary = {
 	"fruity_esters": {"phase": "fermenting", "detail": "Slightly warm fermentation produced fruity ester notes."},
 	"fusel_alcohols": {"phase": "fermenting", "detail": "Too-warm fermentation created harsh fusel alcohols."},
 	"stalled_ferment": {"phase": "fermenting", "detail": "Cold fermentation caused yeast to stall."},
+	# Water-related discoveries (11.3)
+	"water_match": {"phase": "recipe", "detail": "The water chemistry complemented this beer style perfectly."},
+	"water_mismatch": {"phase": "recipe", "detail": "The water profile clashed with this beer style's needs."},
+	# Yeast-temp discoveries (11.4)
+	"banana_esters": {"phase": "fermenting", "detail": "Warm fermentation of wheat yeast produced banana-like esters."},
+	"clove_phenols": {"phase": "fermenting", "detail": "Cool fermentation of wheat yeast brought out clove-like phenols."},
+	"saison_spice": {"phase": "fermenting", "detail": "The saison yeast expressed peppery, spicy character at this temperature."},
+	# Hop schedule discoveries (11.5)
+	"late_hop_aroma": {"phase": "recipe", "detail": "Adding hops late in the boil preserved volatile aromatic compounds."},
+	"dry_hop_character": {"phase": "recipe", "detail": "Dry hopping added intense hop aroma without additional bitterness."},
 }
+
+
+# ---------------------------------------------------------------------------
+# Non-discovery tracking (11.1)
+# ---------------------------------------------------------------------------
+
+## Stores the last brew's slider values and quality per style for comparison.
+var _last_brew_by_style: Dictionary = {}  # style_id → {sliders: Dictionary, quality: float}
+
+## Tracks what the player learned doesn't matter.
+var non_discoveries: Dictionary = {}  # discovery_id → true
+
+
+## Compares this brew against the last brew of the same style.
+## If one variable changed significantly but quality stayed similar, returns the
+## non-discovery type ("mash_tolerance" or "boil_tolerance"). Otherwise returns "".
+func check_non_discovery(style_id: String, current_sliders: Dictionary, current_quality: float) -> String:
+	if not _last_brew_by_style.has(style_id):
+		_last_brew_by_style[style_id] = {"sliders": current_sliders.duplicate(), "quality": current_quality}
+		return ""
+
+	var last: Dictionary = _last_brew_by_style[style_id]
+	var last_sliders: Dictionary = last.get("sliders", {})
+	var last_quality: float = last.get("quality", 0.0)
+	var quality_diff: float = absf(current_quality - last_quality)
+
+	var result: String = ""
+
+	# Only trigger non-discovery if quality didn't change much
+	if quality_diff < 5.0:
+		var mash_diff: float = absf(current_sliders.get("mashing", 65.0) - last_sliders.get("mashing", 65.0))
+		var boil_diff: float = absf(current_sliders.get("boiling", 60.0) - last_sliders.get("boiling", 60.0))
+
+		if mash_diff >= 3.0 and not non_discoveries.has("mash_tolerance"):
+			result = "mash_tolerance"
+			non_discoveries["mash_tolerance"] = true
+		elif boil_diff >= 15.0 and not non_discoveries.has("boil_tolerance"):
+			result = "boil_tolerance"
+			non_discoveries["boil_tolerance"] = true
+
+	# Update last brew data for this style
+	_last_brew_by_style[style_id] = {"sliders": current_sliders.duplicate(), "quality": current_quality}
+	return result
 
 
 # ---------------------------------------------------------------------------

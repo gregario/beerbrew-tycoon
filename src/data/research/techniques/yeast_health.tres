@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "yeast_health"
+node_name = "Yeast Health"
+description = "Proper yeast pitching rates, starters, and nutrient management for clean fermentation."
+category = 0
+rp_cost = 15
+prerequisites = ["mash_basics"]
+unlock_effect = {"type": "brewing_bonus", "bonuses": {"yeast_health": 0.1}}

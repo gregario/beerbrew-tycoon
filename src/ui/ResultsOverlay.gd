@@ -75,6 +75,11 @@ func populate() -> void:
 			tip = "A longer, more vigorous boil drives off DMS precursors."
 		_add_failure_panel("OFF-FLAVORS DETECTED", off_flavor_msg, tip)
 
+	# Off-flavor spectrum display (12.4)
+	var off_flavors: Array = result.get("off_flavors", [])
+	if off_flavors.size() > 0:
+		_add_off_flavor_spectrum(off_flavors)
+
 	# Revenue and current balance
 	var breakdown: Array = result.get("revenue_breakdown", [])
 	if breakdown.size() > 0:
@@ -400,6 +405,107 @@ func _add_mutation_panel(mutation: Dictionary) -> void:
 	panel.add_child(vbox)
 	var scroll_vbox: VBoxContainer = $CardPanel/MarginContainer/OuterVBox/Scroll/VBox
 	scroll_vbox.add_child(panel)
+
+
+func _add_off_flavor_spectrum(off_flavors: Array) -> void:
+	if failure_container == null:
+		_create_failure_container()
+
+	var spectrum_panel := PanelContainer.new()
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color("#FFC857", 0.05)
+	panel_style.border_color = Color("#FFC857", 0.3)
+	panel_style.border_width_left = 4
+	panel_style.set_corner_radius_all(4)
+	panel_style.set_content_margin_all(16)
+	spectrum_panel.add_theme_stylebox_override("panel", panel_style)
+
+	var outer_vbox := VBoxContainer.new()
+	outer_vbox.add_theme_constant_override("separation", 12)
+
+	var header := Label.new()
+	header.text = "OFF-FLAVOR SPECTRUM"
+	header.add_theme_font_size_override("font_size", 18)
+	header.add_theme_color_override("font_color", Color("#FFC857"))
+	outer_vbox.add_child(header)
+
+	for entry in off_flavors:
+		var intensity: float = entry.get("intensity", 0.0)
+		if intensity <= 0.0:
+			continue
+
+		var context: String = entry.get("context", "flaw")
+		var context_color: Color
+		match context:
+			"desired":
+				context_color = Color("#5EE8A4")
+			"neutral":
+				context_color = Color("#FFC857")
+			_:
+				context_color = Color("#FF7B7B")
+
+		var row_vbox := VBoxContainer.new()
+		row_vbox.add_theme_constant_override("separation", 4)
+
+		# Name + severity + context line
+		var info_hbox := HBoxContainer.new()
+		info_hbox.add_theme_constant_override("separation", 8)
+
+		var name_label := Label.new()
+		name_label.text = entry.get("display_name", entry.get("type", "Unknown"))
+		name_label.add_theme_font_size_override("font_size", 16)
+		name_label.add_theme_color_override("font_color", Color.WHITE)
+		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		info_hbox.add_child(name_label)
+
+		var severity_label := Label.new()
+		severity_label.text = entry.get("severity", "subtle")
+		severity_label.add_theme_font_size_override("font_size", 14)
+		severity_label.add_theme_color_override("font_color", context_color)
+		info_hbox.add_child(severity_label)
+
+		var context_label := Label.new()
+		context_label.text = "(%s)" % context
+		context_label.add_theme_font_size_override("font_size", 14)
+		context_label.add_theme_color_override("font_color", context_color)
+		info_hbox.add_child(context_label)
+
+		row_vbox.add_child(info_hbox)
+
+		# Intensity bar
+		var bar_bg := ColorRect.new()
+		bar_bg.custom_minimum_size = Vector2(0, 8)
+		bar_bg.color = Color(0.2, 0.2, 0.2, 0.5)
+		bar_bg.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+		var bar_fill := ColorRect.new()
+		bar_fill.custom_minimum_size = Vector2(0, 8)
+		bar_fill.color = context_color
+		bar_fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		# Use an HBoxContainer to simulate a progress bar
+		var bar_container := HBoxContainer.new()
+		bar_container.custom_minimum_size = Vector2(0, 8)
+		bar_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var fill_ratio: float = clampf(intensity, 0.0, 1.0)
+		bar_fill.size_flags_stretch_ratio = fill_ratio
+		bar_bg.size_flags_stretch_ratio = 1.0 - fill_ratio
+		bar_container.add_child(bar_fill)
+		if fill_ratio < 1.0:
+			bar_container.add_child(bar_bg)
+
+		row_vbox.add_child(bar_container)
+
+		# Intensity value
+		var value_label := Label.new()
+		value_label.text = "Intensity: %.0f%%" % (intensity * 100.0)
+		value_label.add_theme_font_size_override("font_size", 12)
+		value_label.add_theme_color_override("font_color", Color("#8A9BB1"))
+		row_vbox.add_child(value_label)
+
+		outer_vbox.add_child(row_vbox)
+
+	spectrum_panel.add_child(outer_vbox)
+	failure_container.add_child(spectrum_panel)
 
 
 func _on_continue_pressed() -> void:

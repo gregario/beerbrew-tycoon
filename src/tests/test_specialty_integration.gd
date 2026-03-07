@@ -92,7 +92,8 @@ func test_aging_ticks_on_results_continue() -> void:
 	GameState.set_style(_make_normal_style())
 	GameState.set_recipe(_make_recipe())
 	GameState.current_state = GameState.State.RESULTS
-	GameState.advance_state()  # RESULTS -> SELL
+	GameState.advance_state()  # RESULTS -> CONDITIONING
+	GameState.advance_state()  # CONDITIONING -> SELL
 	GameState.advance_state()  # SELL -> _on_results_continue
 	# Beer should have been ticked: 2 -> 1
 	assert_eq(SpecialtyBeerManager.get_aging_queue().size(), 1)
@@ -112,7 +113,8 @@ func test_completed_aged_beer_adds_revenue() -> void:
 	GameState.set_style(_make_normal_style())
 	GameState.set_recipe(_make_recipe())
 	GameState.current_state = GameState.State.RESULTS
-	GameState.advance_state()  # RESULTS -> SELL
+	GameState.advance_state()  # RESULTS -> CONDITIONING
+	GameState.advance_state()  # CONDITIONING -> SELL
 	GameState.advance_state()  # SELL -> _on_results_continue
 	# Balance should have increased from aged beer revenue
 	assert_gt(GameState.balance, balance_before, "Balance should increase from aged beer revenue")
@@ -129,7 +131,8 @@ func test_completed_aged_beers_stored_in_last_brew_result() -> void:
 	GameState.set_style(_make_normal_style())
 	GameState.set_recipe(_make_recipe())
 	GameState.current_state = GameState.State.RESULTS
-	GameState.advance_state()  # RESULTS -> SELL
+	GameState.advance_state()  # RESULTS -> CONDITIONING
+	GameState.advance_state()  # CONDITIONING -> SELL
 	GameState.advance_state()  # SELL -> _on_results_continue
 	var completed: Variant = GameState.last_brew_result.get("completed_aged_beers", null)
 	assert_not_null(completed, "last_brew_result should have completed_aged_beers")

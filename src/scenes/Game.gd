@@ -23,6 +23,7 @@ var equipment_popup: CanvasLayer = null
 var equipment_shop: CanvasLayer = null
 var research_tree: CanvasLayer = null
 var staff_screen: CanvasLayer = null
+var _conditioning_overlay: CanvasLayer = null
 var _sell_overlay: CanvasLayer = null
 var _fork_overlay: CanvasLayer = null
 var _run_summary: CanvasLayer = null
@@ -140,6 +141,9 @@ func _on_state_changed(new_state: GameState.State) -> void:
 			_show_overlay(results_overlay)
 			_play_sfx(sfx_results)
 
+		GameState.State.CONDITIONING:
+			_show_conditioning_overlay()
+
 		GameState.State.SELL:
 			_show_sell_overlay()
 
@@ -234,6 +238,24 @@ func _on_staff_requested() -> void:
 
 func _on_staff_screen_closed() -> void:
 	pass  # Stay in equipment mode, staff screen is just an overlay
+
+# ---------------------------------------------------------------------------
+# Conditioning overlay handlers
+# ---------------------------------------------------------------------------
+
+func _show_conditioning_overlay() -> void:
+	_close_all_managed_overlays()
+	if _conditioning_overlay == null:
+		_conditioning_overlay = preload("res://ui/ConditioningOverlay.gd").new()
+		add_child(_conditioning_overlay)
+		_managed_overlays.append(_conditioning_overlay)
+		_conditioning_overlay.conditioning_confirmed.connect(_on_conditioning_confirmed)
+	_conditioning_overlay.show_overlay()
+
+func _on_conditioning_confirmed(weeks: int) -> void:
+	if weeks > 0:
+		GameState.execute_conditioning(weeks)
+	GameState.advance_state()  # CONDITIONING -> SELL
 
 # ---------------------------------------------------------------------------
 # Sell overlay handlers

@@ -210,6 +210,41 @@ func roll_failures(base_score: float, sanitation_quality: int, temp_control_qual
 
 
 # ---------------------------------------------------------------------------
+# Conditioning decay
+# ---------------------------------------------------------------------------
+
+## Per-week decay rates for off-flavor intensities during conditioning.
+const DECAY_RATES := {
+	"diacetyl": 0.25,
+	"acetaldehyde": 0.15,
+	"ester_banana": 0.05,
+	"ester_fruit": 0.05,
+	"esters": 0.05,
+	"phenol_clove": 0.05,
+	"phenol_pepper": 0.05,
+	"fusel": 0.1,
+	"fusel_alcohols": 0.1,
+	"dms": 0.05,
+	"oxidation": 0.0,
+	"infection": 0.0,
+	"off_flavor": 0.05,
+}
+
+
+## Applies conditioning decay to off-flavor intensities.
+## Returns a new Dictionary with reduced intensities after the given weeks.
+## Formula per type: max(0.0, intensity - weeks * decay_rate)
+func apply_conditioning_decay(intensities: Dictionary, weeks: int) -> Dictionary:
+	var result: Dictionary = {}
+	for off_flavor_type in intensities:
+		var intensity: float = intensities[off_flavor_type]
+		var decay_rate: float = DECAY_RATES.get(off_flavor_type, 0.05)
+		var decayed: float = maxf(0.0, intensity - float(weeks) * decay_rate)
+		result[off_flavor_type] = decayed
+	return result
+
+
+# ---------------------------------------------------------------------------
 # QA Checkpoints
 # ---------------------------------------------------------------------------
 

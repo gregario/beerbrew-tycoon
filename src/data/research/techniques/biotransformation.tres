@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "biotransformation"
+node_name = "Biotransformation"
+description = "Dry hopping during active fermentation to unlock unique fruity and tropical hop flavors."
+category = 0
+rp_cost = 25
+prerequisites = ["dry_hopping"]
+unlock_effect = {"type": "brewing_bonus", "bonuses": {"biotransformation": 0.15}}

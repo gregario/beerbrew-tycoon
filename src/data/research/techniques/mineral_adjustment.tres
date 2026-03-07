@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "mineral_adjustment"
+node_name = "Mineral Adjustment"
+description = "Adding brewing salts to shape water mineral content for specific beer styles."
+category = 0
+rp_cost = 20
+prerequisites = ["water_basics"]
+unlock_effect = {"type": "brewing_bonus", "bonuses": {"mineral_adjustment": 0.15}}

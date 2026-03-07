@@ -32,7 +32,8 @@ func _ready() -> void:
 func _reset_sliders() -> void:
 	mashing_slider.value = 65.0
 	boiling_slider.value = 60.0
-	fermenting_slider.value = 20.0
+	# Use midpoint of current fermenting range (may change with yeast)
+	fermenting_slider.value = round((fermenting_slider.min_value + fermenting_slider.max_value) / 2.0)
 
 func _get_sliders() -> Dictionary:
 	return {
@@ -42,9 +43,14 @@ func _get_sliders() -> Dictionary:
 	}
 
 func _on_slider_changed() -> void:
-	mashing_value.text = "%d°C" % int(mashing_slider.value)
-	boiling_value.text = "%d min" % int(boiling_slider.value)
-	fermenting_value.text = "%d°C" % int(fermenting_slider.value)
+	if _is_temp_numbers_revealed():
+		mashing_value.text = "%d°C" % int(mashing_slider.value)
+		boiling_value.text = "%d min" % int(boiling_slider.value)
+		fermenting_value.text = "%d°C" % int(fermenting_slider.value)
+	else:
+		mashing_value.text = _get_vague_mashing(int(mashing_slider.value))
+		boiling_value.text = _get_vague_boiling(int(boiling_slider.value))
+		fermenting_value.text = _get_vague_fermenting(int(fermenting_slider.value))
 	_update_preview()
 
 func _update_preview() -> void:
@@ -57,10 +63,16 @@ func _on_brew_pressed() -> void:
 
 ## Reset sliders when panel reopens.
 func refresh() -> void:
+	_adjust_ferment_slider_for_yeast()
 	_reset_sliders()
-	mashing_value.text = "65°C"
-	boiling_value.text = "60 min"
-	fermenting_value.text = "20°C"
+	if _is_temp_numbers_revealed():
+		mashing_value.text = "65°C"
+		boiling_value.text = "60 min"
+		fermenting_value.text = "%d°C" % int(fermenting_slider.value)
+	else:
+		mashing_value.text = _get_vague_mashing(65)
+		boiling_value.text = _get_vague_boiling(60)
+		fermenting_value.text = _get_vague_fermenting(int(fermenting_slider.value))
 	_update_preview()
 	_update_bonus_label()
 	_update_staff_labels()
@@ -163,3 +175,74 @@ func _update_staff_labels() -> void:
 		else:
 			label.text = "(no staff assigned)"
 			label.add_theme_color_override("font_color", Color("#8A9BB1"))
+
+# ---------------------------------------------------------------------------
+# Progressive Revelation helpers
+# ---------------------------------------------------------------------------
+
+func _is_temp_numbers_revealed() -> bool:
+	if not is_instance_valid(EquipmentManager):
+		return false
+	return EquipmentManager.is_revealed("temp_numbers")
+
+func _get_vague_mashing(temp_c: int) -> String:
+	if temp_c <= 64:
+		return "Low"
+	elif temp_c <= 67:
+		return "Medium"
+	else:
+		return "High"
+
+func _get_vague_boiling(minutes: int) -> String:
+	if minutes <= 50:
+		return "Short"
+	elif minutes <= 70:
+		return "Medium"
+	else:
+		return "Long"
+
+func _get_vague_fermenting(temp_c: int) -> String:
+	if temp_c <= 18:
+		return "Cool"
+	elif temp_c <= 22:
+		return "Moderate"
+	else:
+		return "Warm"
+
+# ---------------------------------------------------------------------------
+# Yeast-dependent ferment slider range
+# ---------------------------------------------------------------------------
+
+## Yeast-type ferment temperature ranges (with buffer).
+const YEAST_FERMENT_RANGES: Dictionary = {
+	"lager": {"min": 4, "max": 12},
+	"saison": {"min": 20, "max": 35},
+	"wheat": {"min": 16, "max": 26},
+	"ale": {"min": 15, "max": 24},
+}
+
+func _adjust_ferment_slider_for_yeast() -> void:
+	var yeast: Yeast = GameState.current_recipe.get("yeast", null) as Yeast
+	if yeast == null:
+		fermenting_slider.min_value = 15
+		fermenting_slider.max_value = 25
+		return
+	var yeast_type: String = _classify_yeast(yeast)
+	var range_data: Dictionary = YEAST_FERMENT_RANGES.get(yeast_type, {"min": 15, "max": 25})
+	fermenting_slider.min_value = range_data["min"]
+	fermenting_slider.max_value = range_data["max"]
+
+func _classify_yeast(yeast: Yeast) -> String:
+	var name_lower: String = yeast.ingredient_name.to_lower()
+	if "lager" in name_lower:
+		return "lager"
+	if "saison" in name_lower:
+		return "saison"
+	if "wheat" in name_lower:
+		return "wheat"
+	# Default: use temp ranges to classify
+	if yeast.ideal_temp_max_c <= 15.0:
+		return "lager"
+	if yeast.ideal_temp_min_c >= 20.0:
+		return "saison"
+	return "ale"

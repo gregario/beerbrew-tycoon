@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ResearchNode.gd" id="1_research"]
+
+[resource]
+script = ExtResource("1_research")
+node_id = "ph_management"
+node_name = "pH Management"
+description = "Precise mash and sparge pH control for optimal enzyme activity and flavor extraction."
+category = 0
+rp_cost = 25
+prerequisites = ["mineral_adjustment"]
+unlock_effect = {"type": "brewing_bonus", "bonuses": {"ph_control": 0.1}}

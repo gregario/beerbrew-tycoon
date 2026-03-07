@@ -70,7 +70,7 @@ func after_each() -> void:
 	if GameState.game_lost.is_connected(_on_lost):
 		GameState.game_lost.disconnect(_on_lost)
 
-## Simulate the revenue phase of one brew, then advance through results and sell.
+## Simulate the revenue phase of one brew, then advance through results, conditioning, and sell.
 ## quality_score: pass 0.0–100.0; revenue is computed from this score.
 ## Does NOT deduct ingredient cost — call that separately.
 func _brew_and_advance(quality_score: float) -> float:
@@ -78,7 +78,8 @@ func _brew_and_advance(quality_score: float) -> float:
 	GameState.add_revenue(revenue)
 	GameState.record_brew(quality_score)
 	GameState.current_state = GameState.State.RESULTS
-	GameState.advance_state()  # RESULTS → SELL
+	GameState.advance_state()  # RESULTS → CONDITIONING
+	GameState.advance_state()  # CONDITIONING → SELL
 	GameState.advance_state()  # SELL → _on_results_continue → EQUIPMENT_MANAGE / GAME_OVER
 	return revenue
 
@@ -174,7 +175,8 @@ func test_loss_triggers_when_cant_afford_next_brew():
 	GameState.deduct_ingredient_cost()
 	# Do NOT add revenue — simulate zero revenue to leave balance below threshold
 	GameState.current_state = GameState.State.RESULTS
-	GameState.advance_state()  # RESULTS → SELL
+	GameState.advance_state()  # RESULTS → CONDITIONING
+	GameState.advance_state()  # CONDITIONING → SELL
 	GameState.advance_state()  # SELL → _on_results_continue → GAME_OVER
 	assert_true(_lost, "game_lost should emit when balance falls below ingredient cost")
 	assert_eq(GameState.current_state, GameState.State.GAME_OVER)
@@ -190,7 +192,8 @@ func test_loss_triggers_via_rent_wipe():
 	GameState.deduct_ingredient_cost()
 	# Do NOT add revenue
 	GameState.current_state = GameState.State.RESULTS
-	GameState.advance_state()  # RESULTS → SELL
+	GameState.advance_state()  # RESULTS → CONDITIONING
+	GameState.advance_state()  # CONDITIONING → SELL
 	GameState.advance_state()  # SELL → _on_results_continue → GAME_OVER
 	assert_true(_lost, "game_lost should emit when rent wipes balance below 0")
 	assert_eq(GameState.current_state, GameState.State.GAME_OVER)
@@ -219,8 +222,9 @@ func test_execute_brew_runs_full_cycle():
 	# Balance should have decreased (ingredient cost deducted) but no revenue yet
 	assert_lt(GameState.balance, initial_balance,
 		"balance must have decreased from ingredient cost after execute_brew")
-	# Advance through RESULTS → SELL → _on_results_continue
-	GameState.advance_state()  # RESULTS → SELL
+	# Advance through RESULTS → CONDITIONING → SELL → _on_results_continue
+	GameState.advance_state()  # RESULTS → CONDITIONING
+	GameState.advance_state()  # CONDITIONING → SELL
 	GameState.advance_state()  # SELL → _on_results_continue → EQUIPMENT_MANAGE
 	assert_eq(GameState.turn_counter, 1, "turn_counter must increment after sell advance")
 
@@ -256,8 +260,9 @@ func test_execute_brew_win_condition():
 	GameState.add_revenue(revenue)
 	assert_gte(GameState.balance, GameState.WIN_TARGET,
 		"balance must be >= WIN_TARGET after adding revenue")
-	# Advance RESULTS → SELL → _on_results_continue → GAME_OVER
-	GameState.advance_state()  # RESULTS → SELL
+	# Advance RESULTS → CONDITIONING → SELL → _on_results_continue → GAME_OVER
+	GameState.advance_state()  # RESULTS → CONDITIONING
+	GameState.advance_state()  # CONDITIONING → SELL
 	GameState.advance_state()  # SELL → _on_results_continue → win check → GAME_OVER
 	assert_true(_won, "game_won must emit after sell advance when balance >= WIN_TARGET")
 	assert_eq(GameState.current_state, GameState.State.GAME_OVER,

@@ -20,6 +20,7 @@ enum State {
 	RECIPE_DESIGN,   # Player picks malt, hop, yeast
 	BREWING_PHASES,  # Player adjusts phase sliders and confirms brew
 	RESULTS,         # Show quality score, revenue, balance
+	CONDITIONING,    # Player chooses 0-4 weeks of conditioning
 	SELL,            # Player allocates units to channels and sets pricing
 	EQUIPMENT_MANAGE, # Player manages equipment between brews
 	RESEARCH_MANAGE, # Player manages research tree between brews
@@ -50,6 +51,7 @@ var current_hop_allocations: Dictionary = {}  # Maps hop_id -> slot string (bitt
 var general_taste: int = 0
 var style_taste: Dictionary = {}
 var discoveries: Dictionary = {}
+var non_discoveries: Dictionary = {}
 var temp_control_quality: int = 50
 var sanitation_quality: int = 50
 
@@ -62,6 +64,9 @@ var is_brewing: bool = false
 var equipment_spend: float = 0.0
 var unique_ingredients_used: int = 0
 var _used_ingredient_ids: Dictionary = {}
+
+# Conditioning
+var conditioning_weeks: int = 0
 
 # Win/loss tracking for game over screen
 var run_won: bool = false
@@ -81,6 +86,8 @@ func advance_state() -> void:
 		State.BREWING_PHASES:
 			_set_state(State.RESULTS)
 		State.RESULTS:
+			_set_state(State.CONDITIONING)
+		State.CONDITIONING:
 			_set_state(State.SELL)
 		State.SELL:
 			_on_results_continue()
@@ -194,6 +201,9 @@ func set_water_profile(profile) -> void:
 
 func set_hop_allocations(allocations: Dictionary) -> void:
 	current_hop_allocations = allocations
+
+func set_conditioning_weeks(weeks: int) -> void:
+	conditioning_weeks = clampi(weeks, 0, 4)
 
 # ---------------------------------------------------------------------------
 # Economy methods
@@ -364,6 +374,16 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 	result["off_flavor_tags"] = failure_result["off_flavor_tags"]
 	result["off_flavor_message"] = failure_result["off_flavor_message"]
 	result["failure_messages"] = failure_result["failure_messages"]
+	result["off_flavor_intensities"] = failure_result.get("off_flavor_intensities", {})
+
+	# Evaluate off-flavors against style for spectrum display (12.2)
+	if current_style != null and current_style is BeerStyle:
+		var evaluated_off_flavors: Array = FailureSystem.evaluate_off_flavors(
+			failure_result.get("off_flavor_intensities", {}), current_style
+		)
+		result["off_flavors"] = evaluated_off_flavors
+	else:
+		result["off_flavors"] = []
 
 	record_brew(result["final_score"])
 
@@ -440,6 +460,49 @@ func execute_brew(sliders: Dictionary) -> Dictionary:
 	if result.has("brew_attributes"):
 		for attr in result["brew_attributes"]:
 			brew_attributes.append(attr)
+
+	# Water-related attribute detection (11.3)
+	if current_water_profile != null and result.has("water_score"):
+		var ws: float = result["water_score"]
+		if ws >= 80.0:
+			brew_attributes.append("water_match")
+		elif ws < 40.0:
+			brew_attributes.append("water_mismatch")
+
+	# Yeast-temp flavor compound discoveries (11.4)
+	var _disc_yeast: Yeast = current_recipe.get("yeast", null) as Yeast
+	if _disc_yeast != null:
+		var _disc_flavors: Dictionary = BrewingScience.calc_yeast_flavors(sliders.get("fermenting", 20.0), _disc_yeast)
+		if _disc_flavors.get("ester_banana", 0.0) > 0.5:
+			brew_attributes.append("banana_esters")
+		if _disc_flavors.get("phenol_clove", 0.0) > 0.5:
+			brew_attributes.append("clove_phenols")
+		if _disc_flavors.get("phenol_pepper", 0.0) > 0.5:
+			brew_attributes.append("saison_spice")
+
+	# Hop schedule discoveries (11.5)
+	for _hop_id in current_hop_allocations:
+		var _hop_slot: String = current_hop_allocations[_hop_id] if current_hop_allocations[_hop_id] is String else ""
+		if _hop_slot == "aroma" and not brew_attributes.has("late_hop_aroma"):
+			brew_attributes.append("late_hop_aroma")
+		if _hop_slot == "dry_hop" and not brew_attributes.has("dry_hop_character"):
+			brew_attributes.append("dry_hop_character")
+
+	# Non-discovery check (11.1 / 11.2)
+	if current_style != null and is_instance_valid(TasteSystem):
+		var non_disc: String = TasteSystem.check_non_discovery(
+			current_style.style_id, sliders, result["final_score"]
+		)
+		if non_disc != "":
+			non_discoveries[non_disc] = true
+			result["non_discovery"] = non_disc
+			if is_instance_valid(ToastManager):
+				var non_disc_messages: Dictionary = {
+					"mash_tolerance": "You notice that small mash temperature changes don't seem to matter much.",
+					"boil_tolerance": "You realize that boil length doesn't need to be exact.",
+				}
+				ToastManager.show_toast(non_disc_messages.get(non_disc, ""))
+
 	var discovery_result: Dictionary = TasteSystem.roll_discoveries(brew_attributes, current_style.style_name if current_style else "")
 	result["discovery_result"] = discovery_result
 
@@ -555,6 +618,35 @@ func execute_sell(allocations: Array, price_offset: float) -> Dictionary:
 	return {"total": total, "breakdown": breakdown}
 
 # ---------------------------------------------------------------------------
+# Conditioning execution — called from ConditioningOverlay when player confirms
+# ---------------------------------------------------------------------------
+## Applies conditioning: deducts cost, applies off-flavor decay, adds quality bonus.
+## Returns {"weeks": int, "cost": float, "new_balance": float} or {} if no brew result.
+func execute_conditioning(weeks: int) -> Dictionary:
+	if last_brew_result.is_empty():
+		return {}
+	conditioning_weeks = clampi(weeks, 0, 4)
+	if conditioning_weeks == 0:
+		return {"weeks": 0, "cost": 0.0, "new_balance": balance}
+	# Calculate cost: weeks * rent / 4
+	var rent: float = BreweryExpansion.get_rent_amount() if is_instance_valid(BreweryExpansion) else 150.0
+	var cost: float = float(conditioning_weeks) * (rent / 4.0)
+	balance -= cost
+	balance_changed.emit(balance)
+	# Apply off-flavor decay
+	var intensities: Dictionary = last_brew_result.get("off_flavor_intensities", {})
+	if not intensities.is_empty():
+		var decayed: Dictionary = FailureSystem.apply_conditioning_decay(intensities, conditioning_weeks)
+		last_brew_result["off_flavor_intensities"] = decayed
+	# Apply flat quality bonus: +1% per week
+	var quality_bonus: float = float(conditioning_weeks) * 1.0
+	var current_score: float = last_brew_result.get("final_score", 0.0)
+	last_brew_result["final_score"] = minf(current_score + quality_bonus, 100.0)
+	last_brew_result["conditioning_weeks"] = conditioning_weeks
+	last_brew_result["conditioning_cost"] = cost
+	return {"weeks": conditioning_weeks, "cost": cost, "new_balance": balance}
+
+# ---------------------------------------------------------------------------
 # Reset (new run)
 # ---------------------------------------------------------------------------
 func record_equipment_purchase(cost: float) -> void:
@@ -572,6 +664,7 @@ func reset() -> void:
 	last_brew_result = {}
 	current_water_profile = null
 	current_hop_allocations = {}
+	conditioning_weeks = 0
 	total_revenue = 0.0
 	best_quality = 0.0
 	is_brewing = false
@@ -580,6 +673,10 @@ func reset() -> void:
 	general_taste = 0
 	style_taste = {}
 	discoveries = {}
+	non_discoveries = {}
+	if is_instance_valid(TasteSystem):
+		TasteSystem.non_discoveries = {}
+		TasteSystem._last_brew_by_style = {}
 	temp_control_quality = 50
 	sanitation_quality = 50
 	equipment_spend = 0.0

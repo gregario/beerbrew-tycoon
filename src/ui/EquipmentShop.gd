@@ -5,13 +5,14 @@ extends CanvasLayer
 
 signal closed()
 
-var CATEGORY_LABELS: Array[String] = ["All", "Brewing", "Fermentation", "Packaging", "Utility"]
+var CATEGORY_LABELS: Array[String] = ["All", "Brewing", "Fermentation", "Packaging", "Utility", "Measurement"]
 var CATEGORY_MAP: Dictionary = {
 	0: -1,  # All
 	1: Equipment.Category.BREWING,
 	2: Equipment.Category.FERMENTATION,
 	3: Equipment.Category.PACKAGING,
 	4: Equipment.Category.UTILITY,
+	5: Equipment.Category.MEASUREMENT,
 }
 
 var _selected_category: int = 0  # Index into CATEGORY_LABELS
@@ -143,17 +144,18 @@ func _build_ui() -> void:
 
 func _rebuild_category_tabs() -> void:
 	var show_automation: bool = is_instance_valid(PathManager) and PathManager.get_path_type() == "mass_market"
-	CATEGORY_LABELS = ["All", "Brewing", "Fermentation", "Packaging", "Utility"]
+	CATEGORY_LABELS = ["All", "Brewing", "Fermentation", "Packaging", "Utility", "Measurement"]
 	CATEGORY_MAP = {
 		0: -1,
 		1: Equipment.Category.BREWING,
 		2: Equipment.Category.FERMENTATION,
 		3: Equipment.Category.PACKAGING,
 		4: Equipment.Category.UTILITY,
+		5: Equipment.Category.MEASUREMENT,
 	}
 	if show_automation:
 		CATEGORY_LABELS.append("Automation")
-		CATEGORY_MAP[5] = Equipment.Category.AUTOMATION
+		CATEGORY_MAP[CATEGORY_LABELS.size() - 1] = Equipment.Category.AUTOMATION
 	# Rebuild tab buttons
 	for child in _tab_container.get_children():
 		child.queue_free()
